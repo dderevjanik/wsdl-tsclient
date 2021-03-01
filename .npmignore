@@ -1,2 +1,4 @@
 src/
+generated/
 test/
+*.wsdl

@@ -3,8 +3,10 @@
 import yargs from "yargs-parser";
 import path from "path";
 import { generateClient } from "./index";
+import packageJson from "../package.json";
 
 type Config = {
+    _: any[];
     h?: boolean;
     help?: boolean;
     i?: string;
@@ -13,18 +15,19 @@ type Config = {
 
 const conf: Config = yargs(process.argv.slice(2)) as any;
 if (conf.h || conf.help) {
-    process.stdout.write("Usage: wsdl -i WSDL_PATH -o OUT_DIR\n");
+    process.stdout.write(`Version: ${packageJson.version}\n`);
+    process.stdout.write("Usage: wsdl-tsclient WSDL_PATH -o OUT_DIR\n");
     process.stdout.write("\n");
-    process.stdout.write("Example: wsdl-tsclient -i file.wsdl -o ./generator/client\n");
+    process.stdout.write("Example: wsdl-tsclient file.wsdl -o ./generator/client\n");
     process.stdout.write("\n");
-    process.stdout.write("\t-i\tpath to your wsdl file\n");
+    process.stdout.write("\tWSDL_PATH\tpath to your wsdl file\n");
     process.stdout.write("\t-o\toutput dir\n");
     // TODO: Finish --js
     process.exit(0);
 }
 
-if (conf.i === undefined || conf.i.length === 0) {
-    console.error('You forget to pass path to wsdl file -i');
+if (conf._ === undefined || conf._.length === 0) {
+    console.error('You forget to pass path to wsdl file');
     process.exit(1);
 }
 

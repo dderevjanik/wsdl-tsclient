@@ -1,4 +1,5 @@
 import * as path from "path";
+import camelCase from "camelcase";
 import { existsSync } from "fs";
 import { ImportDeclarationStructure, MethodSignatureStructure, OptionalKind, Project, PropertySignatureStructure, StructureKind } from "ts-morph";
 import { open_wsdl } from "soap/lib/wsdl/index";
@@ -52,7 +53,7 @@ const propertiesBlaclist = [
 function createProperty(name: string, type: string, doc: string, optional = true): PropertySignatureStructure {
     return {
         kind: StructureKind.PropertySignature,
-        name: name,
+        name: camelCase(name),
         docs: [doc],
         hasQuestionToken: true,
         type: type
@@ -63,11 +64,13 @@ function createProperty(name: string, type: string, doc: string, optional = true
  * Generate definiton
  * @param project ts-morph project
  * @param defDir dir where to put definition file
- * @param defName name of definition
+ * @param name name of definition
  * @param defParts definitions parts (it's properties from wsdl)
  * @param stack definition stack (for deep objects)
  */
-function generateDefinitionFile(project: Project, defDir: string, defName: string, defParts: { [propNameType: string]: any }, stack: string[]): string {
+function generateDefinitionFile(project: Project, defDir: string, name: string, defParts: { [propNameType: string]: any }, stack: string[]): string {
+    const defName = camelCase(name, { pascalCase: true });
+
     const fileName = findNonUseDefNameInCache(defName);
     const filePath = path.join(defDir, `${fileName}.ts`);
 
@@ -182,7 +185,7 @@ export async function generateClient(wsdlPath: string, outDir: string): Promise<
                     for (const [methodName, method] of Object.entries(port.binding.methods)) { // [O_CustomerChange]
 
                         // TODO: Deduplicate code below by refactoring it to external function. Is it possible ?
-                        let paramName = "requset";
+                        let paramName = "request";
                         let paramType = "{}";
                         if (method.input) {
                             paramName = method.input.$name;
@@ -217,21 +220,18 @@ export async function generateClient(wsdlPath: string, outDir: string): Promise<
                         }
 
                         allMethods[methodName] = {
-                            paramName: paramName,
+                            paramName: camelCase(paramName),
                             paramType: paramType, // TODO: Use string from generated definition files
                             returnType: returnType // TODO: Use string from generated definition files
                         };
 
                         portMethods.push({
                             name: methodName,
-                            paramName: paramName,
+                            paramName: camelCase(paramName),
                             paramType: paramType, // TODO: Use string from generated definition files
                             returnType: returnType // TODO: Use string from generated definition files
                         });
                     }
-
-                    const portFilePath = path.resolve(portsDir, `${portName}.ts`);
-                    const portFile = project.createSourceFile(portFilePath);
                     const portFileMethods: Array<OptionalKind<MethodSignatureStructure>> = [];
                     portMethods.forEach((method) => {
                         portFileMethods.push({
@@ -247,6 +247,10 @@ export async function generateClient(wsdlPath: string, outDir: string): Promise<
                         });
                     })
 
+                    const portFinalName = camelCase(portName, { pascalCase: true });
+                    const portFilePath = path.resolve(portsDir, `${portFinalName}.ts`);
+                    const portFile = project.createSourceFile(portFilePath);
+
                     portFile.addImportDeclarations(Array.from(portImports).map<OptionalKind<ImportDeclarationStructure>>((imp) => ({
                         moduleSpecifier: `../definitions/${imp}`,
                         namedImports: [{ name: imp }]
@@ -256,17 +260,18 @@ export async function generateClient(wsdlPath: string, outDir: string): Promise<
                             leadingTrivia: writer => writer.newLine(),
                             isExported: true,
                             kind: StructureKind.Interface,
-                            name: portName,
+                            name: portFinalName,
                             // NOTE: Could be optimized with Object.entries(port) above
                             methods: portFileMethods
                         }
                     ]);
                     portFile.saveSync();
-                    portsExport.add(portName);
-                    console.debug(`Created Port file: ${path.join(portsDir, portName)}`);
+                    portsExport.add(portFinalName);
+                    console.debug(`Created Port file: ${path.join(portsDir, portFinalName)}`);
                 } // End of Port cycle
 
-                const serviceFilePath = path.resolve(servicesDir, `${serviceName}.ts`);
+                const finalServiceName = camelCase(serviceName);
+                const serviceFilePath = path.resolve(servicesDir, `${finalServiceName}.ts`);
                 const serviceFile = project.createSourceFile(serviceFilePath);
 
                 serviceFile.addImportDeclarations(Array.from(portsExport).map<OptionalKind<ImportDeclarationStructure>>(imp => ({
@@ -278,7 +283,7 @@ export async function generateClient(wsdlPath: string, outDir: string): Promise<
                         leadingTrivia: writer => writer.newLine(),
                         isExported: true,
                         kind: StructureKind.Interface,
-                        name: serviceName,
+                        name: finalServiceName,
                         properties: Array.from(portsExport).map<OptionalKind<PropertySignatureStructure>>(portImport => ({
                             name: portImport,
                             isReadonly: true,
@@ -287,8 +292,8 @@ export async function generateClient(wsdlPath: string, outDir: string): Promise<
                     }
                 ]);
                 serviceFile.saveSync();
-                servicesExports.add(serviceName);
-                console.debug(`Created Service file: ${path.join(servicesDir, serviceName)}`);
+                servicesExports.add(finalServiceName);
+                console.debug(`Created Service file: ${path.join(servicesDir, finalServiceName)}`);
             } // End of Service cycle
 
             // Generate client
