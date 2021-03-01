@@ -22,7 +22,7 @@ npm i -g wsdl-tsclient
 
 ### Using CLI
 
-`wsdl-tsclient -in ./soap.wsdl -o ./generated/soap.wsdl`
+`wsdl-tsclient ./soap.wsdl -o ./generated/soap.wsdl`
 
 ### Programmatically
 
