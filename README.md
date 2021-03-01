@@ -1,4 +1,6 @@
-# WSDL-TSCLIENT
+# WSDL TSClient
+
+[![Build Status](https://travis-ci.org/dderevjanik/wsdl-tsclient.svg?branch=master)](https://travis-ci.org/dderevjanik/wsdl-tsclient)
 
 Generate typescript [soap client](https://www.npmjs.com/package/soap) with typescript definitons from WSDL file.
 
@@ -17,8 +19,6 @@ npm i -g wsdl-tsclient
 ```
 
 ## Usage
-
-this command will generate tsclient from wsdl file to `./generated/soap-client`.
 
 ### Using CLI
 
