@@ -9,9 +9,11 @@
   "scripts": {
     "pretest": "rm -rf ./test/generated",
     "test": "ts-node ./test/generate-clients.test.ts",
+    "preversion": "npm test && npm run build",
     "prepublishOnly": "npm test && npm run dist",
     "dev": "ts-node ./dev.ts",
-    "dist": "tsc"
+    "dist": "tsc",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
