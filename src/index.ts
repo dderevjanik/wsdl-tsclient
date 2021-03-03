@@ -153,7 +153,7 @@ function generateDefinitionFile(project: Project, defDir: string, name: string, 
 
 // TODO: Add logs
 // TODO: Add comments for services, ports, methods and client
-export async function generateClient(wsdlPath: string, outDir: string): Promise<void> {
+export async function generateClient(name: string, wsdlPath: string, outDir: string): Promise<void> {
     // Clear previous cache
     definitionsList = []; // TODO: Avoid this
 

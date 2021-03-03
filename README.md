@@ -22,12 +22,24 @@ npm i -g wsdl-tsclient
 
 ### Using CLI
 
-`wsdl-tsclient ./soap.wsdl -o ./generated/soap.wsdl`
+`wsdl-tsclient ./soap.wsdl -o ./generated`
+
+`wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
+
+```bash
+Version: 0.2.0
+Usage: wsdl-tsclient WSDL_PATH -o OUT_DIR
+
+Example: wsdl-tsclient file.wsdl -o ./generator/client
+
+        WSDL_PATH       path to your wsdl file(s)
+        -o              output dir
+```
 
 ### Programmatically
 
 ```javascript
 import { generateClient } from "wsdl-tsclient";
 
-generateClient("./path/to/wsdl.wsdl", "./generated/soap-client");
+generateClient("MyWsdlClient", "./path/to/wsdl.wsdl", "./generated/soap-client");
 ```
