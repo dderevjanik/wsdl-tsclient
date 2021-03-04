@@ -6,6 +6,9 @@
   "bin": {
     "wsdl-tsclient": "dist/cli.js"
   },
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "scripts": {
     "pretest": "rm -rf ./test/generated",
     "test": "ts-node ./test/generate-clients.test.ts",
