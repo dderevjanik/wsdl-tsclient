@@ -28,13 +28,16 @@ npm i -g wsdl-tsclient
 `wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
 
 ```bash
-Version: 0.3.1
-Usage: wsdl-tsclient WSDL_PATH -o OUT_DIR
+Version: 0.3.2
+Syntax: wsdl-tsclient [options] [path]
 
-Example: wsdl-tsclient file.wsdl -o ./generator/client
+Example: wsdl-tsclient file.wsdl -o ./generated/
+         wsdl-tsclient ./res/**/*.wsdl -o ./generated/
 
-        WSDL_PATH       path to your wsdl file(s)
-        -o              output dir
+Options:
+        -h, --help      Print this message
+        -v, --version   Print version
+        -o              Output dir
 ```
 
 ### Programmatically
