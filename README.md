@@ -1,10 +1,11 @@
 # WSDL TSClient
 
-[![Build Status](https://travis-ci.org/dderevjanik/wsdl-tsclient.svg?branch=master)](https://travis-ci.org/dderevjanik/wsdl-tsclient)
+[![travis-status](https://travis-ci.org/dderevjanik/wsdl-tsclient.svg?branch=master)](https://travis-ci.org/dderevjanik/wsdl-tsclient)
+[![npm-version](https://img.shields.io/npm/v/wsdl-tsclient)](https://npmjs.com/package/wsdl-tsclient)
 
-Generate typescript [soap client](https://www.npmjs.com/package/soap) with typescript definitons from WSDL file.
+Generate [soap client](https://www.npmjs.com/package/soap) with typescript definitons from WSDL file.
 
-This library is using [ts-morph](https://ts-morph.com/) for generate typescript code.
+This library is using [ts-morph](https://www.npmjs.com/package/ts-morph) for generate typescript code and [node-soap](https://github.com/vpulim/node-soap) for runtime.
 
 ## Install
 
