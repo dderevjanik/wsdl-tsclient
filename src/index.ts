@@ -23,6 +23,10 @@ function findReferenceDefiniton(definitionParts: { [propNameType: string]: strin
     return definitionsList.find(def => def.reference === definitionParts);
 }
 
+function timeElapsed(time: [number, number]) {
+    return (time[0] * 1000000000 + time[1]) / 1000000;
+}
+
 const propertiesBlaclist = [
     "targetNSAlias",
     "targetNamespace"
@@ -158,14 +162,17 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
     definitionsList = []; // TODO: Avoid this
 
     return new Promise((resolve, reject) => {
+        const timeParseStart = process.hrtime();
         open_wsdl(wsdlPath, function (err, wsdl) {
             if (err) {
                 return reject(err);
             }
+            console.debug(`WSDL Parse Time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
             if (wsdl === undefined) {
                 return reject(new Error("WSDL is undefined"));
             }
 
+            const timeGenerateStart = process.hrtime();
             const project = new Project();
             const portsDir = path.join(outDir, "ports");
             const servicesDir = path.join(outDir, "services");
@@ -348,6 +355,7 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
             })
             createClientDeclaration.setBodyText("return soapCreateClientAsync(args[0], args[1], args[2]) as any;")
             clientFile.saveSync();
+            console.debug(`Generatation time: ${timeElapsed(process.hrtime(timeGenerateStart))}ms`);
             console.debug(`Created Client file: ${path.join(outDir, "Client.ts")}`);
             return resolve();
         });
