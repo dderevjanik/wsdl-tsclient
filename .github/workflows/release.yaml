@@ -12,8 +12,8 @@ jobs:
         with:
           node-version: "14.x"
           registry-url: "https://registry.npmjs.org"
-      - run: npm version ${{ github.event.release.tag_name }}
       - run: npm install
+      - run: npm version ${{ github.event.release.tag_name }}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
