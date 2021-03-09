@@ -13,8 +13,8 @@ jobs:
           node-version: "14.x"
           registry-url: "https://registry.npmjs.org"
       - run: npm ci
-      - run: git config --global user.name "GitHub CD bot"
-      - run: git config --global user.email "github-cd-bot@example.com"
+      - run: git config --global user.name "Mr. Releaser"
+      - run: git config --global user.email "release@bjerk.io"
       - run: npm version ${{ github.event.release.tag_name }}
       - run: npm publish
         env:
