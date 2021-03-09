@@ -78,7 +78,7 @@ function generateDefinitionFile(project: Project, defDir: string, name: string, 
     const fileName = findNonUseDefNameInCache(defName);
     const filePath = path.join(defDir, `${fileName}.ts`);
 
-    const defFile = project.createSourceFile(filePath);
+    const defFile = project.createSourceFile(filePath, "", { overwrite: true });
     definitionsList.push({ name: fileName, reference: defParts }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
 
     const subDefExports: string[] = [];
@@ -256,7 +256,7 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
 
                     const portFinalName = camelCase(portName, { pascalCase: true });
                     const portFilePath = path.resolve(portsDir, `${portFinalName}.ts`);
-                    const portFile = project.createSourceFile(portFilePath);
+                    const portFile = project.createSourceFile(portFilePath, "", { overwrite: true });
 
                     portFile.addImportDeclarations(Array.from(portImports).map<OptionalKind<ImportDeclarationStructure>>((imp) => ({
                         moduleSpecifier: `../definitions/${imp}`,
@@ -279,7 +279,7 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
 
                 const finalServiceName = camelCase(serviceName);
                 const serviceFilePath = path.resolve(servicesDir, `${finalServiceName}.ts`);
-                const serviceFile = project.createSourceFile(serviceFilePath);
+                const serviceFile = project.createSourceFile(serviceFilePath, "", { overwrite: true });
 
                 serviceFile.addImportDeclarations(Array.from(portsExport).map<OptionalKind<ImportDeclarationStructure>>(imp => ({
                     moduleSpecifier: `../ports/${imp}`,
@@ -305,7 +305,7 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
 
             // Generate client
             const clientFilePath = path.resolve(outDir, "Client.ts");
-            const clientFile = project.createSourceFile(clientFilePath);
+            const clientFile = project.createSourceFile(clientFilePath, "", { overwrite: true });
 
             clientFile.addImportDeclaration({
                 moduleSpecifier: "soap",
