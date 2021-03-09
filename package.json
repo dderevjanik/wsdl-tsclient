@@ -1,5 +1,5 @@
 {
-  "name": "wsdl-tsclient",
+  "name": "@cobraz-dev/wsdl-tsclient",
   "version": "0.3.2",
   "description": "Generate typescript soap client with typescript definitons from WSDL file.",
   "main": "dist/index.js",
