@@ -5,7 +5,9 @@
 
 Generate [soap client](https://www.npmjs.com/package/soap) with typescript definitons from WSDL file.
 
-This library is using [ts-morph](https://www.npmjs.com/package/ts-morph) for generate typescript code and [node-soap](https://github.com/vpulim/node-soap) for runtime.
+This library is using [ts-morph](https://www.npmjs.com/package/ts-morph) to generate typescript code and [node-soap](https://github.com/vpulim/node-soap) for runtime, inspired by Java [wsimport](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/wsimport.html)
+
+*NOTE:* Add `soap` to your npm runtime dependency `npm i soap`
 
 ## Install
 
