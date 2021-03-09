@@ -14,7 +14,7 @@
     "test": "ts-node ./test/generate-clients.test.ts",
     "preversion": "npm test && npm run build",
     "prepublishOnly": "npm test && npm run dist",
-    "dev": "ts-node ./dev.ts",
+    "dev": "ts-node -T ./dev.ts",
     "dist": "tsc",
     "build": "tsc"
   },
