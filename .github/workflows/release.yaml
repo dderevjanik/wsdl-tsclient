@@ -19,5 +19,5 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          file_pattern: packages/**
+          file_pattern: package.json
           commit_message: "chore: bump version to ${{ github.event.release.tag_name }}"
