@@ -12,12 +12,14 @@ jobs:
         with:
           node-version: "14.x"
           registry-url: "https://registry.npmjs.org"
-      - run: npm install
+      - run: npm ci
+      - run: git config --global user.name "GitHub CD bot"
+      - run: git config --global user.email "github-cd-bot@example.com"
       - run: npm version ${{ github.event.release.tag_name }}
-      - run: npm publish
+      - run: npm publish --tag ${{ github.event.release.target_commitish }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          file_pattern: package.json
-          commit_message: "chore: bump version to ${{ github.event.release.tag_name }}"
+      - run: git push
+        env:
+          # The secret is passed automatically. Nothing to configure.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
