@@ -23,9 +23,9 @@ npm i -g wsdl-tsclient
 
 ### Using CLI
 
-`wsdl-tsclient ./soap.wsdl -o ./generated`
+`wsdl-tsclient -i ./soap.wsdl -o ./generated`
 
-`wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
+`wsdl-tsclient -i ./resources/**/*.wsdl -o ./generated` - using glob
 
 ```bash
 Version: 0.3.2
@@ -37,6 +37,7 @@ Example: wsdl-tsclient file.wsdl -o ./generated/
 Options:
         -h, --help      Print this message
         -v, --version   Print version
+        -i              path to your wsdl file(s)
         -o              Output dir
 ```
 
