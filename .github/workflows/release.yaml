@@ -19,7 +19,8 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: git push HEAD:${{ github.event.release.target_commitish }}
-        env:
-          # The secret is passed automatically. Nothing to configure.
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.event.release.target_commitish }}
