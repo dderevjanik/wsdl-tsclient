@@ -16,7 +16,7 @@ jobs:
       - run: git config --global user.name "GitHub CD bot"
       - run: git config --global user.email "github-cd-bot@example.com"
       - run: npm version ${{ github.event.release.tag_name }}
-      - run: npm publish --tag ${{ github.event.release.target_commitish }}
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: git push
