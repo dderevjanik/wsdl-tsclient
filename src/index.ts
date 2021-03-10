@@ -2,6 +2,7 @@ import * as path from "path";
 import camelCase from "camelcase";
 import { existsSync } from "fs";
 import { ImportDeclarationStructure, MethodSignatureStructure, OptionalKind, Project, PropertySignatureStructure, StructureKind } from "ts-morph";
+import { reservedKeywords } from "./utils/javascript";
 import { open_wsdl } from "soap/lib/wsdl/index";
 
 // TODO: Avoid this
@@ -226,15 +227,18 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
                             }
                         }
 
+                        const finalParamName = reservedKeywords.includes(camelCase(paramName))
+                            ? `${camelCase(paramName)}Param`
+                            : camelCase(paramName)
                         allMethods[methodName] = {
-                            paramName: camelCase(paramName),
+                            paramName: finalParamName,
                             paramType: paramType, // TODO: Use string from generated definition files
                             returnType: returnType // TODO: Use string from generated definition files
                         };
 
                         portMethods.push({
                             name: methodName,
-                            paramName: camelCase(paramName),
+                            paramName: finalParamName,
                             paramType: paramType, // TODO: Use string from generated definition files
                             returnType: returnType // TODO: Use string from generated definition files
                         });
