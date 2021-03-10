@@ -2,9 +2,9 @@
   "name": "wsdl-tsclient",
   "version": "0.3.4",
   "description": "Generate typescript soap client with typescript definitons from WSDL file.",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "bin": {
-    "wsdl-tsclient": "dist/cli.js"
+    "wsdl-tsclient": "dist/src/cli.js"
   },
   "engines": {
     "node": ">=10.0.0"
