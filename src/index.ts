@@ -1,5 +1,7 @@
 import * as path from "path";
 import camelCase from "camelcase";
+import { parseWsdl } from "./parser";
+import { generate as generate } from "./generator";
 import { existsSync } from "fs";
 import { ImportDeclarationStructure, MethodSignatureStructure, OptionalKind, Project, PropertySignatureStructure, StructureKind } from "ts-morph";
 import { open_wsdl } from "soap/lib/wsdl/index";
@@ -361,4 +363,15 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
         });
 
     });
+}
+
+
+export async function parseAndGenerate(wsdlPath: string, outDir: string): Promise<void> {
+    const timeParseStart = process.hrtime();
+    const parsedWsdl = await parseWsdl(wsdlPath);
+    console.debug(`Parsing WSDL time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
+
+    const timeGenerateStart = process.hrtime();
+    await generate(parsedWsdl, outDir);
+    console.debug(`Generatation time: ${timeElapsed(process.hrtime(timeGenerateStart))}ms`);
 }

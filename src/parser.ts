@@ -4,14 +4,13 @@ import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
 import { timeElapsed } from "./utils/timer";
 
-// TODO: Avoid this
 type VisitedDefinition = { name: string; parts: object; definition: Definition; };
 
 function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionParts: object) {
     return visited.find(def => def.parts === definitionParts);
 }
 
-// TODO: Use blacklist
+// TODO: Use this blacklist to skip parts that shouldn't be included in definitions
 const propertiesBlaclist = [
     "targetNSAlias",
     "targetNamespace"
@@ -53,7 +52,7 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
                     // Array of
                     if (typeof type === "string") {
                         // primitive type
-                        definition.properties.push({ kind: "PRIMITIVE", name: stripedPropName, sourceName: propName, type: "string", isArray: true });
+                        definition.properties.push({ kind: "PRIMITIVE", name: stripedPropName, sourceName: propName, description: type, type: "string", isArray: true });
                     } else {
                         // With sub-type
                         const visited = findReferenceDefiniton(visitedDefs, type);
@@ -68,13 +67,14 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
                 } else {
                     if (typeof type === "string") {
                         // primitive type
-                        definition.properties.push({ kind: "PRIMITIVE", name: propName, sourceName: propName, type: "string", isArray: false });
+                        definition.properties.push({ kind: "PRIMITIVE", name: propName, sourceName: propName, description: type, type: "string", isArray: false });
                     } else {
                         // With sub-type
                         const reference = findReferenceDefiniton(visitedDefs, type);
                         if (reference) {
                             // By referencing already declared definition, we will avoid circular references
-                            definition.properties.push({ kind: "REFERENCE", name: propName, sourceName: propName, ref: reference.definition, isArray: false });
+                            definition.properties.push({
+                                kind: "REFERENCE", name: propName, sourceName: propName, description: "", ref: reference.definition, isArray: false });
                         } else {
                             const subDefinition = parseDefinition(parsedWsdl, propName, type, [...stack, propName], visitedDefs);
                             definition.properties.push({ kind: "REFERENCE", name: propName, sourceName: propName, ref: subDefinition, isArray: false });
@@ -94,22 +94,21 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
 
 // TODO: Add logs
 // TODO: Add comments for services, ports, methods and client
-export async function parseWsdl(name: string, wsdlPath: string, outDir: string): Promise<void> {
+export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
     return new Promise((resolve, reject) => {
-        const timeParseXml = process.hrtime();
         open_wsdl(wsdlPath, function (err, wsdl) {
             if (err) {
                 return reject(err);
             }
-            console.debug(`WSDL Parse Time: ${timeElapsed(process.hrtime(timeParseXml))}ms`);
             if (wsdl === undefined) {
                 return reject(new Error("WSDL is undefined"));
             }
 
             wsdl.describeServices();
 
-            const timeParseWsdl = process.hrtime();
             const parsedWsdl = new ParsedWsdl();
+            parsedWsdl.wsdlFilename = path.basename(wsdlPath);
+            parsedWsdl.wsdlPath = path.resolve(wsdlPath);
 
             const visitedDefinitions: Array<VisitedDefinition> = [];
 
@@ -135,8 +134,6 @@ export async function parseWsdl(name: string, wsdlPath: string, outDir: string):
                             if (inputMessage.element) {
                                 // TODO: if $type not defined, inline type into function declartion
                                 const typeName = inputMessage.element.$type ?? inputMessage.element.$name;
-                                console.log(inputMessage.element.$minOccurs);
-                                console.log(inputMessage.element.$maxOccurs);
                                 const type = parsedWsdl.findDefinition(inputMessage.element.$type ?? inputMessage.element.$name);
                                 inputDefinition = type
                                     ? type
@@ -150,8 +147,6 @@ export async function parseWsdl(name: string, wsdlPath: string, outDir: string):
                             if (outputMessage.element) {
                                 // TODO: if input doesn't have $type, use $name for definition file
                                 const typeName = outputMessage.element.$type ?? outputMessage.element.$name;
-                                console.log(outputMessage.element.$minOccurs);
-                                console.log(outputMessage.element.$maxOccurs);
                                 const type = parsedWsdl.findDefinition(typeName);
                                 outputDefinition = type
                                     ? type
@@ -179,16 +174,15 @@ export async function parseWsdl(name: string, wsdlPath: string, outDir: string):
                 } // End of Port cycle
 
                 services.push({
-                    name: camelCase(serviceName),
+                    name: camelCase(serviceName, { pascalCase: true }),
                     sourceName: serviceName,
                     ports: servicePorts
                 });
             } // End of Service cycle
             parsedWsdl.services = services;
             parsedWsdl.ports = allPorts;
-            console.debug(`Generatation time: ${timeElapsed(process.hrtime(timeParseWsdl))}ms`);
-            console.debug(`Created Client file: ${path.join(outDir, "Client.ts")}`);
-            return resolve();
+
+            return resolve(parsedWsdl);
         });
 
     });
