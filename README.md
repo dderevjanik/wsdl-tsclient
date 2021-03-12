@@ -30,7 +30,7 @@ npm i -g wsdl-tsclient
 `wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
 
 ```bash
-Version: 0.3.2
+Version: 0.3.4
 Syntax: wsdl-tsclient [options] [path]
 
 Example: wsdl-tsclient file.wsdl -o ./generated/

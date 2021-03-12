@@ -2,3 +2,4 @@ src/
 generated/
 test/
 *.wsdl
+*.asmx
