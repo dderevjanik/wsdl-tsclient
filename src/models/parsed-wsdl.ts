@@ -47,6 +47,7 @@ export interface Service {
 }
 
 export class ParsedWsdl {
+    name: string;
     wsdlFilename: string;
     wsdlPath: string;
 

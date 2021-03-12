@@ -141,6 +141,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
             leadingTrivia: writer => writer.newLine(),
             isExported: true,
             kind: StructureKind.Interface,
+            docs: [`${parsedWsdl.name}Client`],
             name: "IClient",
             properties: clientServices,
             methods: allMethods.map<OptionalKind<MethodSignatureStructure>>(method => ({
@@ -155,6 +156,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
     ]);
     const createClientDeclaration = clientFile.addFunction({
         name: "createClientAsync",
+        docs: [`Create ${parsedWsdl.name}Client`],
         isExported: true,
         parameters: [{
             isRestParameter: true,

@@ -2,7 +2,7 @@ import camelCase from "camelcase";
 import * as path from "path";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
-import { timeElapsed } from "./utils/timer";
+import { stripExtension } from "./utils/file";
 
 type VisitedDefinition = { name: string; parts: object; definition: Definition; };
 
@@ -107,7 +107,9 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
             wsdl.describeServices();
 
             const parsedWsdl = new ParsedWsdl();
-            parsedWsdl.wsdlFilename = path.basename(wsdlPath);
+            const filename = path.basename(wsdlPath);
+            parsedWsdl.name = camelCase(stripExtension(filename), { pascalCase: true });
+            parsedWsdl.wsdlFilename = path.basename(filename);
             parsedWsdl.wsdlPath = path.resolve(wsdlPath);
 
             const visitedDefinitions: Array<VisitedDefinition> = [];
