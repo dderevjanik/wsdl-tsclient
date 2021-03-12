@@ -3,6 +3,7 @@ import * as path from "path";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
 import { stripExtension } from "./utils/file";
+import { reservedKeywords } from "./utils/javascript";
 
 type VisitedDefinition = { name: string; parts: object; definition: Definition; };
 
@@ -156,9 +157,12 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                             }
                         }
 
+                        const paramNameCamel = camelCase(paramName);
                         const portMethod: Method = {
                             name: methodName,
-                            paramName: camelCase(paramName),
+                            paramName: reservedKeywords.includes(paramNameCamel) // Avoid collision with javascript keywords
+                                ? `${paramNameCamel}Param`
+                                : paramNameCamel,
                             paramDefinition: inputDefinition, // TODO: Use string from generated definition files
                             returnDefinition: outputDefinition // TODO: Use string from generated definition files
                         };
