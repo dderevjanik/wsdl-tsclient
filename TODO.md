@@ -8,7 +8,7 @@
 - [ ] Generator: Blacklist several properties, e.g. `targetNsAlias` (Add them as jsdoc to interface?)
 - [ ] Generator: Add more metada for properties (e.g. `xsd:number`, `minlength`, `maxlength`)
 - [ ] Generator: Don't add `jsdoc` to property which references another type
-- [ ] Project: Split `Generator` into `Parser` and `Generator`
+- [x] Project: Split `Generator` into `Parser` and `Generator`
 - [ ] Project: Add more strict TSC option
 - [ ] Project: Add eslint
 - [ ] Project: Add more sophisticate test
