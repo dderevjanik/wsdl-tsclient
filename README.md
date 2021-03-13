@@ -62,3 +62,7 @@ client.CallSoapMethodAsync();
 ```
 
 for more information about how to use client, read more about [node-soap](https://github.com/vpulim/node-soap)
+
+## How it works
+
+![overview](./docs/Overview.png)
