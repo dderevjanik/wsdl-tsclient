@@ -22,6 +22,7 @@ export interface Definition {
     name: string;
     sourceName: string;
     description?: string;
+    docs: string[];
     properties: Array<DefinitionProperty>;
 }
 

@@ -11,12 +11,6 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
     return visited.find(def => def.parts === definitionParts);
 }
 
-// TODO: Use this blacklist to skip parts that shouldn't be included in definitions
-const propertiesBlaclist = [
-    "targetNSAlias",
-    "targetNamespace"
-];
-
 /**
  * parse definition
  * @param parsedWsdl context of parsed wsdl
@@ -31,6 +25,7 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
     const definition: Definition = {
         name: parsedWsdl.findNonCollisionDefinitionName(defName),
         sourceName: defName,
+        docs: [],
         properties: [],
         description: ""
     };
@@ -48,7 +43,11 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
             });
         } else {
             Object.entries(defParts).forEach(([propName, type]) => {
-                if (propName.endsWith("[]")) {
+                if (propName === "targetNSAlias") {
+                    definition.docs.push(`targetNSAlias \`${type}\``);
+                } else if (propName === "targetNamespace") {
+                    definition.docs.push(`targetNamespace \`${type}\``);
+                } else if (propName.endsWith("[]")) {
                     const stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
                     if (typeof type === "string") {

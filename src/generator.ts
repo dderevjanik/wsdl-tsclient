@@ -43,6 +43,7 @@ function generateDefinitionFile(project: Project, definition: Definition, defDir
         leadingTrivia: writer => writer.newLine(),
         isExported: true,
         name: defName,
+        docs: [definition.docs.join("\n")],
         kind: StructureKind.Interface,
         properties: definitionProperties
     }]);
