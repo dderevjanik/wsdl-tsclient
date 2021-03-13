@@ -87,11 +87,14 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
                 clientImports.push({ moduleSpecifier: `./definitions/${method.paramDefinition.name}`, namedImports: [{ name: method.paramDefinition.name }]});
                 clientImports.push({ moduleSpecifier: `./definitions/${method.returnDefinition.name}`, namedImports: [{ name: method.returnDefinition.name }]});
                 // TODO: Deduplicate imports
-                portImports.push({ moduleSpecifier: path.join("..", defDir, method.paramDefinition.name), namedImports: [{ name: method.paramDefinition.name }] });
-                portImports.push({ moduleSpecifier: path.join("..", defDir, method.returnDefinition.name), namedImports: [{ name: method.returnDefinition.name }] });
+                portImports.push({ moduleSpecifier: path.join("..", "definitions", method.paramDefinition.name), namedImports: [{ name: method.paramDefinition.name }] });
+                portImports.push({ moduleSpecifier: path.join("..", "definitions", method.returnDefinition.name), namedImports: [{ name: method.returnDefinition.name }] });
                 portFileMethods.push({
                     name: method.paramName,
-                    parameters: [{ name: method.paramName, type: method.paramDefinition.name }],
+                    parameters: [
+                        { name: method.paramName, type: method.paramDefinition.name },
+                        { name: "callback", type: `(err: any, result: ${method.paramDefinition.name}, rawResponse: any, soapHeader: any, rawRequest: any) => void` }
+                    ],
                     returnType: method.returnDefinition.name
                 });
             } // End of PortMethod
