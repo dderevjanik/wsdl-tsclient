@@ -47,6 +47,10 @@ export interface Service {
 }
 
 export class ParsedWsdl {
+    /**
+     * Name is always uppercased filename of wsdl without an extension
+     * @example "MyClient"
+     */
     name: string;
     wsdlFilename: string;
     wsdlPath: string;
@@ -63,7 +67,7 @@ export class ParsedWsdl {
         if (!this.definitions.find(def => def.name === definitionName)) {
             return definitionName;
         }
-        for (let i = 1; i < 20; i++) { // TODO: Unhardcode `20`
+        for (let i = 1; i < 30; i++) { // TODO: Unhardcode `20`
             if (!this.definitions.find(def => def.name === `${definitionName}${i}`)) {
                 return `${definitionName}${i}`;
             }

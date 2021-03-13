@@ -141,8 +141,8 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
             leadingTrivia: writer => writer.newLine(),
             isExported: true,
             kind: StructureKind.Interface,
-            docs: [`${parsedWsdl.name}Client`],
-            name: "IClient",
+            // docs: [`${parsedWsdl.name}Client`],
+            name: `${parsedWsdl.name}Client`,
             properties: clientServices,
             methods: allMethods.map<OptionalKind<MethodSignatureStructure>>(method => ({
                 name: `${method.name}Async`,
@@ -163,7 +163,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
             name: "args",
             type: "Parameters<typeof soapCreateClientAsync>"
         }],
-        returnType: "Promise<SoapClient & IClient>" // TODO: `any` keyword is very dangerous
+        returnType: `Promise<SoapClient & ${parsedWsdl.name}Client>` // TODO: `any` keyword is very dangerous
     });
     createClientDeclaration.setBodyText("return soapCreateClientAsync(args[0], args[1], args[2]) as any;");
     clientFile.saveSync();
