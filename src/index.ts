@@ -6,6 +6,7 @@ import { existsSync } from "fs";
 import { ImportDeclarationStructure, MethodSignatureStructure, OptionalKind, Project, PropertySignatureStructure, StructureKind } from "ts-morph";
 import { reservedKeywords } from "./utils/javascript";
 import { open_wsdl } from "soap/lib/wsdl/index";
+import { Logger } from "./utils/logger";
 
 // TODO: Avoid this
 let definitionsList: Array<{ name: string; reference: any; }> = [];
@@ -373,9 +374,11 @@ export async function generateClient(name: string, wsdlPath: string, outDir: str
 export async function parseAndGenerate(wsdlPath: string, outDir: string): Promise<void> {
     const timeParseStart = process.hrtime();
     const parsedWsdl = await parseWsdl(wsdlPath);
-    console.debug(`Parsing WSDL time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
+    Logger.debug(`Parser time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
 
     const timeGenerateStart = process.hrtime();
     await generate(parsedWsdl, outDir);
-    console.debug(`Generatation time: ${timeElapsed(process.hrtime(timeGenerateStart))}ms`);
+    Logger.debug(`Generator time: ${timeElapsed(process.hrtime(timeGenerateStart))}ms`);
+
+    Logger.info(`Generating finished: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
 }

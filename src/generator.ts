@@ -2,6 +2,7 @@ import path from "path";
 import camelCase from "camelcase";
 import { ImportDeclarationStructure, MethodSignatureStructure, OptionalKind, Project, PropertySignatureStructure, StructureKind } from "ts-morph";
 import { Definition, Method, ParsedWsdl } from "./models/parsed-wsdl";
+import { Logger } from "./utils/logger";
 
 function createProperty(name: string, type: string, doc: string, isArray: boolean, optional = true): PropertySignatureStructure {
     return {
@@ -48,7 +49,7 @@ function generateDefinitionFile(project: Project, definition: Definition, defDir
         properties: definitionProperties
     }]);
     defFile.saveSync();
-    console.debug(`Created Definition file: ${path.join(defDir, defName)}`);
+    Logger.log(`Created Definition file: ${path.join(defDir, defName)}`);
 }
 
 export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<void> {

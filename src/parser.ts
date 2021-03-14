@@ -4,6 +4,7 @@ import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
 import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
+import { Logger } from "./utils/logger";
 
 type VisitedDefinition = { name: string; parts: object; definition: Definition; };
 
@@ -36,7 +37,7 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
         if (("undefined" in defParts) && (defParts.undefined === undefined)) {
             // TODO: problem while parsing WSDL, maybe report to node-soap
             // TODO: add flag --FailOnWsdlError
-            console.error({
+            Logger.error({
                 message: "Problem while generating a definition file",
                 path: stack.join("."),
                 parts: defParts
