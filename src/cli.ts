@@ -32,9 +32,9 @@ if (conf.h || conf.help) {
     process.stdout.write("\t-h, --help\tPrint this message\n");
     process.stdout.write("\t-v, --version\tPrint version\n");
     process.stdout.write("\t-o\t\tOutput dir\n");
-    process.stdout.write("\t--no-color\t");
-    process.stdout.write("\t--quiet\tSuppress logs");
-    process.stdout.write("\t--verbose\tPrint verbose logs");
+    process.stdout.write("\t--quiet\t\tSuppress logs\n");
+    process.stdout.write("\t--verbose\tPrint verbose logs\n");
+    process.stdout.write("\t--no-color\n");
     // TODO: Finish --js
     process.exit(0);
 }
