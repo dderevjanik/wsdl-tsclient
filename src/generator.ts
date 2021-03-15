@@ -17,7 +17,7 @@ function createProperty(name: string, type: string, doc: string, isArray: boolea
 /**
  * @return definitionName (filename) of generated definition
  */
-function generateDefinitionFile(project: Project, definition: Definition, defDir: string, stack: string[], generated: Set<Definition>): void {
+function generateDefinitionFile(project: Project, definition: null | Definition, defDir: string, stack: string[], generated: Set<Definition>): void {
     const defName = camelCase(definition.name, { pascalCase: true });
     const defFilePath = path.join(defDir, `${defName}.ts`);
     const defFile = project.createSourceFile(defFilePath, "", { overwrite: true });
@@ -77,30 +77,29 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
             const portImports: Array<OptionalKind<ImportDeclarationStructure>> = [];
             const portFileMethods: Array<OptionalKind<MethodSignatureStructure>> = [];
             for (const method of port.methods) {
-                if (!allDefintions.has(method.paramDefinition)) {
+                // TODO: Deduplicate PortImports
+                if ((method.paramDefinition !== null) && !allDefintions.has(method.paramDefinition)) {
                     generateDefinitionFile(project, method.paramDefinition, defDir, [method.paramDefinition.name], allDefintions);
+                    clientImports.push({ moduleSpecifier: `./definitions/${method.paramDefinition.name}`, namedImports: [{ name: method.paramDefinition.name }] });
+                    portImports.push({ moduleSpecifier: path.join("..", "definitions", method.paramDefinition.name), namedImports: [{ name: method.paramDefinition.name }] });
                 }
-                if (!allDefintions.has(method.returnDefinition)) {
+                if ((method.returnDefinition !== null) && !allDefintions.has(method.returnDefinition)) {
                     generateDefinitionFile(project, method.returnDefinition, defDir, [method.returnDefinition.name], allDefintions);
+                    clientImports.push({ moduleSpecifier: `./definitions/${method.returnDefinition.name}`, namedImports: [{ name: method.returnDefinition.name }] });
+                    portImports.push({ moduleSpecifier: path.join("..", "definitions", method.returnDefinition.name), namedImports: [{ name: method.returnDefinition.name }] });
                 }
                 // TODO: Deduplicate PortMethods
                 allMethods.push(method);
-                // TODO: Deduplicate imports
-                clientImports.push({ moduleSpecifier: `./definitions/${method.paramDefinition.name}`, namedImports: [{ name: method.paramDefinition.name }]});
-                clientImports.push({ moduleSpecifier: `./definitions/${method.returnDefinition.name}`, namedImports: [{ name: method.returnDefinition.name }]});
-                // TODO: Deduplicate imports
-                portImports.push({ moduleSpecifier: path.join("..", "definitions", method.paramDefinition.name), namedImports: [{ name: method.paramDefinition.name }] });
-                portImports.push({ moduleSpecifier: path.join("..", "definitions", method.returnDefinition.name), namedImports: [{ name: method.returnDefinition.name }] });
                 portFileMethods.push({
                     name: method.paramName,
                     parameters: [
-                        { name: method.paramName, type: method.paramDefinition.name },
-                        { name: "callback", type: `(err: any, result: ${method.paramDefinition.name}, rawResponse: any, soapHeader: any, rawRequest: any) => void` }
+                        { name: method.paramName, type: method.paramDefinition ? method.paramDefinition.name : "{}" },
+                        { name: "callback", type: `(err: any, result: ${method.paramDefinition ? method.paramDefinition.name : "unknown"}, rawResponse: any, soapHeader: any, rawRequest: any) => void` }
                     ],
-                    returnType: method.returnDefinition.name
+                    returnType: method.returnDefinition ? method.returnDefinition.name : "unknown"
                 });
             } // End of PortMethod
-            serviceImports.push({ moduleSpecifier: path.join("..", "ports", port.name), namedImports: [{ name: port.name }]});
+            serviceImports.push({ moduleSpecifier: path.join("..", "ports", port.name), namedImports: [{ name: port.name }] });
             servicePorts.push({ name: port.name, isReadonly: true, type: port.name });
             portFile.addImportDeclarations(portImports);
             portFile.addStatements([
@@ -115,7 +114,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
             portFile.saveSync();
         } // End of Port
 
-        clientImports.push({ moduleSpecifier: `./services/${service.name}`, namedImports: [{ name: service.name }]});
+        clientImports.push({ moduleSpecifier: `./services/${service.name}`, namedImports: [{ name: service.name }] });
         clientServices.push({ name: service.name, type: service.name });
 
         serviceFile.addImportDeclarations(serviceImports);
@@ -153,9 +152,9 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
                 name: `${method.name}Async`,
                 parameters: [{
                     name: method.paramName,
-                    type: method.paramDefinition.name
+                    type: method.paramDefinition ? method.paramDefinition.name : "{}"
                 }],
-                returnType: `Promise<${method.returnDefinition.name}>`
+                returnType: `Promise<${method.returnDefinition ? method.returnDefinition.name : "unknown"}>`
             }))
         }
     ]);

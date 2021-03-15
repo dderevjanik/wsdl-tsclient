@@ -47,6 +47,7 @@
     "camelcase": "^6.2.0",
     "chalk": "^4.1.0",
     "glob": "^7.1.6",
+    "sanitize-filename": "^1.6.3",
     "soap": "^0.36.0",
     "supports-color": "^8.1.1",
     "ts-morph": "^10.0.1",

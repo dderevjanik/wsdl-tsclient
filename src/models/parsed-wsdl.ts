@@ -29,8 +29,8 @@ export interface Definition {
 export interface Method {
     name: string;
     paramName: string;
-    paramDefinition: Definition;
-    returnDefinition: Definition;
+    paramDefinition: null | Definition;
+    returnDefinition: null | Definition;
 }
 
 export interface Port {

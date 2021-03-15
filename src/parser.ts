@@ -1,4 +1,5 @@
 import camelCase from "camelcase";
+import sanitizeFilename from "sanitize-filename";
 import * as path from "path";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
@@ -10,6 +11,15 @@ type VisitedDefinition = { name: string; parts: object; definition: Definition; 
 
 function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionParts: object) {
     return visited.find(def => def.parts === definitionParts);
+}
+
+function correctDefinitionName(definitionName: string): string {
+    const sanitized = sanitizeFilename(definitionName);
+    const camelCased = camelCase(sanitized);
+    if (reservedKeywords.includes(camelCased)) {
+        return `${camelCased}Param`;
+    }
+    return camelCased;
 }
 
 /**
@@ -128,7 +138,7 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
 
                         // TODO: Deduplicate code below by refactoring it to external function. Is it possible ?
                         let paramName = "request";
-                        let inputDefinition: Definition = null; // default
+                        let inputDefinition: Definition = null; // default type
                         if (method.input) {
                             if (method.input.$name) {
                                 paramName = method.input.$name;
@@ -157,12 +167,9 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                             }
                         }
 
-                        const paramNameCamel = camelCase(paramName);
                         const portMethod: Method = {
                             name: methodName,
-                            paramName: reservedKeywords.includes(paramNameCamel) // Avoid collision with javascript keywords
-                                ? `${paramNameCamel}Param`
-                                : paramNameCamel,
+                            paramName: correctDefinitionName(paramName),
                             paramDefinition: inputDefinition, // TODO: Use string from generated definition files
                             returnDefinition: outputDefinition // TODO: Use string from generated definition files
                         };
