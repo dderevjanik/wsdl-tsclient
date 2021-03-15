@@ -49,7 +49,7 @@ function generateDefinitionFile(project: Project, definition: null | Definition,
         properties: definitionProperties
     }]);
     defFile.saveSync();
-    Logger.log(`Created Definition file: ${path.join(defDir, defName)}`);
+    Logger.log(`Created Definition file: ${path.join(defDir, defName)}.ts`);
 }
 
 export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<void> {
@@ -96,7 +96,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
                         { name: method.paramName, type: method.paramDefinition ? method.paramDefinition.name : "{}" },
                         { name: "callback", type: `(err: any, result: ${method.paramDefinition ? method.paramDefinition.name : "unknown"}, rawResponse: any, soapHeader: any, rawRequest: any) => void` }
                     ],
-                    returnType: method.returnDefinition ? method.returnDefinition.name : "unknown"
+                    returnType: method.returnDefinition ? method.returnDefinition.name : "void"
                 });
             } // End of PortMethod
             serviceImports.push({ moduleSpecifier: path.join("..", "ports", port.name), namedImports: [{ name: port.name }] });

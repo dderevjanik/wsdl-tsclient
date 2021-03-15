@@ -1,5 +1,4 @@
 import camelCase from "camelcase";
-import sanitizeFilename from "sanitize-filename";
 import * as path from "path";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
@@ -11,15 +10,6 @@ type VisitedDefinition = { name: string; parts: object; definition: Definition; 
 
 function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionParts: object) {
     return visited.find(def => def.parts === definitionParts);
-}
-
-function correctDefinitionName(definitionName: string): string {
-    const sanitized = sanitizeFilename(definitionName);
-    const camelCased = camelCase(sanitized);
-    if (reservedKeywords.includes(camelCased)) {
-        return `${camelCased}Param`;
-    }
-    return camelCased;
 }
 
 /**
@@ -167,9 +157,12 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                             }
                         }
 
+                        const camelParamName = camelCase(paramName);
                         const portMethod: Method = {
                             name: methodName,
-                            paramName: correctDefinitionName(paramName),
+                            paramName: reservedKeywords.includes(camelParamName)
+                                ? `${camelParamName}Param`
+                                : camelParamName,
                             paramDefinition: inputDefinition, // TODO: Use string from generated definition files
                             returnDefinition: outputDefinition // TODO: Use string from generated definition files
                         };

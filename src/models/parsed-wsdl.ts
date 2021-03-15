@@ -1,3 +1,5 @@
+import sanitizeFilename from "sanitize-filename";
+
 export type DefinitionProperty = {
     name: string;
     sourceName: string;
@@ -64,7 +66,8 @@ export class ParsedWsdl {
         return this.definitions.find((def) => def.name === definitionName);
     }
 
-    findNonCollisionDefinitionName(definitionName: string): string {
+    findNonCollisionDefinitionName(defName: string): string {
+        const definitionName = sanitizeFilename(defName);
         if (!this.definitions.find(def => def.name === definitionName)) {
             return definitionName;
         }
