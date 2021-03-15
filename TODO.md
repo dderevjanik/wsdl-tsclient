@@ -2,15 +2,16 @@
 
 - [ ] CLI: Add more logs (check [swagger-codegen](https://swagger.io/tools/swagger-codegen/))
 - [ ] CLI: Add param `--failOnError`
-- [x] CLI: Add `--quiet`
-- [x] CLI: Add `--verbose`
-- [x] CLI: Add colors, also detect if its possible to use colors, respect `--no-colors` flag ([supports-colors](https://www.npmjs.com/package/supports-color)
+- ~~[x] CLI: Add `--quiet`~~
+- ~~[x] CLI: Add `--verbose`~~
+- ~~[x] CLI: Add colors, also detect if its possible to use colors, respect `--no-colors` flag ([supports-colors](https://www.npmjs.com/package/supports-color)~~
 - [x] ~~CLI: Add param to overwrite existing files `-r`~~
 - [x] ~~CLI: Use blob for generating several clients at once~~
 - [x] ~~Generator: Generate client name from wsdl filename~~
 - [x] ~~Generator: Blacklist several properties, e.g. `targetNsAlias` (Add them as jsdoc to interface?)~~
 - [ ] Generator: Add more metada for properties (e.g. `xsd:number`, `minlength`, `maxlength`)
 - [ ] Generator: Don't add `jsdoc` to property which references another type
+- [ ] Engine: Option to generate only defintiions
 - [x] ~~Project: Split `Generator` into `Parser` and `Generator`~~
 - [ ] Project: Include Docker image
 - [ ] Project: Add more strict TSC option

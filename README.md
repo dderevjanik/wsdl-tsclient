@@ -50,7 +50,7 @@ Options:
 ```typescript
 import { generateClient } from "wsdl-tsclient";
 
-generateClient("MyWsdlClient", "./path/to/wsdl.wsdl", "./generated/soap-client");
+parseAndGenerate("./path/to/MyWsdl.wsdl", "./generated/");
 ```
 
 ### Using generated client in your project
@@ -58,7 +58,7 @@ generateClient("MyWsdlClient", "./path/to/wsdl.wsdl", "./generated/soap-client")
 *Note:* Make sure you have [soap](https://www.npmjs.com/package/soap) package in your runtime dependencies (`npm i soap`)
 
 ```typescript
-import { createClientAsync } from "./generated/soap-client";
+import { createClientAsync } from "./generated/MyWsdl";
 
 const client = await createClientAsync("./path/to/wsdl.wsdl");
 client.CallSoapMethodAsync();

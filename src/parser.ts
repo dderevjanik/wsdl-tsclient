@@ -26,7 +26,7 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
     const definition: Definition = {
         name: parsedWsdl.findNonCollisionDefinitionName(defName),
         sourceName: defName,
-        docs: [],
+        docs: [name],
         properties: [],
         description: ""
     };

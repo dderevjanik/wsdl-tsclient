@@ -4,6 +4,10 @@ import { ImportDeclarationStructure, MethodSignatureStructure, OptionalKind, Pro
 import { Definition, Method, ParsedWsdl } from "./models/parsed-wsdl";
 import { Logger } from "./utils/logger";
 
+export interface Options {
+    emitDefinitionsOnly: boolean;
+}
+
 function createProperty(name: string, type: string, doc: string, isArray: boolean, optional = true): PropertySignatureStructure {
     return {
         kind: StructureKind.PropertySignature,
@@ -14,9 +18,6 @@ function createProperty(name: string, type: string, doc: string, isArray: boolea
     };
 }
 
-/**
- * @return definitionName (filename) of generated definition
- */
 function generateDefinitionFile(project: Project, definition: null | Definition, defDir: string, stack: string[], generated: Set<Definition>): void {
     const defName = camelCase(definition.name, { pascalCase: true });
     const defFilePath = path.join(defDir, `${defName}.ts`);
@@ -48,11 +49,11 @@ function generateDefinitionFile(project: Project, definition: null | Definition,
         kind: StructureKind.Interface,
         properties: definitionProperties
     }]);
+    Logger.log(`Writing Definition file: ${path.resolve(path.join(defDir, defName))}.ts`);
     defFile.saveSync();
-    Logger.log(`Created Definition file: ${path.join(defDir, defName)}.ts`);
 }
 
-export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<void> {
+export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: Options): Promise<void> {
     const project = new Project();
 
     const portsDir = path.join(outDir, "ports");
@@ -99,76 +100,85 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string): Promise<
                     returnType: method.returnDefinition ? method.returnDefinition.name : "void"
                 });
             } // End of PortMethod
-            serviceImports.push({ moduleSpecifier: path.join("..", "ports", port.name), namedImports: [{ name: port.name }] });
-            servicePorts.push({ name: port.name, isReadonly: true, type: port.name });
-            portFile.addImportDeclarations(portImports);
-            portFile.addStatements([
+            if (!options.emitDefinitionsOnly) {
+                serviceImports.push({ moduleSpecifier: path.join("..", "ports", port.name), namedImports: [{ name: port.name }] });
+                servicePorts.push({ name: port.name, isReadonly: true, type: port.name });
+                portFile.addImportDeclarations(portImports);
+                portFile.addStatements([
+                    {
+                        leadingTrivia: writer => writer.newLine(),
+                        isExported: true,
+                        kind: StructureKind.Interface,
+                        name: port.name,
+                        methods: portFileMethods
+                    }
+                ]);
+                Logger.log(`Writing Port file: ${path.resolve(path.join(portsDir, port.name))}.ts`);
+                portFile.saveSync();
+            }
+        } // End of Port
+
+        if (!options.emitDefinitionsOnly) {
+            clientImports.push({ moduleSpecifier: `./services/${service.name}`, namedImports: [{ name: service.name }] });
+            clientServices.push({ name: service.name, type: service.name });
+
+            serviceFile.addImportDeclarations(serviceImports);
+            serviceFile.addStatements([
                 {
                     leadingTrivia: writer => writer.newLine(),
                     isExported: true,
                     kind: StructureKind.Interface,
-                    name: port.name,
-                    methods: portFileMethods
+                    name: service.name,
+                    properties: servicePorts
                 }
             ]);
-            portFile.saveSync();
-        } // End of Port
+            Logger.log(`Writing Service file: ${path.resolve(path.join(servicesDir, service.name))}.ts`);
+            serviceFile.saveSync();
+        }
+    } // End of Service
 
-        clientImports.push({ moduleSpecifier: `./services/${service.name}`, namedImports: [{ name: service.name }] });
-        clientServices.push({ name: service.name, type: service.name });
-
-        serviceFile.addImportDeclarations(serviceImports);
-        serviceFile.addStatements([
+    if (!options.emitDefinitionsOnly) {
+        const clientFilePath = path.join(outDir, "client.ts");
+        const clientFile = project.createSourceFile(clientFilePath, "", { overwrite: true });
+        clientFile.addImportDeclaration({
+            moduleSpecifier: "soap",
+            namedImports: [
+                { name: "Client", alias: "SoapClient" },
+                { name: "createClientAsync", alias: "soapCreateClientAsync" }
+            ],
+        });
+        clientFile.addImportDeclarations(clientImports);
+        clientFile.addStatements([
             {
                 leadingTrivia: writer => writer.newLine(),
                 isExported: true,
                 kind: StructureKind.Interface,
-                name: service.name,
-                properties: servicePorts
+                // docs: [`${parsedWsdl.name}Client`],
+                name: `${parsedWsdl.name}Client`,
+                properties: clientServices,
+                methods: allMethods.map<OptionalKind<MethodSignatureStructure>>(method => ({
+                    name: `${method.name}Async`,
+                    parameters: [{
+                        name: method.paramName,
+                        type: method.paramDefinition ? method.paramDefinition.name : "{}"
+                    }],
+                    returnType: `Promise<${method.returnDefinition ? method.returnDefinition.name : "unknown"}>`
+                }))
             }
         ]);
-        serviceFile.saveSync();
-    } // End of Service
-
-    const clientFilePath = path.join(outDir, "client.ts");
-    const clientFile = project.createSourceFile(clientFilePath, "", { overwrite: true });
-    clientFile.addImportDeclaration({
-        moduleSpecifier: "soap",
-        namedImports: [
-            { name: "Client", alias: "SoapClient" },
-            { name: "createClientAsync", alias: "soapCreateClientAsync" }
-        ],
-    });
-    clientFile.addImportDeclarations(clientImports);
-    clientFile.addStatements([
-        {
-            leadingTrivia: writer => writer.newLine(),
+        const createClientDeclaration = clientFile.addFunction({
+            name: "createClientAsync",
+            docs: [`Create ${parsedWsdl.name}Client`],
             isExported: true,
-            kind: StructureKind.Interface,
-            // docs: [`${parsedWsdl.name}Client`],
-            name: `${parsedWsdl.name}Client`,
-            properties: clientServices,
-            methods: allMethods.map<OptionalKind<MethodSignatureStructure>>(method => ({
-                name: `${method.name}Async`,
-                parameters: [{
-                    name: method.paramName,
-                    type: method.paramDefinition ? method.paramDefinition.name : "{}"
-                }],
-                returnType: `Promise<${method.returnDefinition ? method.returnDefinition.name : "unknown"}>`
-            }))
-        }
-    ]);
-    const createClientDeclaration = clientFile.addFunction({
-        name: "createClientAsync",
-        docs: [`Create ${parsedWsdl.name}Client`],
-        isExported: true,
-        parameters: [{
-            isRestParameter: true,
-            name: "args",
-            type: "Parameters<typeof soapCreateClientAsync>"
-        }],
-        returnType: `Promise<SoapClient & ${parsedWsdl.name}Client>` // TODO: `any` keyword is very dangerous
-    });
-    createClientDeclaration.setBodyText("return soapCreateClientAsync(args[0], args[1], args[2]) as any;");
-    clientFile.saveSync();
+            parameters: [{
+                isRestParameter: true,
+                name: "args",
+                type: "Parameters<typeof soapCreateClientAsync>"
+            }],
+            returnType: `Promise<SoapClient & ${parsedWsdl.name}Client>` // TODO: `any` keyword is very dangerous
+        });
+        createClientDeclaration.setBodyText("return soapCreateClientAsync(args[0], args[1], args[2]) as any;");
+        Logger.log(`Writing Client file: ${path.resolve(path.join(outDir, "client"))}.ts`);
+        clientFile.saveSync();
+    }
 }
