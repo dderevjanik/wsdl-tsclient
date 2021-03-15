@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-import camelCase from "camelcase";
 import yargs from "yargs-parser";
 import path from "path";
 import glob from "glob";
 import { Logger } from "./utils/logger";
-import { generateClient, parseAndGenerate } from "./index";
+import { parseAndGenerate } from "./index";
 import packageJson from "../package.json";
 
 type Config = {
