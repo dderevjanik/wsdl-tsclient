@@ -39,12 +39,15 @@ Example: wsdl-tsclient file.wsdl -o ./generated/
          wsdl-tsclient ./res/**/*.wsdl -o ./generated/
 
 Options:
-        -h, --help      Print this message
-        -v, --version   Print version
-        -o              Output dir
-        --quiet         Suppress logs
-        --verbose       Print verbose logs
-        --no-color
+        -o                      Output dir
+        -h, --help              Print this message
+        -v, --version           Print version
+        --emitDefinitionsOnly   Generate only Definitions
+        --modelNamePreffix
+        --modelNameSuffix
+        --quiet                 Suppress logs
+        --verbose               Print verbose logs
+        --no-color              Logs without colors
 ```
 
 ### Generate client programmatically
