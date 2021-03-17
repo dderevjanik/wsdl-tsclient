@@ -6,6 +6,11 @@ import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
 
+interface Options {
+    modelNamePreffix: string;
+    modelNameSuffix: string;
+}
+
 type VisitedDefinition = {
     name: string;
     parts: object;
@@ -26,6 +31,7 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
  */
 function parseDefinition(
     parsedWsdl: ParsedWsdl,
+    options: Options,
     name: string,
     defParts: { [propNameType: string]: any },
     stack: string[],
@@ -34,7 +40,7 @@ function parseDefinition(
     const defName = camelCase(name, { pascalCase: true });
 
     const definition: Definition = {
-        name: parsedWsdl.findNonCollisionDefinitionName(defName),
+        name: `${options.modelNamePreffix}${parsedWsdl.findNonCollisionDefinitionName(defName)}${options.modelNameSuffix}`,
         sourceName: defName,
         docs: [name],
         properties: [],
@@ -86,6 +92,7 @@ function parseDefinition(
                         } else {
                             const subDefinition = parseDefinition(
                                 parsedWsdl,
+                                options,
                                 stripedPropName,
                                 type,
                                 [...stack, propName],
@@ -127,6 +134,7 @@ function parseDefinition(
                         } else {
                             const subDefinition = parseDefinition(
                                 parsedWsdl,
+                                options,
                                 propName,
                                 type,
                                 [...stack, propName],
@@ -155,7 +163,7 @@ function parseDefinition(
 
 // TODO: Add logs
 // TODO: Add comments for services, ports, methods and client
-export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
+export async function parseWsdl(wsdlPath: string, options: Options): Promise<ParsedWsdl> {
     return new Promise((resolve, reject) => {
         open_wsdl(wsdlPath, function (err, wsdl) {
             if (err) {
@@ -209,6 +217,7 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
+                                          options,
                                           typeName,
                                           inputMessage.parts,
                                           [typeName],
@@ -229,6 +238,7 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
+                                          options,
                                           typeName,
                                           outputMessage.parts,
                                           [typeName],

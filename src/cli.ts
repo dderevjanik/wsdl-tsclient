@@ -16,6 +16,8 @@ type Config = {
     quiet?: boolean;
     verbose?: boolean;
     emitDefinitionsOnly?: boolean;
+    modelNamePrefix?: string;
+    modelNameSuffix?: string;
 };
 
 const conf: Config = yargs(process.argv.slice(2)) as any;
@@ -32,6 +34,8 @@ if (conf.h || conf.help) {
     process.stdout.write("\t-h, --help\t\tPrint this message\n");
     process.stdout.write("\t-v, --version\t\tPrint version\n");
     process.stdout.write("\t--emitDefinitionsOnly\tGenerate only Definitions\n");
+    process.stdout.write("\t--modelNamePreffix\n");
+    process.stdout.write("\t--modelNameSuffix\n");
     process.stdout.write("\t--quiet\t\t\tSuppress logs\n");
     process.stdout.write("\t--verbose\t\tPrint verbose logs\n");
     process.stdout.write("\t--no-color\t\tLogs without colors\n");
@@ -68,6 +72,14 @@ if (conf.emitDefinitionsOnly) {
     options.emitDefinitionsOnly = true;
 }
 
+if (conf.modelNamePrefix) {
+    options.modelNamePreffix = conf.modelNamePrefix;
+}
+
+if (conf.modelNameSuffix) {
+    options.modelNameSuffix = conf.modelNameSuffix;
+}
+
 //
 
 if (conf._ === undefined || conf._.length === 0) {
@@ -86,7 +98,7 @@ if (conf._ === undefined || conf._.length === 0) {
         const matches = conf._;
 
         if (matches.length > 1) {
-            Logger.debug(matches.map(m => path.resolve(m)).join("\n"));
+            Logger.debug(matches.map((m) => path.resolve(m)).join("\n"));
             Logger.log(`Found ${matches.length} wsdl files`);
         }
         for (const match of matches) {
@@ -95,7 +107,7 @@ if (conf._ === undefined || conf._.length === 0) {
             Logger.log(`Generating soap client from "${wsdlName}"`);
             try {
                 await parseAndGenerate(wsdlPath, path.join(outDir), options);
-            } catch(err) {
+            } catch (err) {
                 Logger.error(`Error occured while generating client "${wsdlName}"`);
                 Logger.error(`\t${err}`);
                 errorOccured = true;

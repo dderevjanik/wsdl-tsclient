@@ -9,10 +9,14 @@ export { parseWsdl } from "./parser";
 
 export interface Options {
     emitDefinitionsOnly: boolean;
+    modelNamePreffix: string;
+    modelNameSuffix: string;
 }
 
 export const defaultOptions: Options = {
     emitDefinitionsOnly: false,
+    modelNamePreffix: "",
+    modelNameSuffix: "",
 };
 
 export async function parseAndGenerate(
@@ -27,7 +31,7 @@ export async function parseAndGenerate(
     // Logger.debug(`Options: ${JSON.stringify(mergedOptions, null, 2)}`);
 
     const timeParseStart = process.hrtime();
-    const parsedWsdl = await parseWsdl(wsdlPath);
+    const parsedWsdl = await parseWsdl(wsdlPath, mergedOptions);
     Logger.debug(`Parser time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
 
     const timeGenerateStart = process.hrtime();
