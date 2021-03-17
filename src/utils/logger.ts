@@ -2,7 +2,6 @@ import Chalk from "chalk";
 import SupportsColors from "supports-color";
 
 export class Logger {
-
     static isDebug = false;
     static isLog = true;
     static isInfo = true;
@@ -44,5 +43,4 @@ export class Logger {
             }
         }
     }
-
 }

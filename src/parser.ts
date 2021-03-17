@@ -6,10 +6,14 @@ import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
 
-type VisitedDefinition = { name: string; parts: object; definition: Definition; };
+type VisitedDefinition = {
+    name: string;
+    parts: object;
+    definition: Definition;
+};
 
 function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionParts: object) {
-    return visited.find(def => def.parts === definitionParts);
+    return visited.find((def) => def.parts === definitionParts);
 }
 
 /**
@@ -20,7 +24,13 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
  * @param stack definition stack (for deep objects) (immutable)
  * @param visitedDefs set of visited definition (mutable)
  */
-function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [propNameType: string]: any }, stack: string[], visitedDefs: Array<VisitedDefinition>): Definition {
+function parseDefinition(
+    parsedWsdl: ParsedWsdl,
+    name: string,
+    defParts: { [propNameType: string]: any },
+    stack: string[],
+    visitedDefs: Array<VisitedDefinition>
+): Definition {
     const defName = camelCase(name, { pascalCase: true });
 
     const definition: Definition = {
@@ -28,19 +38,19 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
         sourceName: defName,
         docs: [name],
         properties: [],
-        description: ""
+        description: "",
     };
     visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
 
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
-        if (("undefined" in defParts) && (defParts.undefined === undefined)) {
+        if ("undefined" in defParts && defParts.undefined === undefined) {
             // TODO: problem while parsing WSDL, maybe report to node-soap
             // TODO: add flag --FailOnWsdlError
             Logger.error({
                 message: "Problem while generating a definition file",
                 path: stack.join("."),
-                parts: defParts
+                parts: defParts,
             });
         } else {
             Object.entries(defParts).forEach(([propName, type]) => {
@@ -53,32 +63,82 @@ function parseDefinition(parsedWsdl: ParsedWsdl, name: string, defParts: { [prop
                     // Array of
                     if (typeof type === "string") {
                         // primitive type
-                        definition.properties.push({ kind: "PRIMITIVE", name: stripedPropName, sourceName: propName, description: type, type: "string", isArray: true });
+                        definition.properties.push({
+                            kind: "PRIMITIVE",
+                            name: stripedPropName,
+                            sourceName: propName,
+                            description: type,
+                            type: "string",
+                            isArray: true,
+                        });
                     } else {
                         // With sub-type
                         const visited = findReferenceDefiniton(visitedDefs, type);
                         if (visited) {
                             // By referencing already declared definition, we will avoid circular references
-                            definition.properties.push({ kind: "REFERENCE", name: stripedPropName, sourceName: propName, ref: visited.definition, isArray: true });
+                            definition.properties.push({
+                                kind: "REFERENCE",
+                                name: stripedPropName,
+                                sourceName: propName,
+                                ref: visited.definition,
+                                isArray: true,
+                            });
                         } else {
-                            const subDefinition = parseDefinition(parsedWsdl, stripedPropName, type, [...stack, propName], visitedDefs);
-                            definition.properties.push({ kind: "REFERENCE", name: stripedPropName, sourceName: propName, ref: subDefinition, isArray: true });
+                            const subDefinition = parseDefinition(
+                                parsedWsdl,
+                                stripedPropName,
+                                type,
+                                [...stack, propName],
+                                visitedDefs
+                            );
+                            definition.properties.push({
+                                kind: "REFERENCE",
+                                name: stripedPropName,
+                                sourceName: propName,
+                                ref: subDefinition,
+                                isArray: true,
+                            });
                         }
                     }
                 } else {
                     if (typeof type === "string") {
                         // primitive type
-                        definition.properties.push({ kind: "PRIMITIVE", name: propName, sourceName: propName, description: type, type: "string", isArray: false });
+                        definition.properties.push({
+                            kind: "PRIMITIVE",
+                            name: propName,
+                            sourceName: propName,
+                            description: type,
+                            type: "string",
+                            isArray: false,
+                        });
                     } else {
                         // With sub-type
                         const reference = findReferenceDefiniton(visitedDefs, type);
                         if (reference) {
                             // By referencing already declared definition, we will avoid circular references
                             definition.properties.push({
-                                kind: "REFERENCE", name: propName, sourceName: propName, description: "", ref: reference.definition, isArray: false });
+                                kind: "REFERENCE",
+                                name: propName,
+                                sourceName: propName,
+                                description: "",
+                                ref: reference.definition,
+                                isArray: false,
+                            });
                         } else {
-                            const subDefinition = parseDefinition(parsedWsdl, propName, type, [...stack, propName], visitedDefs);
-                            definition.properties.push({ kind: "REFERENCE", name: propName, sourceName: propName, ref: subDefinition, isArray: false });
+                            const subDefinition = parseDefinition(
+                                parsedWsdl,
+                                propName,
+                                type,
+                                [...stack, propName],
+                                visitedDefs
+                            );
+                            definition.properties.push({
+                                kind: "REFERENCE",
+                                name: propName,
+                                sourceName: propName,
+                                ref: subDefinition,
+                                isArray: false,
+                            });
                         }
                     }
                 }
@@ -109,7 +169,9 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
 
             const parsedWsdl = new ParsedWsdl();
             const filename = path.basename(wsdlPath);
-            parsedWsdl.name = camelCase(stripExtension(filename), { pascalCase: true });
+            parsedWsdl.name = camelCase(stripExtension(filename), {
+                pascalCase: true,
+            });
             parsedWsdl.wsdlFilename = path.basename(filename);
             parsedWsdl.wsdlPath = path.resolve(wsdlPath);
 
@@ -121,10 +183,12 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
             for (const [serviceName, service] of Object.entries(wsdl.definitions.services)) {
                 const servicePorts: Port[] = []; // TODO: Convert to Array
 
-                for (const [portName, port] of Object.entries(service.ports)) { // [SI_ManageOrder_O]
+                for (const [portName, port] of Object.entries(service.ports)) {
+                    // [SI_ManageOrder_O]
                     const portMethods: Method[] = [];
 
-                    for (const [methodName, method] of Object.entries(port.binding.methods)) { // [O_CustomerChange]
+                    for (const [methodName, method] of Object.entries(port.binding.methods)) {
+                        // [O_CustomerChange]
 
                         // TODO: Deduplicate code below by refactoring it to external function. Is it possible ?
                         let paramName = "request";
@@ -136,11 +200,20 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                             const inputMessage = wsdl.definitions.messages[method.input.$name];
                             if (inputMessage.element) {
                                 // TODO: if $type not defined, inline type into function declartion
-                                const typeName = inputMessage.element.$type ?? inputMessage.element.$name;
-                                const type = parsedWsdl.findDefinition(inputMessage.element.$type ?? inputMessage.element.$name);
+                                const typeName =
+                                    inputMessage.element.$type ?? inputMessage.element.$name;
+                                const type = parsedWsdl.findDefinition(
+                                    inputMessage.element.$type ?? inputMessage.element.$name
+                                );
                                 inputDefinition = type
                                     ? type
-                                    : parseDefinition(parsedWsdl, typeName, inputMessage.parts, [typeName], visitedDefinitions);
+                                    : parseDefinition(
+                                          parsedWsdl,
+                                          typeName,
+                                          inputMessage.parts,
+                                          [typeName],
+                                          visitedDefinitions
+                                      );
                             }
                         }
 
@@ -149,11 +222,18 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                             const outputMessage = wsdl.definitions.messages[method.output.$name];
                             if (outputMessage.element) {
                                 // TODO: if input doesn't have $type, use $name for definition file
-                                const typeName = outputMessage.element.$type ?? outputMessage.element.$name;
+                                const typeName =
+                                    outputMessage.element.$type ?? outputMessage.element.$name;
                                 const type = parsedWsdl.findDefinition(typeName);
                                 outputDefinition = type
                                     ? type
-                                    : parseDefinition(parsedWsdl, typeName, outputMessage.parts, [typeName], visitedDefinitions);
+                                    : parseDefinition(
+                                          parsedWsdl,
+                                          typeName,
+                                          outputMessage.parts,
+                                          [typeName],
+                                          visitedDefinitions
+                                      );
                             }
                         }
 
@@ -164,7 +244,7 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                                 ? `${camelParamName}Param`
                                 : camelParamName,
                             paramDefinition: inputDefinition, // TODO: Use string from generated definition files
-                            returnDefinition: outputDefinition // TODO: Use string from generated definition files
+                            returnDefinition: outputDefinition, // TODO: Use string from generated definition files
                         };
                         portMethods.push(portMethod);
                         allMethods.push(portMethod);
@@ -173,7 +253,7 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                     const servicePort: Port = {
                         name: camelCase(portName, { pascalCase: true }),
                         sourceName: portName,
-                        methods: portMethods
+                        methods: portMethods,
                     };
                     servicePorts.push(servicePort);
                     allPorts.push(servicePort);
@@ -182,7 +262,7 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
                 services.push({
                     name: camelCase(serviceName, { pascalCase: true }),
                     sourceName: serviceName,
-                    ports: servicePorts
+                    ports: servicePorts,
                 });
             } // End of Service cycle
             parsedWsdl.services = services;
@@ -190,6 +270,5 @@ export async function parseWsdl(wsdlPath: string): Promise<ParsedWsdl> {
 
             return resolve(parsedWsdl);
         });
-
     });
 }

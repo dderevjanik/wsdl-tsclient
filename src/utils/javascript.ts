@@ -62,5 +62,5 @@ export const reservedKeywords = [
     "volatile",
     "while",
     "with",
-    "yield"
+    "yield",
 ];

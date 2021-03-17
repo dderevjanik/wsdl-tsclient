@@ -12,13 +12,17 @@ export interface Options {
 }
 
 export const defaultOptions: Options = {
-    emitDefinitionsOnly: false
+    emitDefinitionsOnly: false,
 };
 
-export async function parseAndGenerate(wsdlPath: string, outDir: string, options: Partial<Options> = {}): Promise<void> {
+export async function parseAndGenerate(
+    wsdlPath: string,
+    outDir: string,
+    options: Partial<Options> = {}
+): Promise<void> {
     const mergedOptions = {
         ...defaultOptions,
-        ...options
+        ...options,
     };
     // Logger.debug(`Options: ${JSON.stringify(mergedOptions, null, 2)}`);
 

@@ -1,24 +1,26 @@
 import sanitizeFilename from "sanitize-filename";
 
-export type DefinitionProperty = {
-    name: string;
-    sourceName: string;
-    description?: string;
-    kind: "PRIMITIVE";
-    isArray?: boolean;
-    type: string;
-} | {
-    name: string;
-    sourceName: string;
-    description?: string;
-    /**
-     * This is very information to know, because
-     * you can avoid circular references with this
-     */
-    kind: "REFERENCE";
-    isArray?: boolean;
-    ref: Definition;
-};
+export type DefinitionProperty =
+    | {
+          name: string;
+          sourceName: string;
+          description?: string;
+          kind: "PRIMITIVE";
+          isArray?: boolean;
+          type: string;
+      }
+    | {
+          name: string;
+          sourceName: string;
+          description?: string;
+          /**
+           * This is very information to know, because
+           * you can avoid circular references with this
+           */
+          kind: "REFERENCE";
+          isArray?: boolean;
+          ref: Definition;
+      };
 
 export interface Definition {
     name: string;
@@ -68,15 +70,15 @@ export class ParsedWsdl {
 
     findNonCollisionDefinitionName(defName: string): string {
         const definitionName = sanitizeFilename(defName);
-        if (!this.definitions.find(def => def.name === definitionName)) {
+        if (!this.definitions.find((def) => def.name === definitionName)) {
             return definitionName;
         }
-        for (let i = 1; i < 30; i++) { // TODO: Unhardcode `20`
-            if (!this.definitions.find(def => def.name === `${definitionName}${i}`)) {
+        for (let i = 1; i < 30; i++) {
+            // TODO: Unhardcode `20`
+            if (!this.definitions.find((def) => def.name === `${definitionName}${i}`)) {
                 return `${definitionName}${i}`;
             }
         }
         throw new Error(`Out of stack for "${definitionName}", there's probably cyclic definition`);
     }
-
 }
