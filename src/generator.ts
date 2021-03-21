@@ -126,7 +126,10 @@ export async function generate(
             const portFileMethods: Array<OptionalKind<MethodSignatureStructure>> = [];
             for (const method of port.methods) {
                 // TODO: Deduplicate PortImports
-                if (method.paramDefinition !== null && !allDefintions.includes(method.paramDefinition)) {
+                if (
+                    method.paramDefinition !== null &&
+                    !allDefintions.includes(method.paramDefinition)
+                ) {
                     generateDefinitionFile(
                         project,
                         method.paramDefinition,
@@ -300,24 +303,33 @@ export async function generate(
         overwrite: true,
     });
 
-    indexFile.addExportDeclarations(allDefintions.map(def => ({
-        namedExports: [def.name],
-        moduleSpecifier: `./definitions/${def.name}`
-    })));
+    indexFile.addExportDeclarations(
+        allDefintions.map((def) => ({
+            namedExports: [def.name],
+            moduleSpecifier: `./definitions/${def.name}`,
+        }))
+    );
     if (!options.emitDefinitionsOnly) {
         // TODO: Aggregate all exports during decleartions generation
         // https://ts-morph.com/details/exports
         indexFile.addExportDeclarations([
-            { namedExports: ["createClientAsync", `${parsedWsdl.name}Client`], moduleSpecifier: "./client" }
+            {
+                namedExports: ["createClientAsync", `${parsedWsdl.name}Client`],
+                moduleSpecifier: "./client",
+            },
         ]);
-        indexFile.addExportDeclarations(parsedWsdl.services.map(service => ({
-            namedExports: [service.name],
-            moduleSpecifier: `./services/${service.name}`
-        })));
-        indexFile.addExportDeclarations(parsedWsdl.ports.map(port => ({
-            namedExports: [port.name],
-            moduleSpecifier: `./ports/${port.name}`
-        })));
+        indexFile.addExportDeclarations(
+            parsedWsdl.services.map((service) => ({
+                namedExports: [service.name],
+                moduleSpecifier: `./services/${service.name}`,
+            }))
+        );
+        indexFile.addExportDeclarations(
+            parsedWsdl.ports.map((port) => ({
+                namedExports: [port.name],
+                moduleSpecifier: `./ports/${port.name}`,
+            }))
+        );
     }
 
     Logger.log(`Writing Index file: ${path.resolve(path.join(outDir, "index"))}.ts`);

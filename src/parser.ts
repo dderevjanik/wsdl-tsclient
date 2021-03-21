@@ -40,7 +40,9 @@ function parseDefinition(
     const defName = camelCase(name, { pascalCase: true });
 
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${parsedWsdl.findNonCollisionDefinitionName(defName)}${options.modelNameSuffix}`,
+        name: `${options.modelNamePreffix}${parsedWsdl.findNonCollisionDefinitionName(defName)}${
+            options.modelNameSuffix
+        }`,
         sourceName: defName,
         docs: [name],
         properties: [],
