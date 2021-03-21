@@ -83,7 +83,8 @@ if (conf.modelNameSuffix) {
 //
 
 if (conf._ === undefined || conf._.length === 0) {
-    Logger.error("You forget to pass Path to wsdl file");
+    Logger.error("Node wsdl files found");
+    Logger.debug(`Path: ${conf._}`);
     process.exit(1);
 }
 
