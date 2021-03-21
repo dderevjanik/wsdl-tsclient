@@ -37,7 +37,7 @@ function generateDefinitionFile(
     definition: null | Definition,
     defDir: string,
     stack: string[],
-    generated: Set<Definition>
+    generated: Definition[]
 ): void {
     const defName = camelCase(definition.name, { pascalCase: true });
     const defFilePath = path.join(defDir, `${defName}.ts`);
@@ -45,7 +45,7 @@ function generateDefinitionFile(
         overwrite: true,
     });
 
-    generated.add(definition);
+    generated.push(definition);
 
     const definitionImports: OptionalKind<ImportDeclarationStructure>[] = [];
     const definitionProperties: PropertySignatureStructure[] = [];
@@ -57,7 +57,7 @@ function generateDefinitionFile(
             );
         } else if (prop.kind === "REFERENCE") {
             // e.g. Items
-            if (!generated.has(prop.ref)) {
+            if (!generated.includes(prop.ref)) {
                 // Wasn't generated yet
                 generateDefinitionFile(
                     project,
@@ -104,7 +104,7 @@ export async function generate(
     const defDir = path.join(outDir, "definitions");
 
     const allMethods: Method[] = [];
-    const allDefintions = new Set<Definition>();
+    const allDefintions: Definition[] = [];
 
     const clientImports: Array<OptionalKind<ImportDeclarationStructure>> = [];
     const clientServices: Array<OptionalKind<PropertySignatureStructure>> = [];
@@ -126,7 +126,7 @@ export async function generate(
             const portFileMethods: Array<OptionalKind<MethodSignatureStructure>> = [];
             for (const method of port.methods) {
                 // TODO: Deduplicate PortImports
-                if (method.paramDefinition !== null && !allDefintions.has(method.paramDefinition)) {
+                if (method.paramDefinition !== null && !allDefintions.includes(method.paramDefinition)) {
                     generateDefinitionFile(
                         project,
                         method.paramDefinition,
@@ -149,7 +149,7 @@ export async function generate(
                 }
                 if (
                     method.returnDefinition !== null &&
-                    !allDefintions.has(method.returnDefinition)
+                    !allDefintions.includes(method.returnDefinition)
                 ) {
                     generateDefinitionFile(
                         project,
@@ -260,6 +260,7 @@ export async function generate(
                 // docs: [`${parsedWsdl.name}Client`],
                 name: `${parsedWsdl.name}Client`,
                 properties: clientServices,
+                extends: ["SoapClient"],
                 methods: allMethods.map<OptionalKind<MethodSignatureStructure>>((method) => ({
                     name: `${method.name}Async`,
                     parameters: [
@@ -285,7 +286,7 @@ export async function generate(
                     type: "Parameters<typeof soapCreateClientAsync>",
                 },
             ],
-            returnType: `Promise<SoapClient & ${parsedWsdl.name}Client>`, // TODO: `any` keyword is very dangerous
+            returnType: `Promise<${parsedWsdl.name}Client>`, // TODO: `any` keyword is very dangerous
         });
         createClientDeclaration.setBodyText(
             "return soapCreateClientAsync(args[0], args[1], args[2]) as any;"
@@ -298,6 +299,26 @@ export async function generate(
     const indexFile = project.createSourceFile(indexFilePath, "", {
         overwrite: true,
     });
+
+    indexFile.addExportDeclarations(allDefintions.map(def => ({
+        namedExports: [def.name],
+        moduleSpecifier: `./definitions/${def.name}`
+    })));
+    if (!options.emitDefinitionsOnly) {
+        // TODO: Aggregate all exports during decleartions generation
+        // https://ts-morph.com/details/exports
+        indexFile.addExportDeclarations([
+            { namedExports: ["createClientAsync", `${parsedWsdl.name}Client`], moduleSpecifier: "./client" }
+        ]);
+        indexFile.addExportDeclarations(parsedWsdl.services.map(service => ({
+            namedExports: [service.name],
+            moduleSpecifier: `./services/${service.name}`
+        })));
+        indexFile.addExportDeclarations(parsedWsdl.ports.map(port => ({
+            namedExports: [port.name],
+            moduleSpecifier: `./ports/${port.name}`
+        })));
+    }
 
     Logger.log(`Writing Index file: ${path.resolve(path.join(outDir, "index"))}.ts`);
 
