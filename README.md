@@ -5,6 +5,8 @@
 ![license](https://img.shields.io/npm/l/wsdl-tsclient)
 [![npm-version](https://img.shields.io/npm/v/wsdl-tsclient)](https://npmjs.com/package/wsdl-tsclient)
 
+**Example how to generate and use wsdl-tsclient:** [wsdl-tsclient-example](https://github.com/dderevjanik/wsdl-tsclient-example)
+
 Generate [soap client](https://www.npmjs.com/package/soap) with typescript definitons from WSDL file.
 
 This library is using [ts-morph](https://www.npmjs.com/package/ts-morph) to generate typescript code and [soap](https://github.com/vpulim/node-soap) for runtime. Inspired by Java [wsimport](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/wsimport.html) and [openapi-generator](https://github.com/OpenAPITools/openapi-generator).
@@ -25,6 +27,8 @@ npm i -g wsdl-tsclient
 
 ## Usage
 
+You can check example repository [wsdl-tsclient-example](https://github.com/dderevjanik/wsdl-tsclient-example)
+
 ### Generate client using CLI
 
 `wsdl-tsclient ./soap.wsdl -o ./generated`
@@ -32,7 +36,7 @@ npm i -g wsdl-tsclient
 `wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
 
 ```bash
-Version: 1.0.0
+Version: 1.0.1
 Syntax: wsdl-tsclient [options] [path]
 
 Example: wsdl-tsclient file.wsdl -o ./generated/
