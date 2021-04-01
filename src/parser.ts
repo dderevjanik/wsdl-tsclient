@@ -40,9 +40,8 @@ function parseDefinition(
     const defName = camelCase(name, { pascalCase: true });
 
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${parsedWsdl.findNonCollisionDefinitionName(defName)}${
-            options.modelNameSuffix
-        }`,
+        name: `${options.modelNamePreffix}${parsedWsdl.findNonCollisionDefinitionName(defName)}${options.modelNameSuffix
+            }`,
         sourceName: defName,
         docs: [name],
         properties: [],
@@ -63,9 +62,9 @@ function parseDefinition(
         } else {
             Object.entries(defParts).forEach(([propName, type]) => {
                 if (propName === "targetNSAlias") {
-                    definition.docs.push(`targetNSAlias \`${type}\``);
+                    definition.docs.push(`@targetNSAlias \`${type}\``);
                 } else if (propName === "targetNamespace") {
-                    definition.docs.push(`targetNamespace \`${type}\``);
+                    definition.docs.push(`@targetNamespace \`${type}\``);
                 } else if (propName.endsWith("[]")) {
                     const stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
@@ -175,8 +174,6 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                 return reject(new Error("WSDL is undefined"));
             }
 
-            wsdl.describeServices();
-
             const parsedWsdl = new ParsedWsdl();
             const filename = path.basename(wsdlPath);
             parsedWsdl.name = camelCase(stripExtension(filename), {
@@ -218,13 +215,23 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                 inputDefinition = type
                                     ? type
                                     : parseDefinition(
-                                          parsedWsdl,
-                                          options,
-                                          typeName,
-                                          inputMessage.parts,
-                                          [typeName],
-                                          visitedDefinitions
-                                      );
+                                        parsedWsdl,
+                                        options,
+                                        typeName,
+                                        inputMessage.parts,
+                                        [typeName],
+                                        visitedDefinitions
+                                    );
+                            } else if (inputMessage.parts) {
+                                const type = parsedWsdl.findDefinition(paramName);
+                                inputDefinition = type ? type : parseDefinition(
+                                    parsedWsdl,
+                                    options,
+                                    paramName,
+                                    inputMessage.parts,
+                                    [paramName],
+                                    visitedDefinitions
+                                );
                             }
                         }
 
@@ -239,13 +246,23 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                 outputDefinition = type
                                     ? type
                                     : parseDefinition(
-                                          parsedWsdl,
-                                          options,
-                                          typeName,
-                                          outputMessage.parts,
-                                          [typeName],
-                                          visitedDefinitions
-                                      );
+                                        parsedWsdl,
+                                        options,
+                                        typeName,
+                                        outputMessage.parts,
+                                        [typeName],
+                                        visitedDefinitions
+                                    );
+                            } else {
+                                const type = parsedWsdl.findDefinition(paramName);
+                                outputDefinition = type ? type : parseDefinition(
+                                    parsedWsdl,
+                                    options,
+                                    paramName,
+                                    outputMessage.parts,
+                                    [paramName],
+                                    visitedDefinitions
+                                );
                             }
                         }
 
