@@ -8,6 +8,13 @@ export class Logger {
     static isError = true;
     static colors = true;
 
+    static disabled() {
+        Logger.isDebug = false;
+        Logger.isLog = false;
+        Logger.isInfo = false;
+        Logger.isError = false;
+    }
+
     static debug(str: any) {
         if (Logger.isDebug) {
             if (Logger.colors && SupportsColors.stdout) {
