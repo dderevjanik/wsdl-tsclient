@@ -1,24 +1,10 @@
 #!/usr/bin/env node
-import yargs, { describe } from "yargs";
+import yargs from "yargs";
 import path from "path";
+import { isUrl } from "./utils/url";
 import { Logger } from "./utils/logger";
 import { parseAndGenerate, Options } from "./index";
 import packageJson from "../package.json";
-
-type Config = {
-    _: any[];
-    h?: boolean;
-    help?: boolean;
-    o?: string;
-    v?: boolean;
-    version?: boolean;
-    "no-color"?: boolean;
-    quiet?: boolean;
-    verbose?: boolean;
-    emitDefinitionsOnly?: boolean;
-    modelNamePrefix?: string;
-    modelNameSuffix?: string;
-};
 
 const conf = yargs(process.argv.slice(2))
     .version(packageJson.version)
@@ -26,12 +12,9 @@ const conf = yargs(process.argv.slice(2))
     .example("", "wsdl-tsclient file.wsdl -o ./generated/")
     .example("", "wsdl-tsclient ./res/**/*.wsdl -o ./generated/")
     .demandOption(["o"])
-    .positional("source", {
-        type: "string"
-    })
     .option("o", {
         type: "string",
-        description: "Output dir"
+        description: "Output directory"
     })
     .option("version", {
         alias: "v",
@@ -43,9 +26,11 @@ const conf = yargs(process.argv.slice(2))
     })
     .option("modelNamePreffix", {
         type: "string",
+        description: "Prefix for generated interface names"
     })
     .option("modelNameSuffix", {
-        type: "string"
+        type: "string",
+        description: "Suffix for generated interface names"
     })
     .option("quiet", {
         type: "boolean",
@@ -61,12 +46,7 @@ const conf = yargs(process.argv.slice(2))
     })
     .argv;
 
-if (conf.v || conf.version) {
-    Logger.log(`${packageJson.version}\n`);
-    process.exit(0);
-}
-
-//
+// Logger section
 
 if (conf["no-color"]) {
     Logger.colors = false;
@@ -82,7 +62,7 @@ if (conf.quiet) {
     Logger.isError = false;
 }
 
-//
+// Options override section
 
 const options: Partial<Options> = {};
 
@@ -101,7 +81,7 @@ if (conf.modelNameSuffix) {
 //
 
 if (conf._ === undefined || conf._.length === 0) {
-    Logger.error("Node wsdl files found");
+    Logger.error("No WSDL files found");
     Logger.debug(`Path: ${conf._}`);
     process.exit(1);
 }
@@ -114,26 +94,26 @@ if (conf._ === undefined || conf._.length === 0) {
         const outDir = path.resolve(conf.o);
 
         let errorOccured = false;
-        const matches = conf._;
+        const matches = conf._ as string[];
 
-        // if (matches.length > 1) {
-        //     Logger.debug(matches.map((m) => path.resolve(m)).join("\n"));
-        //     Logger.log(`Found ${matches.length} wsdl files`);
-        // }
-        // for (const match of matches) {
-        //     const wsdlPath = path.resolve(match);
-        //     const wsdlName = path.basename(wsdlPath);
-        //     Logger.log(`Generating soap client from "${wsdlName}"`);
-        //     try {
-        //         await parseAndGenerate(wsdlPath, path.join(outDir), options);
-        //     } catch (err) {
-        //         Logger.error(`Error occured while generating client "${wsdlName}"`);
-        //         Logger.error(`\t${err}`);
-        //         errorOccured = true;
-        //     }
-        // }
-        // if (errorOccured) {
-        //     process.exit(1);
-        // }
+        if (matches.length > 1) {
+            Logger.debug(matches.map((m) => path.resolve(m)).join("\n"));
+            Logger.log(`Found ${matches.length} wsdl files`);
+        }
+        for (const match of matches) {
+            const wsdlPath = path.resolve(match);
+            const wsdlName = path.basename(wsdlPath);
+            Logger.log(`Generating soap client from "${wsdlName}"`);
+            try {
+                await parseAndGenerate(wsdlPath, path.join(outDir), options);
+            } catch (err) {
+                Logger.error(`Error occured while generating client "${wsdlName}"`);
+                Logger.error(`\t${err}`);
+                errorOccured = true;
+            }
+        }
+        if (errorOccured) {
+            process.exit(1);
+        }
     }
 })();
