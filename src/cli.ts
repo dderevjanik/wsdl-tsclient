@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import yargs from "yargs";
 import path from "path";
-import { isUrl } from "./utils/url";
 import { Logger } from "./utils/logger";
 import { parseAndGenerate, Options } from "./index";
 import packageJson from "../package.json";
