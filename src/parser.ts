@@ -38,9 +38,17 @@ function parseDefinition(
     visitedDefs: Array<VisitedDefinition>
 ): Definition {
     const defName = camelCase(name, { pascalCase: true });
+    Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
+    let nonCollisionDefName: string;
+    try {
+        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName);
+    } catch (err) {
+        Logger.error(`Error for finding non-collision definitino name for ${stack.join(".")}.${name}`);
+        throw err;
+    }
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${parsedWsdl.findNonCollisionDefinitionName(defName)}${options.modelNameSuffix
+        name: `${options.modelNamePreffix}${nonCollisionDefName}${options.modelNameSuffix
             }`,
         sourceName: defName,
         docs: [name],
@@ -51,7 +59,7 @@ function parseDefinition(
 
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
-        if ("undefined" in defParts && defParts.undefined === undefined) {
+        if (("undefined" in defParts) && (defParts.undefined === undefined)) {
             // TODO: problem while parsing WSDL, maybe report to node-soap
             // TODO: add flag --FailOnWsdlError
             Logger.error({
@@ -188,13 +196,16 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
             const allPorts: Port[] = [];
             const services: Service[] = [];
             for (const [serviceName, service] of Object.entries(wsdl.definitions.services)) {
+                Logger.debug(`Parsing Service ${serviceName}`);
                 const servicePorts: Port[] = []; // TODO: Convert to Array
 
                 for (const [portName, port] of Object.entries(service.ports)) {
+                    Logger.debug(`Parsing Port ${portName}`);
                     // [SI_ManageOrder_O]
                     const portMethods: Method[] = [];
 
                     for (const [methodName, method] of Object.entries(port.binding.methods)) {
+                        Logger.debug(`Parsing Method ${methodName}`);
                         // [O_CustomerChange]
 
                         // TODO: Deduplicate code below by refactoring it to external function. Is it possible ?

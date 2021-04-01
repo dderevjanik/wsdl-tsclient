@@ -51,6 +51,8 @@ export interface Service {
     ports: Array<Port>;
 }
 
+const MAX_STACK = 30;
+
 export class ParsedWsdl {
     /**
      * Name is always uppercased filename of wsdl without an extension
@@ -73,12 +75,12 @@ export class ParsedWsdl {
         if (!this.definitions.find((def) => def.name === definitionName)) {
             return definitionName;
         }
-        for (let i = 1; i < 30; i++) {
+        for (let i = 1; i < MAX_STACK; i++) {
             // TODO: Unhardcode `20`
             if (!this.definitions.find((def) => def.name === `${definitionName}${i}`)) {
                 return `${definitionName}${i}`;
             }
         }
-        throw new Error(`Out of stack for "${definitionName}", there's probably cyclic definition`);
+        throw new Error(`Out of stack (${MAX_STACK}) for "${definitionName}", there's probably cyclic definition`);
     }
 }

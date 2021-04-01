@@ -69,13 +69,15 @@ if (conf.emitDefinitionsOnly) {
     options.emitDefinitionsOnly = true;
 }
 
-if (conf.modelNamePrefix) {
+if (conf.modelNamePreffix) {
     options.modelNamePreffix = conf.modelNamePreffix;
 }
 
 if (conf.modelNameSuffix) {
     options.modelNameSuffix = conf.modelNameSuffix;
 }
+Logger.debug("Options");
+Logger.debug(JSON.stringify(options, null, 2));
 
 //
 
@@ -92,7 +94,7 @@ if (conf._ === undefined || conf._.length === 0) {
     } else {
         const outDir = path.resolve(conf.o);
 
-        let errorOccured = false;
+        let errorsCount = 0;
         const matches = conf._ as string[];
 
         if (matches.length > 1) {
@@ -108,10 +110,11 @@ if (conf._ === undefined || conf._.length === 0) {
             } catch (err) {
                 Logger.error(`Error occured while generating client "${wsdlName}"`);
                 Logger.error(`\t${err}`);
-                errorOccured = true;
+                errorsCount += 1;
             }
         }
-        if (errorOccured) {
+        if (errorsCount) {
+            Logger.error(`${errorsCount} Errors occured!`);
             process.exit(1);
         }
     }
