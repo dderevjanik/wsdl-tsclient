@@ -3,10 +3,10 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../src";
 import { Logger } from "../src/utils/logger";
 
-test("attachments", async t => {
+test("Dummy", async t => {
     Logger.disabled();
 
-    const input = "./test/resources/attachments.wsdl";
+    const input = "./test/resources/Dummy.wsdl";
     const outdir = "./test/generated";
 
     t.test("generate wsdl client", async t => {
@@ -15,8 +15,10 @@ test("attachments", async t => {
     });
 
     t.test("check definitions", async t => {
-        t.equal(existsSync(`${outdir}/attachments/definitions/Request.ts`), true);
+        t.equal(existsSync(`${outdir}/dummy/definitions/DummyList.ts`), true);
+        t.equal(existsSync(`${outdir}/dummy/definitions/DummyRequest.ts`), true);
+        t.equal(existsSync(`${outdir}/dummy/definitions/DummyResponse.ts`), true);
+        t.equal(existsSync(`${outdir}/dummy/definitions/DummyResult.ts`), true);
         t.end();
     });
-
 });

@@ -3,10 +3,10 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../src";
 import { Logger } from "../src/utils/logger";
 
-test("attachments", async t => {
+test("marketo", async t => {
     Logger.disabled();
 
-    const input = "./test/resources/attachments.wsdl";
+    const input = "./test/resources/marketo.wsdl";
     const outdir = "./test/generated";
 
     t.test("generate wsdl client", async t => {
@@ -15,8 +15,9 @@ test("attachments", async t => {
     });
 
     t.test("check definitions", async t => {
-        t.equal(existsSync(`${outdir}/attachments/definitions/Request.ts`), true);
+        t.equal(existsSync(`${outdir}/marketo/definitions/ActivityNameFilter.ts`), true);
+        t.equal(existsSync(`${outdir}/marketo/definitions/TnsparamsGetLeadChanges.ts`), true);
+        t.equal(existsSync(`${outdir}/marketo/definitions/TnssuccessGetLeadChanges.ts`), true);
         t.end();
     });
-
 });

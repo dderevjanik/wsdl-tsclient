@@ -3,10 +3,10 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../src";
 import { Logger } from "../src/utils/logger";
 
-test("attachments", async t => {
+test("default_namespace_soap12", async t => {
     Logger.disabled();
 
-    const input = "./test/resources/attachments.wsdl";
+    const input = "./test/resources/default_namespace_soap12.wsdl";
     const outdir = "./test/generated";
 
     t.test("generate wsdl client", async t => {
@@ -15,8 +15,8 @@ test("attachments", async t => {
     });
 
     t.test("check definitions", async t => {
-        t.equal(existsSync(`${outdir}/attachments/definitions/Request.ts`), true);
+        t.equal(existsSync(`${outdir}/defaultnamespacesoap12/definitions/Request.ts`), true);
+        t.equal(existsSync(`${outdir}/defaultnamespacesoap12/definitions/Response.ts`), true);
         t.end();
     });
-
 });

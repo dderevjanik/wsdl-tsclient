@@ -3,10 +3,10 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../src";
 import { Logger } from "../src/utils/logger";
 
-test("attachments", async t => {
+test("recursive", async t => {
     Logger.disabled();
 
-    const input = "./test/resources/attachments.wsdl";
+    const input = "./test/resources/recursive.wsdl";
     const outdir = "./test/generated";
 
     t.test("generate wsdl client", async t => {
@@ -15,8 +15,9 @@ test("attachments", async t => {
     });
 
     t.test("check definitions", async t => {
-        t.equal(existsSync(`${outdir}/attachments/definitions/Request.ts`), true);
+        t.equal(existsSync(`${outdir}/recursive/definitions/ActivityNameFilter.ts`), true);
+        t.equal(existsSync(`${outdir}/recursive/definitions/TnsparamsGetLeadChanges.ts`), true);
+        t.equal(existsSync(`${outdir}/recursive/definitions/TnssuccessGetLeadChanges.ts`), true);
         t.end();
     });
-
 });
