@@ -1,23 +1,22 @@
 import test from "tape";
 import { existsSync } from "fs";
-import { parseAndGenerate } from "../src";
-import { Logger } from "../src/utils/logger";
+import { parseAndGenerate } from "../../src";
+import { Logger } from "../../src/utils/logger";
 
-test("attachments", async suite => {
+test("attachments", async t => {
     Logger.disabled();
 
     const input = "./test/resources/attachments.wsdl";
     const outdir = "./test/generated";
 
-    test("generate wsdl client", async t => {
+    t.test("generate wsdl client", async t => {
         await parseAndGenerate(input, outdir);
         t.end();
     });
 
-    test("check definitions", async t => {
+    t.test("check definitions", async t => {
         t.equal(existsSync(`${outdir}/attachments/definitions/Request.ts`), true);
         t.end();
     });
 
-    suite.end();
 });

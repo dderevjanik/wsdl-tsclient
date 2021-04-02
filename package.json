@@ -11,7 +11,8 @@
   },
   "scripts": {
     "pretest": "rm -rf ./test/generated",
-    "test": "ts-node node_modules/tape/bin/tape test/**/*.ts",
+    "test": "npm run test:node-soap",
+    "test:node-soap": "ts-node node_modules/tape/bin/tape ./test/node-soap/**/*.test.ts | tap-spec",
     "preversion": "npm test && npm run build",
     "prepublishOnly": "npm test && npm run dist",
     "dev": "ts-node -T ./dev.ts",
@@ -38,6 +39,7 @@
   "homepage": "https://github.com/dderevjanik/wsdl-tsclient#readme",
   "devDependencies": {
     "prettier": "^2.2.1",
+    "tap-spec": "^5.0.0",
     "tape": "^5.2.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
