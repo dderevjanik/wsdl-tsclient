@@ -47,11 +47,11 @@ const conf = yargs(process.argv.slice(2))
 
 // Logger section
 
-if (conf["no-color"]) {
+if (conf["no-color"] || process.env.NO_COLOR) {
     Logger.colors = false;
 }
 
-if (conf.verbose) {
+if (conf.verbose || process.env.DEBUG) {
     Logger.isDebug = true;
 }
 
