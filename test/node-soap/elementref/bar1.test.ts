@@ -3,13 +3,15 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../../../src";
 import { Logger } from "../../../src/utils/logger";
 
-test("elementref/bar1", async t => {
+const target = "elementref/bar1";
+
+test(target, async t => {
     Logger.disabled();
 
-    const input = "./test/resources/elementref/bar1.xsd";
+    const input = `./test/resources/${target}.xsd`;
     const outdir = "./test/generated/elementref";
 
-    t.test("generate wsdl client", async t => {
+    t.test(`${target} - generate wsdl client`, async t => {
         await parseAndGenerate(input, outdir);
         t.end();
     });

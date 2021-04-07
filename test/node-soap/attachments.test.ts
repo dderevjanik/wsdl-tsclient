@@ -3,18 +3,20 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../../src";
 import { Logger } from "../../src/utils/logger";
 
-test("attachments", async t => {
+const target = "attachments";
+
+test(target, async t => {
     Logger.disabled();
 
-    const input = "./test/resources/attachments.wsdl";
+    const input = `./test/resources/${target}.wsdl`;
     const outdir = "./test/generated";
 
-    t.test("generate wsdl client", async t => {
+    t.test(`${target} - generate wsdl client`, async t => {
         await parseAndGenerate(input, outdir);
         t.end();
     });
 
-    t.test("check definitions", async t => {
+    t.test(`${target} - check definitions`, async t => {
         t.equal(existsSync(`${outdir}/attachments/definitions/Request.ts`), true);
         t.end();
     });

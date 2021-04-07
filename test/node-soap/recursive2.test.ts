@@ -3,18 +3,20 @@ import { existsSync } from "fs";
 import { parseAndGenerate } from "../../src";
 import { Logger } from "../../src/utils/logger";
 
-test("recursive2", async t => {
+const target = "recursive2";
+
+test(target, async t => {
     Logger.disabled();
 
-    const input = "./test/resources/recursive2.wsdl";
+    const input = `./test/resources/${target}.wsdl`;
     const outdir = "./test/generated";
 
-    t.test("generate wsdl client", async t => {
+    t.test(`${target} - generate wsdl client`, async t => {
         await parseAndGenerate(input, outdir);
         t.end();
     });
 
-    t.test("check definitions", async t => {
+    t.test(`${target} - check definitions`, async t => {
         t.equal(existsSync(`${outdir}/recursive2/definitions/AccountElement.ts`), true);
         t.equal(existsSync(`${outdir}/recursive2/definitions/AccountElements.ts`), true);
         t.equal(existsSync(`${outdir}/recursive2/definitions/AddAttribute.ts`), true);
