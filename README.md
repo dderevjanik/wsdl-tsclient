@@ -35,6 +35,10 @@ You can check example repository [wsdl-tsclient-example](https://github.com/dder
 
 `wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
 
+you can also use `npx`
+
+`npx wsdl-tsclient ./soap.wsdl -o ./generated`
+
 ```bash
 Version: 1.0.1
 Syntax: wsdl-tsclient [options] [path]
