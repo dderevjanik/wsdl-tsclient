@@ -6,7 +6,6 @@ import {
     OptionalKind,
     Project,
     PropertySignatureStructure,
-    Structure,
     StructureKind,
 } from "ts-morph";
 import { Definition, Method, ParsedWsdl } from "./models/parsed-wsdl";
@@ -125,7 +124,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                         namedImports: [{ name: method.paramDefinition.name }],
                     });
                     portImports.push({
-                        moduleSpecifier: path.join("..", "definitions", method.paramDefinition.name),
+                        moduleSpecifier: `../definitions/${method.paramDefinition.name}`,
                         namedImports: [{ name: method.paramDefinition.name }],
                     });
                 }
@@ -142,7 +141,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                         namedImports: [{ name: method.returnDefinition.name }],
                     });
                     portImports.push({
-                        moduleSpecifier: path.join("..", "definitions", method.returnDefinition.name),
+                        moduleSpecifier: `../definitions/${method.returnDefinition.name}`,
                         namedImports: [{ name: method.returnDefinition.name }],
                     });
                 }
@@ -167,7 +166,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
             } // End of PortMethod
             if (!options.emitDefinitionsOnly) {
                 serviceImports.push({
-                    moduleSpecifier: path.join("..", "ports", port.name),
+                    moduleSpecifier: `../ports/${port.name}`,
                     namedImports: [{ name: port.name }],
                 });
                 servicePorts.push({
