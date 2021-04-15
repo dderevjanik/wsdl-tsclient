@@ -52,28 +52,18 @@ function generateDefinitionFile(
     for (const prop of definition.properties) {
         if (prop.kind === "PRIMITIVE") {
             // e.g. string
-            definitionProperties.push(
-                createProperty(prop.name, prop.type, prop.description, prop.isArray)
-            );
+            definitionProperties.push(createProperty(prop.name, prop.type, prop.description, prop.isArray));
         } else if (prop.kind === "REFERENCE") {
             // e.g. Items
             if (!generated.includes(prop.ref)) {
                 // Wasn't generated yet
-                generateDefinitionFile(
-                    project,
-                    prop.ref,
-                    defDir,
-                    [...stack, prop.ref.name],
-                    generated
-                );
+                generateDefinitionFile(project, prop.ref, defDir, [...stack, prop.ref.name], generated);
             }
             definitionImports.push({
                 moduleSpecifier: `./${prop.ref.name}`,
                 namedImports: [{ name: prop.ref.name }],
             });
-            definitionProperties.push(
-                createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray)
-            );
+            definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
         }
     }
 
@@ -92,11 +82,7 @@ function generateDefinitionFile(
     defFile.saveSync();
 }
 
-export async function generate(
-    parsedWsdl: ParsedWsdl,
-    outDir: string,
-    options: Options
-): Promise<void> {
+export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: Options): Promise<void> {
     const project = new Project();
 
     const portsDir = path.join(outDir, "ports");
@@ -126,10 +112,7 @@ export async function generate(
             const portFileMethods: Array<OptionalKind<MethodSignatureStructure>> = [];
             for (const method of port.methods) {
                 // TODO: Deduplicate PortImports
-                if (
-                    method.paramDefinition !== null &&
-                    !allDefintions.includes(method.paramDefinition)
-                ) {
+                if (method.paramDefinition !== null && !allDefintions.includes(method.paramDefinition)) {
                     generateDefinitionFile(
                         project,
                         method.paramDefinition,
@@ -142,18 +125,11 @@ export async function generate(
                         namedImports: [{ name: method.paramDefinition.name }],
                     });
                     portImports.push({
-                        moduleSpecifier: path.join(
-                            "..",
-                            "definitions",
-                            method.paramDefinition.name
-                        ),
+                        moduleSpecifier: path.join("..", "definitions", method.paramDefinition.name),
                         namedImports: [{ name: method.paramDefinition.name }],
                     });
                 }
-                if (
-                    method.returnDefinition !== null &&
-                    !allDefintions.includes(method.returnDefinition)
-                ) {
+                if (method.returnDefinition !== null && !allDefintions.includes(method.returnDefinition)) {
                     generateDefinitionFile(
                         project,
                         method.returnDefinition,
@@ -166,11 +142,7 @@ export async function generate(
                         namedImports: [{ name: method.returnDefinition.name }],
                     });
                     portImports.push({
-                        moduleSpecifier: path.join(
-                            "..",
-                            "definitions",
-                            method.returnDefinition.name
-                        ),
+                        moduleSpecifier: path.join("..", "definitions", method.returnDefinition.name),
                         namedImports: [{ name: method.returnDefinition.name }],
                     });
                 }
@@ -235,9 +207,7 @@ export async function generate(
                     properties: servicePorts,
                 },
             ]);
-            Logger.log(
-                `Writing Service file: ${path.resolve(path.join(servicesDir, service.name))}.ts`
-            );
+            Logger.log(`Writing Service file: ${path.resolve(path.join(servicesDir, service.name))}.ts`);
             serviceFile.saveSync();
         }
     } // End of Service
@@ -272,9 +242,7 @@ export async function generate(
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
                         },
                     ],
-                    returnType: `Promise<${
-                        method.returnDefinition ? method.returnDefinition.name : "unknown"
-                    }>`,
+                    returnType: `Promise<${method.returnDefinition ? method.returnDefinition.name : "unknown"}>`,
                 })),
             },
         ]);
@@ -291,9 +259,7 @@ export async function generate(
             ],
             returnType: `Promise<${parsedWsdl.name}Client>`, // TODO: `any` keyword is very dangerous
         });
-        createClientDeclaration.setBodyText(
-            "return soapCreateClientAsync(args[0], args[1], args[2]) as any;"
-        );
+        createClientDeclaration.setBodyText("return soapCreateClientAsync(args[0], args[1], args[2]) as any;");
         Logger.log(`Writing Client file: ${path.resolve(path.join(outDir, "client"))}.ts`);
         clientFile.saveSync();
     }

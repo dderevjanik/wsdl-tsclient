@@ -13,37 +13,36 @@ const conf = yargs(process.argv.slice(2))
     .demandOption(["o"])
     .option("o", {
         type: "string",
-        description: "Output directory"
+        description: "Output directory",
     })
     .option("version", {
         alias: "v",
-        type: "boolean"
+        type: "boolean",
     })
     .option("emitDefinitionsOnly", {
         type: "boolean",
-        description: "Generate only Definitions"
+        description: "Generate only Definitions",
     })
     .option("modelNamePreffix", {
         type: "string",
-        description: "Prefix for generated interface names"
+        description: "Prefix for generated interface names",
     })
     .option("modelNameSuffix", {
         type: "string",
-        description: "Suffix for generated interface names"
+        description: "Suffix for generated interface names",
     })
     .option("quiet", {
         type: "boolean",
-        description: "Suppress logs"
+        description: "Suppress logs",
     })
     .option("verbose", {
         type: "boolean",
-        description: "Print verbose logs"
+        description: "Print verbose logs",
     })
     .option("no-color", {
         type: "boolean",
-        description: "Logs without colors"
-    })
-    .argv;
+        description: "Logs without colors",
+    }).argv;
 
 // Logger section
 
