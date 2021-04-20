@@ -38,7 +38,7 @@ function generateDefinitionFile(
     stack: string[],
     generated: Definition[]
 ): void {
-    const defName = camelCase(definition.name, { pascalCase: true });
+    const defName = definition.name;
     const defFilePath = path.join(defDir, `${defName}.ts`);
     const defFile = project.createSourceFile(defFilePath, "", {
         overwrite: true,
@@ -111,35 +111,41 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
             const portFileMethods: Array<OptionalKind<MethodSignatureStructure>> = [];
             for (const method of port.methods) {
                 // TODO: Deduplicate PortImports
-                if (method.paramDefinition !== null && !allDefintions.includes(method.paramDefinition)) {
-                    generateDefinitionFile(
-                        project,
-                        method.paramDefinition,
-                        defDir,
-                        [method.paramDefinition.name],
-                        allDefintions
-                    );
-                    clientImports.push({
-                        moduleSpecifier: `./definitions/${method.paramDefinition.name}`,
-                        namedImports: [{ name: method.paramDefinition.name }],
-                    });
+                if (method.paramDefinition !== null) {
+                    if (!allDefintions.includes(method.paramDefinition)) {
+                        // Definition is not generated
+                        generateDefinitionFile(
+                            project,
+                            method.paramDefinition,
+                            defDir,
+                            [method.paramDefinition.name],
+                            allDefintions
+                        );
+                        clientImports.push({
+                            moduleSpecifier: `./definitions/${method.paramDefinition.name}`,
+                            namedImports: [{ name: method.paramDefinition.name }],
+                        });
+                    }
                     portImports.push({
                         moduleSpecifier: `../definitions/${method.paramDefinition.name}`,
                         namedImports: [{ name: method.paramDefinition.name }],
                     });
                 }
-                if (method.returnDefinition !== null && !allDefintions.includes(method.returnDefinition)) {
-                    generateDefinitionFile(
-                        project,
-                        method.returnDefinition,
-                        defDir,
-                        [method.returnDefinition.name],
-                        allDefintions
-                    );
-                    clientImports.push({
-                        moduleSpecifier: `./definitions/${method.returnDefinition.name}`,
-                        namedImports: [{ name: method.returnDefinition.name }],
-                    });
+                if (method.returnDefinition !== null) {
+                    if (!allDefintions.includes(method.returnDefinition)) {
+                        // Definition is not generated
+                        generateDefinitionFile(
+                            project,
+                            method.returnDefinition,
+                            defDir,
+                            [method.returnDefinition.name],
+                            allDefintions
+                        );
+                        clientImports.push({
+                            moduleSpecifier: `./definitions/${method.returnDefinition.name}`,
+                            namedImports: [{ name: method.returnDefinition.name }],
+                        });
+                    }
                     portImports.push({
                         moduleSpecifier: `../definitions/${method.returnDefinition.name}`,
                         namedImports: [{ name: method.returnDefinition.name }],

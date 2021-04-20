@@ -48,7 +48,7 @@ function parseDefinition(
         throw err;
     }
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${nonCollisionDefName}${options.modelNameSuffix}`,
+        name: `${options.modelNamePreffix}${camelCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
         sourceName: defName,
         docs: [name],
         properties: [],
@@ -58,7 +58,7 @@ function parseDefinition(
 
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
-        if ("undefined" in defParts && defParts.undefined === undefined) {
+        if (("undefined" in defParts) && (defParts.undefined === undefined)) {
             // TODO: problem while parsing WSDL, maybe report to node-soap
             // TODO: add flag --FailOnWsdlError
             Logger.error({
