@@ -241,7 +241,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
                         },
                     ],
-                    returnType: `Promise<${method.returnDefinition ? method.returnDefinition.name : "unknown"}>`,
+                    returnType: `Promise<[result: ${method.returnDefinition ? method.returnDefinition.name : "unknown"}, rawResponse: any, soapHeader: any, rawRequest: any]>`,
                 })),
             },
         ]);
