@@ -2,4 +2,5 @@ src/
 generated/
 test/
 *.wsdl
+*.wso
 *.asmx
