@@ -3,3 +3,5 @@ test/generated/
 generated/
 dist/
 *.wsdl
+*.wso
+*.xsd
