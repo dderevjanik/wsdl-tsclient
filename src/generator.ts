@@ -148,7 +148,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                 // TODO: Deduplicate PortMethods
                 allMethods.push(method);
                 portFileMethods.push({
-                    name: method.paramName,
+                    name: method.name,
                     parameters: [
                         {
                             name: method.paramName,
