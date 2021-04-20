@@ -6,11 +6,11 @@
 
 **Example how to generate and use wsdl-tsclient:** [wsdl-tsclient-example](https://github.com/dderevjanik/wsdl-tsclient-example)
 
-Generate [soap client](https://www.npmjs.com/package/soap) with typescript definitons from WSDL file.
+Generate a [soap client](https://www.npmjs.com/package/soap) with typescript definitions from a WSDL file.
 
-This library is using [ts-morph](https://www.npmjs.com/package/ts-morph) to generate typescript code and [soap](https://github.com/vpulim/node-soap) for runtime. Inspired by Java [wsimport](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/wsimport.html) and [openapi-generator](https://github.com/OpenAPITools/openapi-generator).
+This library uses [ts-morph](https://www.npmjs.com/package/ts-morph) to generate typescript code and [soap](https://github.com/vpulim/node-soap) for runtime. Inspired by Java [wsimport](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/wsimport.html) and [openapi-generator](https://github.com/OpenAPITools/openapi-generator).
 
-*NOTE:* Add [soap](https://www.npmjs.com/package/soap) to your npm runtime dependencies (`npm i soap`)
+*NOTE:* Add [soap](https://www.npmjs.com/package/soap) to your npm runtime dependencies (`npm i soap`).
 
 ## Install
 
@@ -39,22 +39,22 @@ you can also use `npx`
 `npx wsdl-tsclient ./soap.wsdl -o ./generated`
 
 ```bash
-Version: 1.0.1
-Syntax: wsdl-tsclient [options] [path]
-
-Example: wsdl-tsclient file.wsdl -o ./generated/
-         wsdl-tsclient ./res/**/*.wsdl -o ./generated/
+wsdl-tsclient [options] [path]
 
 Options:
-        -o                      Output dir
-        -h, --help              Print this message
-        -v, --version           Print version
-        --emitDefinitionsOnly   Generate only Definitions
-        --modelNamePreffix
-        --modelNameSuffix
-        --quiet                 Suppress logs
-        --verbose               Print verbose logs
-        --no-color              Logs without colors
+      --help                 Show help                                 [boolean]
+  -v, --version                                                        [boolean]
+  -o                         Output directory                [string] [required]
+      --emitDefinitionsOnly  Generate only Definitions                 [boolean]
+      --modelNamePreffix     Prefix for generated interface names       [string]
+      --modelNameSuffix      Suffix for generated interface names       [string]
+      --quiet                Suppress logs                             [boolean]
+      --verbose              Print verbose logs                        [boolean]
+      --no-color             Logs without colors                       [boolean]
+
+Examples:
+    wsdl-tsclient file.wsdl -o ./generated/
+    wsdl-tsclient ./res/**/*.wsdl -o ./generated/
 ```
 
 ### Generate client programmatically
@@ -76,7 +76,7 @@ const client = await createClientAsync("./path/to/wsdl.wsdl");
 client.CallSoapMethodAsync();
 ```
 
-for more information about how to use client, read more about [soap](https://github.com/vpulim/node-soap)
+for more information about the use of the client, read more about [soap](https://github.com/vpulim/node-soap)
 
 ## How it works
 
