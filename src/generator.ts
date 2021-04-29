@@ -163,11 +163,11 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                         {
                             name: "callback",
                             type: `(err: any, result: ${
-                                method.paramDefinition ? method.paramDefinition.name : "unknown"
+                                method.returnDefinition ? method.returnDefinition.name : "unknown"
                             }, rawResponse: any, soapHeader: any, rawRequest: any) => void`, // TODO: Use ts-morph to generate proper type
                         },
                     ],
-                    returnType: method.returnDefinition ? method.returnDefinition.name : "void",
+                    returnType: "void",
                 });
             } // End of PortMethod
             if (!options.emitDefinitionsOnly) {
