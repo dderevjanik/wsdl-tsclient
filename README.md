@@ -81,3 +81,7 @@ for more information about the use of the client, read more about [soap](https:/
 ## How it works
 
 ![overview](./docs/Overview.png)
+
+## License
+
+The source code is licensed under the [MIT](./LICENSE) license

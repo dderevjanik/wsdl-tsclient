@@ -55,28 +55,32 @@ const MAX_STACK = 30;
 
 export class ParsedWsdl {
     /**
-     * Name is always uppercased filename of wsdl without an extension
+     * Name is always uppercased filename of wsdl without an extension.
+     * Used to generate client name of interface
      * @example "MyClient"
      */
     name: string;
+    /** Original wsdl filename */
     wsdlFilename: string;
+    /** Absolute basepath or url */
     wsdlPath: string;
 
     definitions: Array<Definition> = [];
     ports: Array<Port> = [];
     services: Array<Service> = [];
 
+    /** Find definition by it's name */
     findDefinition(definitionName: string): Definition {
         return this.definitions.find((def) => def.name === definitionName);
     }
 
+    /** To make every definition's name unique. If definition with same name exists, suffix it with incremented number */
     findNonCollisionDefinitionName(defName: string): string {
         const definitionName = sanitizeFilename(defName);
         if (!this.definitions.find((def) => def.name === definitionName)) {
             return definitionName;
         }
         for (let i = 1; i < MAX_STACK; i++) {
-            // TODO: Unhardcode `20`
             if (!this.definitions.find((def) => def.name === `${definitionName}${i}`)) {
                 return `${definitionName}${i}`;
             }

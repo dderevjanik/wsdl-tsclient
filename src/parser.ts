@@ -24,10 +24,10 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
 /**
  * parse definition
  * @param parsedWsdl context of parsed wsdl
- * @param name name of definition
- * @param defParts definition's parts (its properties from wsdl)
- * @param stack definition stack (for deep objects) (immutable)
- * @param visitedDefs set of visited definition (mutable)
+ * @param name name of definition, will be used as name of interface
+ * @param defParts definition's parts - its properties
+ * @param stack definitions stack of path to current subdefinition (immutable)
+ * @param visitedDefs set of globally visited definitions to avoid circular definitions
  */
 function parseDefinition(
     parsedWsdl: ParsedWsdl,
@@ -161,7 +161,6 @@ function parseDefinition(
             });
         }
     } else {
-        // TODO: Doesn't have parts :(
     }
 
     parsedWsdl.definitions.push(definition);
@@ -171,6 +170,10 @@ function parseDefinition(
 
 // TODO: Add logs
 // TODO: Add comments for services, ports, methods and client
+/**
+ * Parse WSDL to domain model `ParsedWsdl`
+ * @param wsdlPath - path or url to wsdl file
+ */
 export async function parseWsdl(wsdlPath: string, options: Options): Promise<ParsedWsdl> {
     return new Promise((resolve, reject) => {
         open_wsdl(wsdlPath, function (err, wsdl) {
@@ -200,14 +203,12 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
 
                 for (const [portName, port] of Object.entries(service.ports)) {
                     Logger.debug(`Parsing Port ${portName}`);
-                    // [SI_ManageOrder_O]
                     const portMethods: Method[] = [];
 
                     for (const [methodName, method] of Object.entries(port.binding.methods)) {
                         Logger.debug(`Parsing Method ${methodName}`);
-                        // [O_CustomerChange]
 
-                        // TODO: Deduplicate code below by refactoring it to external function. Is it possible ?
+                        // TODO: Deduplicate code below by refactoring it to external function. Is it even possible ?
                         let paramName = "request";
                         let inputDefinition: Definition = null; // default type
                         if (method.input) {
@@ -216,7 +217,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                             }
                             const inputMessage = wsdl.definitions.messages[method.input.$name];
                             if (inputMessage.element) {
-                                // TODO: if $type not defined, inline type into function declartion
+                                // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
                                 const typeName = inputMessage.element.$type ?? inputMessage.element.$name;
                                 const type = parsedWsdl.findDefinition(
                                     inputMessage.element.$type ?? inputMessage.element.$name
@@ -243,14 +244,14 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                           [paramName],
                                           visitedDefinitions
                                       );
-                            }
+                            } // TODO: Add debug to else
                         }
 
-                        let outputDefinition: Definition = null; // default type
+                        let outputDefinition: Definition = null; // default type, `{}` or `unknown` ?
                         if (method.output) {
                             const outputMessage = wsdl.definitions.messages[method.output.$name];
                             if (outputMessage.element) {
-                                // TODO: if input doesn't have $type, use $name for definition file
+                                // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
                                 const typeName = outputMessage.element.$type ?? outputMessage.element.$name;
                                 const type = parsedWsdl.findDefinition(typeName);
                                 outputDefinition = type
@@ -275,7 +276,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                           [paramName],
                                           visitedDefinitions
                                       );
-                            }
+                            } // TODO: Add debug to else
                         }
 
                         const camelParamName = camelCase(paramName);
@@ -306,6 +307,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                     ports: servicePorts,
                 });
             } // End of Service cycle
+
             parsedWsdl.services = services;
             parsedWsdl.ports = allPorts;
 

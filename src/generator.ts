@@ -164,7 +164,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             name: "callback",
                             type: `(err: any, result: ${
                                 method.paramDefinition ? method.paramDefinition.name : "unknown"
-                            }, rawResponse: any, soapHeader: any, rawRequest: any) => void`,
+                            }, rawResponse: any, soapHeader: any, rawRequest: any) => void`, // TODO: Use ts-morph to generate proper type
                         },
                     ],
                     returnType: method.returnDefinition ? method.returnDefinition.name : "void",
@@ -281,7 +281,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
         }))
     );
     if (!options.emitDefinitionsOnly) {
-        // TODO: Aggregate all exports during decleartions generation
+        // TODO: Aggregate all exports during declarations generation
         // https://ts-morph.com/details/exports
         indexFile.addExportDeclarations([
             {
