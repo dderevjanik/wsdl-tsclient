@@ -116,7 +116,7 @@ function parseDefinition(
                                     isArray: true,
                                 });
                             } catch (err) {
-                                const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+                                const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
                                 e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
                                 throw e;
                             }
@@ -164,7 +164,7 @@ function parseDefinition(
                                     isArray: false,
                                 });
                             } catch (err) {
-                                const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+                                const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
                                 e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
                                 throw e;
                             }
