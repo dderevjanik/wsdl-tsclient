@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2021-05-01
+
+- Fix wrong generated callback result
+- Parser: Improved message for cyclic errors
+- Parser: Improved message for finding non-collision definition name
+
 ## [1.1.1] - 2021-04-20
 
 - Fix wrong AsyncFunction return's type generation #10
