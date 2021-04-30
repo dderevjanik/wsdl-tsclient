@@ -44,8 +44,9 @@ function parseDefinition(
     try {
         nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName);
     } catch (err) {
-        Logger.error(`Error for finding non-collision definitino name for ${stack.join(".")}.${name}`);
-        throw err;
+        const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+        e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
+        throw e;
     }
     const definition: Definition = {
         name: `${options.modelNamePreffix}${camelCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
@@ -98,21 +99,27 @@ function parseDefinition(
                                 isArray: true,
                             });
                         } else {
-                            const subDefinition = parseDefinition(
-                                parsedWsdl,
-                                options,
-                                stripedPropName,
-                                type,
-                                [...stack, propName],
-                                visitedDefs
-                            );
-                            definition.properties.push({
-                                kind: "REFERENCE",
-                                name: stripedPropName,
-                                sourceName: propName,
-                                ref: subDefinition,
-                                isArray: true,
-                            });
+                            try {
+                                const subDefinition = parseDefinition(
+                                    parsedWsdl,
+                                    options,
+                                    stripedPropName,
+                                    type,
+                                    [...stack, propName],
+                                    visitedDefs
+                                );
+                                definition.properties.push({
+                                    kind: "REFERENCE",
+                                    name: stripedPropName,
+                                    sourceName: propName,
+                                    ref: subDefinition,
+                                    isArray: true,
+                                });
+                            } catch (err) {
+                                const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+                                e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
+                                throw e;
+                            }
                         }
                     }
                 } else {
@@ -140,21 +147,27 @@ function parseDefinition(
                                 isArray: false,
                             });
                         } else {
-                            const subDefinition = parseDefinition(
-                                parsedWsdl,
-                                options,
-                                propName,
-                                type,
-                                [...stack, propName],
-                                visitedDefs
-                            );
-                            definition.properties.push({
-                                kind: "REFERENCE",
-                                name: propName,
-                                sourceName: propName,
-                                ref: subDefinition,
-                                isArray: false,
-                            });
+                            try {
+                                const subDefinition = parseDefinition(
+                                    parsedWsdl,
+                                    options,
+                                    propName,
+                                    type,
+                                    [...stack, propName],
+                                    visitedDefs
+                                );
+                                definition.properties.push({
+                                    kind: "REFERENCE",
+                                    name: propName,
+                                    sourceName: propName,
+                                    ref: subDefinition,
+                                    isArray: false,
+                                });
+                            } catch (err) {
+                                const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+                                e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
+                                throw e;
+                            }
                         }
                     }
                 }
