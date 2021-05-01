@@ -1,5 +1,6 @@
 import camelCase from "camelcase";
 import * as path from "path";
+import { ComplexTypeElement } from "soap/lib/wsdl/elements";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
 import { stripExtension } from "./utils/file";
@@ -56,7 +57,6 @@ function parseDefinition(
         description: "",
     };
     visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
-
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
         if (("undefined" in defParts) && (defParts.undefined === undefined)) {
@@ -85,6 +85,16 @@ function parseDefinition(
                             description: type,
                             type: "string",
                             isArray: true,
+                        });
+                    } else if (type instanceof ComplexTypeElement) {
+                        // TODO: Finish complex type parsing by updating node-soap
+                        definition.properties.push({
+                            kind: "PRIMITIVE",
+                            name: stripedPropName,
+                            sourceName: propName,
+                            description: "ComplexType are not supported yet",
+                            type: "any",
+                            isArray: true
                         });
                     } else {
                         // With sub-type
@@ -132,6 +142,16 @@ function parseDefinition(
                             description: type,
                             type: "string",
                             isArray: false,
+                        });
+                    } else if (type instanceof ComplexTypeElement) {
+                        // TODO: Finish complex type parsing by updating node-soap
+                        definition.properties.push({
+                            kind: "PRIMITIVE",
+                            name: propName,
+                            sourceName: propName,
+                            description: "ComplexType are not supported yet",
+                            type: "any",
+                            isArray: false
                         });
                     } else {
                         // With sub-type
@@ -196,6 +216,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
             if (wsdl === undefined) {
                 return reject(new Error("WSDL is undefined"));
             }
+            const x = wsdl.describeServices();
 
             const parsedWsdl = new ParsedWsdl();
             const filename = path.basename(wsdlPath);
