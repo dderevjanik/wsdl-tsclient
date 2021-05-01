@@ -24,7 +24,7 @@ export async function parseAndGenerate(
     outDir: string,
     options: Partial<Options> = {}
 ): Promise<void> {
-    const mergedOptions = {
+    const mergedOptions: Options = {
         ...defaultOptions,
         ...options,
     };

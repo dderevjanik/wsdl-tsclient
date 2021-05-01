@@ -15,6 +15,18 @@ export interface Options {
     emitDefinitionsOnly: boolean;
 }
 
+/**
+ * To avoid duplicated imports
+ */
+function addSafeImport(imports: OptionalKind<ImportDeclarationStructure>[], moduleSpecifier: string, namedImport: string) {
+    if (!imports.find(imp => imp.moduleSpecifier == moduleSpecifier)) {
+        imports.push({
+           moduleSpecifier,
+           namedImports: [{ name: namedImport }]
+        });
+    }
+}
+
 function createProperty(
     name: string,
     type: string,
@@ -58,10 +70,7 @@ function generateDefinitionFile(
                 // Wasn't generated yet
                 generateDefinitionFile(project, prop.ref, defDir, [...stack, prop.ref.name], generated);
             }
-            definitionImports.push({
-                moduleSpecifier: `./${prop.ref.name}`,
-                namedImports: [{ name: prop.ref.name }],
-            });
+            addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
             definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
         }
     }
@@ -89,7 +98,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
     const defDir = path.join(outDir, "definitions");
 
     const allMethods: Method[] = [];
-    const allDefintions: Definition[] = [];
+    const allDefinitions: Definition[] = [];
 
     const clientImports: Array<OptionalKind<ImportDeclarationStructure>> = [];
     const clientServices: Array<OptionalKind<PropertySignatureStructure>> = [];
@@ -112,44 +121,32 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
             for (const method of port.methods) {
                 // TODO: Deduplicate PortImports
                 if (method.paramDefinition !== null) {
-                    if (!allDefintions.includes(method.paramDefinition)) {
+                    if (!allDefinitions.includes(method.paramDefinition)) {
                         // Definition is not generated
                         generateDefinitionFile(
                             project,
                             method.paramDefinition,
                             defDir,
                             [method.paramDefinition.name],
-                            allDefintions
+                            allDefinitions
                         );
-                        clientImports.push({
-                            moduleSpecifier: `./definitions/${method.paramDefinition.name}`,
-                            namedImports: [{ name: method.paramDefinition.name }],
-                        });
+                        addSafeImport(clientImports, `./definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
                     }
-                    portImports.push({
-                        moduleSpecifier: `../definitions/${method.paramDefinition.name}`,
-                        namedImports: [{ name: method.paramDefinition.name }],
-                    });
+                    addSafeImport(portImports, `../definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
                 }
                 if (method.returnDefinition !== null) {
-                    if (!allDefintions.includes(method.returnDefinition)) {
+                    if (!allDefinitions.includes(method.returnDefinition)) {
                         // Definition is not generated
                         generateDefinitionFile(
                             project,
                             method.returnDefinition,
                             defDir,
                             [method.returnDefinition.name],
-                            allDefintions
+                            allDefinitions
                         );
-                        clientImports.push({
-                            moduleSpecifier: `./definitions/${method.returnDefinition.name}`,
-                            namedImports: [{ name: method.returnDefinition.name }],
-                        });
+                        addSafeImport(clientImports, `./definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
                     }
-                    portImports.push({
-                        moduleSpecifier: `../definitions/${method.returnDefinition.name}`,
-                        namedImports: [{ name: method.returnDefinition.name }],
-                    });
+                    addSafeImport(portImports, `../definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
                 }
                 // TODO: Deduplicate PortMethods
                 allMethods.push(method);
@@ -171,10 +168,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                 });
             } // End of PortMethod
             if (!options.emitDefinitionsOnly) {
-                serviceImports.push({
-                    moduleSpecifier: `../ports/${port.name}`,
-                    namedImports: [{ name: port.name }],
-                });
+                addSafeImport(serviceImports, `../ports/${port.name}`, port.name);
                 servicePorts.push({
                     name: port.name,
                     isReadonly: true,
@@ -196,10 +190,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
         } // End of Port
 
         if (!options.emitDefinitionsOnly) {
-            clientImports.push({
-                moduleSpecifier: `./services/${service.name}`,
-                namedImports: [{ name: service.name }],
-            });
+            addSafeImport(clientImports, `./services/${service.name}`, service.name);
             clientServices.push({ name: service.name, type: service.name });
 
             serviceFile.addImportDeclarations(serviceImports);
@@ -269,13 +260,14 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
         clientFile.saveSync();
     }
 
+    // Create index file with re-exports
     const indexFilePath = path.join(outDir, "index.ts");
     const indexFile = project.createSourceFile(indexFilePath, "", {
         overwrite: true,
     });
 
     indexFile.addExportDeclarations(
-        allDefintions.map((def) => ({
+        allDefinitions.map((def) => ({
             namedExports: [def.name],
             moduleSpecifier: `./definitions/${def.name}`,
         }))
