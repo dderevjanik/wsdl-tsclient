@@ -30,6 +30,9 @@ You can check example repository [wsdl-tsclient-example](https://github.com/dder
 
 ### Generate client using CLI
 
+Easiest way to generate client from is to use CLI. You need to provide only path to `.wsdl` file and
+path to output directory (`-o` param). If you want to generate **only typescript types** (no runtime code) for node-soap, you can pass `--emitDefinitionsOnly` param.
+
 `wsdl-tsclient ./soap.wsdl -o ./generated`
 
 `wsdl-tsclient ./resources/**/*.wsdl -o ./generated` - using glob
