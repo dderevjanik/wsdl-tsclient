@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2021-05-03
+
+- Fix cyclic error when parsing `ComplexType`. Now generates `any` type
+- Fix problem with duplicated imports (importing same definition for client/service/port)
+
 ## [1.1.2] - 2021-05-01
 
 - Fix wrong generated callback result
