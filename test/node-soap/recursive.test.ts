@@ -23,4 +23,9 @@ test(target, async t => {
         // t.equal(existsSync(`${outdir}/recursive/definitions/TnssuccessGetLeadChanges.ts`), true);
         // t.end();
     });
+
+    // t.test(`${target} - compile`, async t => {
+    //     await typecheck(`${outdir}/arraynamespaceoverride/index.ts`);
+    // });
+
 });

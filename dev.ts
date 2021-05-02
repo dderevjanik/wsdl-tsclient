@@ -1,5 +1,5 @@
 import { parseWsdl } from "./src/parser";
 
 (async function () {
-    const d = await parseWsdl("XXX", "./ed.wsdl", "./generated");
+    const d = await parseWsdl("./test/resources/strict/EVacSyncService_SPClient.wsdl", { modelNamePreffix: "", modelNameSuffix: "" });
 })();
