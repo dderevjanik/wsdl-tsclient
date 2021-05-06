@@ -11,9 +11,13 @@ import {
 import { Definition, Method, ParsedWsdl } from "./models/parsed-wsdl";
 import { Logger } from "./utils/logger";
 
-export interface Options {
+export interface GeneratorOptions {
     emitDefinitionsOnly: boolean;
 }
+
+const defaultOptions: GeneratorOptions = {
+    emitDefinitionsOnly: false
+};
 
 /**
  * To avoid duplicated imports
@@ -90,7 +94,11 @@ function generateDefinitionFile(
     defFile.saveSync();
 }
 
-export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: Options): Promise<void> {
+export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: Partial<GeneratorOptions>): Promise<void> {
+    const mergedOptions: GeneratorOptions = {
+        ...defaultOptions,
+        ...options
+    };
     const project = new Project();
 
     const portsDir = path.join(outDir, "ports");
@@ -167,7 +175,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                     returnType: "void",
                 });
             } // End of PortMethod
-            if (!options.emitDefinitionsOnly) {
+            if (!mergedOptions.emitDefinitionsOnly) {
                 addSafeImport(serviceImports, `../ports/${port.name}`, port.name);
                 servicePorts.push({
                     name: port.name,
@@ -189,7 +197,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
             }
         } // End of Port
 
-        if (!options.emitDefinitionsOnly) {
+        if (!mergedOptions.emitDefinitionsOnly) {
             addSafeImport(clientImports, `./services/${service.name}`, service.name);
             clientServices.push({ name: service.name, type: service.name });
 
@@ -208,7 +216,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
         }
     } // End of Service
 
-    if (!options.emitDefinitionsOnly) {
+    if (!mergedOptions.emitDefinitionsOnly) {
         const clientFilePath = path.join(outDir, "client.ts");
         const clientFile = project.createSourceFile(clientFilePath, "", {
             overwrite: true,
@@ -272,7 +280,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
             moduleSpecifier: `./definitions/${def.name}`,
         }))
     );
-    if (!options.emitDefinitionsOnly) {
+    if (!mergedOptions.emitDefinitionsOnly) {
         // TODO: Aggregate all exports during declarations generation
         // https://ts-morph.com/details/exports
         indexFile.addExportDeclarations([

@@ -14,8 +14,8 @@ export type DefinitionProperty =
           sourceName: string;
           description?: string;
           /**
-           * This is very information to know, because
-           * you can avoid circular references with this
+           * This definition only reference another definition instead of primitive type
+           * @description helps to avoid circular referencies
            */
           kind: "REFERENCE";
           isArray?: boolean;
@@ -23,7 +23,9 @@ export type DefinitionProperty =
       };
 
 export interface Definition {
+    /** Will be used as name of generated Definition's interface */
     name: string;
+    /** Original name of Definition in WSDL */
     sourceName: string;
     description?: string;
     docs: string[];
@@ -31,23 +33,33 @@ export interface Definition {
 }
 
 export interface Method {
+    /** Will be used as name for generated Function/Method */
     name: string;
+    /** First param name (InputMessage) */
     paramName: string;
+    /** First param type (InputMessage) */
     paramDefinition: null | Definition;
+    /** Result type (OutputMessage) */
     returnDefinition: null | Definition;
 }
 
 export interface Port {
+    /** Will be used as name of generated Port's interface */
     name: string;
+    /** Original name of Port in WSDL */
     sourceName: string;
     description?: string;
+    /** List of callable methods within this Port */
     methods: Array<Method>;
 }
 
 export interface Service {
+    /** Will be used as name of generated Service's interface */
     name: string;
+    /** Original name of Service in WSDL */
     sourceName: string;
     description?: string;
+    /** List of Service's Ports */
     ports: Array<Port>;
 }
 
@@ -74,7 +86,10 @@ export class ParsedWsdl {
         return this.definitions.find((def) => def.name === definitionName);
     }
 
-    /** To make every definition's name unique. If definition with same name exists, suffix it with incremented number */
+    /**
+     * To make every definition's name unique.
+     * If definition with same name exists, suffix it with incremented number
+     */
     findNonCollisionDefinitionName(defName: string): string {
         const definitionName = sanitizeFilename(defName);
         if (!this.definitions.find((def) => def.name === definitionName)) {

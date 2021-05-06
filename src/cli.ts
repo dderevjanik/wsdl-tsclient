@@ -57,6 +57,7 @@ if (conf.verbose || process.env.DEBUG) {
 if (conf.quiet) {
     Logger.isDebug = false;
     Logger.isInfo = false;
+    Logger.isWarn = false;
     Logger.isError = false;
 }
 

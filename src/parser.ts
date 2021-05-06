@@ -7,10 +7,15 @@ import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
 
-interface Options {
+interface ParserOptions {
     modelNamePreffix: string;
     modelNameSuffix: string;
 }
+
+const defaultOptions: ParserOptions = {
+    modelNamePreffix: "",
+    modelNameSuffix: ""
+};
 
 type VisitedDefinition = {
     name: string;
@@ -32,7 +37,7 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
  */
 function parseDefinition(
     parsedWsdl: ParsedWsdl,
-    options: Options,
+    options: ParserOptions,
     name: string,
     defParts: { [propNameType: string]: any },
     stack: string[],
@@ -96,6 +101,7 @@ function parseDefinition(
                             type: "any",
                             isArray: true
                         });
+                        Logger.warn(`Cannot parse ComplexType '${stack.join(".")}.${name}' - using 'any' type`);
                     } else {
                         // With sub-type
                         const visited = findReferenceDefiniton(visitedDefs, type);
@@ -126,7 +132,7 @@ function parseDefinition(
                                     isArray: true,
                                 });
                             } catch (err) {
-                                const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
+                                const e = new Error(`Error while parsing Subdefinition for '${stack.join(".")}.${name}'`);
                                 e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
                                 throw e;
                             }
@@ -153,6 +159,7 @@ function parseDefinition(
                             type: "any",
                             isArray: false
                         });
+                        Logger.warn(`Cannot parse ComplexType '${stack.join(".")}.${name}' - using 'any' type`);
                     } else {
                         // With sub-type
                         const reference = findReferenceDefiniton(visitedDefs, type);
@@ -207,7 +214,11 @@ function parseDefinition(
  * Parse WSDL to domain model `ParsedWsdl`
  * @param wsdlPath - path or url to wsdl file
  */
-export async function parseWsdl(wsdlPath: string, options: Options): Promise<ParsedWsdl> {
+export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions>): Promise<ParsedWsdl> {
+    const mergedOptions: ParserOptions = {
+        ...defaultOptions,
+        ...options
+    };
     return new Promise((resolve, reject) => {
         open_wsdl(wsdlPath, function (err, wsdl) {
             if (err) {
@@ -216,7 +227,6 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
             if (wsdl === undefined) {
                 return reject(new Error("WSDL is undefined"));
             }
-            const x = wsdl.describeServices();
 
             const parsedWsdl = new ParsedWsdl();
             const filename = path.basename(wsdlPath);
@@ -260,7 +270,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           typeName,
                                           inputMessage.parts,
                                           [typeName],
@@ -272,13 +282,15 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           paramName,
                                           inputMessage.parts,
                                           [paramName],
                                           visitedDefinitions
                                       );
-                            } // TODO: Add debug to else
+                            } else {
+                                Logger.debug(`Method '${serviceName}.${portName}.${methodName}' doesn't have any input defined`);
+                            }
                         }
 
                         let outputDefinition: Definition = null; // default type, `{}` or `unknown` ?
@@ -292,7 +304,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           typeName,
                                           outputMessage.parts,
                                           [typeName],
@@ -304,13 +316,13 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           paramName,
                                           outputMessage.parts,
                                           [paramName],
                                           visitedDefinitions
                                       );
-                            } // TODO: Add debug to else
+                            }
                         }
 
                         const camelParamName = camelCase(paramName);
