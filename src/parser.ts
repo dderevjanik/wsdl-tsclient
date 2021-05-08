@@ -56,7 +56,7 @@ function parseDefinition(
     }
     const definition: Definition = {
         name: `${options.modelNamePreffix}${camelCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
-        sourceName: defName,
+        sourceName: name,
         docs: [name],
         properties: [],
         description: "",
