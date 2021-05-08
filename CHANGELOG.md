@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2021-05-10
+
+- Parser: Fix `sourceName` for definitions
+- Parser: Add warn logs when parsing `ComplexType` as `any`
+- Parser: Partial options for `parse` function
+- Generator: Partial options for `generate` function
+- More meaningful source code comments
+
 ## [1.1.3] - 2021-05-03
 
 - Fix cyclic error when parsing `ComplexType`. Now generates `any` type
