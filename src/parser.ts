@@ -43,12 +43,12 @@ function parseDefinition(
     stack: string[],
     visitedDefs: Array<VisitedDefinition>
 ): Definition {
-    name = camelCase(name, { pascalCase: true });
+    const defName = camelCase(name, { pascalCase: true });
     Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
     let nonCollisionDefName: string;
     try {
-        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(name);
+        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName);
     } catch (err) {
         const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
         e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
