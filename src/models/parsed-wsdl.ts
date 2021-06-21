@@ -92,11 +92,11 @@ export class ParsedWsdl {
      */
     findNonCollisionDefinitionName(defName: string): string {
         const definitionName = sanitizeFilename(defName);
-        if (!this.definitions.find((def) => def.name === definitionName)) {
+        if (!this.definitions.find((def) => def.name.toLowerCase() === definitionName.toLowerCase())) {
             return definitionName;
         }
         for (let i = 1; i < MAX_STACK; i++) {
-            if (!this.definitions.find((def) => def.name === `${definitionName}${i}`)) {
+            if (!this.definitions.find((def) => def.name.toLowerCase() === `${definitionName.toLowerCase()}${i}`)) {
                 return `${definitionName}${i}`;
             }
         }
