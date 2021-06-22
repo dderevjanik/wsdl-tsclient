@@ -11,12 +11,14 @@ export interface Options {
     emitDefinitionsOnly: boolean;
     modelNamePreffix: string;
     modelNameSuffix: string;
+    maxRecursiveDefinitionName: number;
 }
 
 export const defaultOptions: Options = {
     emitDefinitionsOnly: false,
     modelNamePreffix: "",
     modelNameSuffix: "",
+    maxRecursiveDefinitionName: 64
 };
 
 export async function parseAndGenerate(

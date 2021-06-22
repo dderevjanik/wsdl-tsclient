@@ -1,4 +1,5 @@
 import sanitizeFilename from "sanitize-filename";
+import { Logger } from "../utils/logger";
 
 export type DefinitionProperty =
     | {
@@ -63,7 +64,15 @@ export interface Service {
     ports: Array<Port>;
 }
 
-const MAX_STACK = 30;
+export interface Options {
+    maxStack: number;
+    maxStackWarn: number;
+}
+
+const defaultOptions: Options = {
+    maxStack: 64,
+    maxStackWarn: 32
+}
 
 export class ParsedWsdl {
     /**
@@ -81,6 +90,15 @@ export class ParsedWsdl {
     ports: Array<Port> = [];
     services: Array<Service> = [];
 
+    private _options: Options;
+
+    constructor(options: Partial<Options>) {
+        this._options = {
+            ...defaultOptions,
+            ...options
+        };
+    }
+
     /** Find definition by it's name */
     findDefinition(definitionName: string): Definition {
         return this.definitions.find((def) => def.name === definitionName);
@@ -95,11 +113,14 @@ export class ParsedWsdl {
         if (!this.definitions.find((def) => def.name === definitionName)) {
             return definitionName;
         }
-        for (let i = 1; i < MAX_STACK; i++) {
+        for (let i = 1; i < this._options.maxStack; i++) {
             if (!this.definitions.find((def) => def.name === `${definitionName}${i}`)) {
                 return `${definitionName}${i}`;
             }
+            if (i == this._options.maxStackWarn) {
+                Logger.warn(`Too many definition with same name "${definitionName}", will throw an exception at ${this._options.maxStack}`);
+            }
         }
-        throw new Error(`Out of stack (${MAX_STACK}) for "${definitionName}", there's probably cyclic definition`);
+        throw new Error(`Out of stack (${this._options.maxStack}) for "${definitionName}", there's probably cyclic definition. You can also try to increase maxStack with --TODO option`);
     }
 }

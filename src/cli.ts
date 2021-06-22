@@ -31,6 +31,10 @@ const conf = yargs(process.argv.slice(2))
         type: "string",
         description: "Suffix for generated interface names",
     })
+    .option("maxRecursiveDefinitionName", {
+        type: "number",
+        description: "Maximum count of definition's with same name but increased suffix. Will throw an error if exceed",
+    })
     .option("quiet", {
         type: "boolean",
         description: "Suppress logs",
@@ -76,6 +80,11 @@ if (conf.modelNamePreffix) {
 if (conf.modelNameSuffix) {
     options.modelNameSuffix = conf.modelNameSuffix;
 }
+
+if (conf.maxRecursiveDefinitionName || conf.maxRecursiveDefinitionName == 0) {
+    options.maxRecursiveDefinitionName = conf.maxRecursiveDefinitionName;
+}
+
 Logger.debug("Options");
 Logger.debug(JSON.stringify(options, null, 2));
 

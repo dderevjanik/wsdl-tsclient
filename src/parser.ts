@@ -10,11 +10,13 @@ import { Logger } from "./utils/logger";
 interface ParserOptions {
     modelNamePreffix: string;
     modelNameSuffix: string;
+    maxRecursiveDefinitionName: number;
 }
 
 const defaultOptions: ParserOptions = {
     modelNamePreffix: "",
-    modelNameSuffix: ""
+    modelNameSuffix: "",
+    maxRecursiveDefinitionName: 64
 };
 
 type VisitedDefinition = {
@@ -228,7 +230,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                 return reject(new Error("WSDL is undefined"));
             }
 
-            const parsedWsdl = new ParsedWsdl();
+            const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
             const filename = path.basename(wsdlPath);
             parsedWsdl.name = camelCase(stripExtension(filename), {
                 pascalCase: true,
