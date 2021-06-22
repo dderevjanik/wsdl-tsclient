@@ -31,6 +31,10 @@ const conf = yargs(process.argv.slice(2))
         type: "string",
         description: "Suffix for generated interface names",
     })
+    .option("caseInsensitiveNames", {
+        type: "boolean",
+        description: "Case-insensitive name while parsing definition names"
+    })
     .option("maxRecursiveDefinitionName", {
         type: "number",
         description: "Maximum count of definition's with same name but increased suffix. Will throw an error if exceed",
@@ -83,6 +87,10 @@ if (conf.modelNameSuffix) {
 
 if (conf.maxRecursiveDefinitionName || conf.maxRecursiveDefinitionName == 0) {
     options.maxRecursiveDefinitionName = conf.maxRecursiveDefinitionName;
+}
+
+if (conf.caseInsensitiveNames) {
+    options.caseInsensitiveNames = conf.caseInsensitiveNames;
 }
 
 Logger.debug("Options");
