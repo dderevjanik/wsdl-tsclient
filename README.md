@@ -89,3 +89,7 @@ for more information about the use of the client, read more about [soap](https:/
 ## License
 
 The source code is licensed under the [MIT](./LICENSE) license
+
+## Contributors
+
+![Contributors](https://contrib.rocks/image?repo=dderevjanik/wsdl-tsclient)
