@@ -1,5 +1,4 @@
 import path from "path";
-import camelCase from "camelcase";
 import {
     ImportDeclarationStructure,
     MethodSignatureStructure,
@@ -9,6 +8,7 @@ import {
     StructureKind,
 } from "ts-morph";
 import { Definition, Method, ParsedWsdl } from "./models/parsed-wsdl";
+import { changeCase } from "./utils/change-case";
 import { Logger } from "./utils/logger";
 
 export interface GeneratorOptions {
@@ -40,7 +40,7 @@ function createProperty(
 ): PropertySignatureStructure {
     return {
         kind: StructureKind.PropertySignature,
-        name: camelCase(name),
+        name: changeCase(name),
         docs: [doc],
         hasQuestionToken: true,
         type: isArray ? `Array<${type}>` : type,

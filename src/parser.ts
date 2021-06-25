@@ -1,8 +1,8 @@
-import camelCase from "camelcase";
 import * as path from "path";
 import { ComplexTypeElement } from "soap/lib/wsdl/elements";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
+import { changeCase } from "./utils/change-case";
 import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
@@ -45,7 +45,7 @@ function parseDefinition(
     stack: string[],
     visitedDefs: Array<VisitedDefinition>
 ): Definition {
-    const defName = camelCase(name, { pascalCase: true });
+    const defName = changeCase(name, { pascalCase: true });
     Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
     let nonCollisionDefName: string;
@@ -57,7 +57,7 @@ function parseDefinition(
         throw e;
     }
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${camelCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
+        name: `${options.modelNamePreffix}${changeCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
         sourceName: name,
         docs: [name],
         properties: [],
@@ -232,7 +232,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
 
             const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
             const filename = path.basename(wsdlPath);
-            parsedWsdl.name = camelCase(stripExtension(filename), {
+            parsedWsdl.name = changeCase(stripExtension(filename), {
                 pascalCase: true,
             });
             parsedWsdl.wsdlFilename = path.basename(filename);
@@ -327,7 +327,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                             }
                         }
 
-                        const camelParamName = camelCase(paramName);
+                        const camelParamName = changeCase(paramName);
                         const portMethod: Method = {
                             name: methodName,
                             paramName: reservedKeywords.includes(camelParamName)
@@ -341,7 +341,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                     }
 
                     const servicePort: Port = {
-                        name: camelCase(portName, { pascalCase: true }),
+                        name: changeCase(portName, { pascalCase: true }),
                         sourceName: portName,
                         methods: portMethods,
                     };
@@ -350,7 +350,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                 } // End of Port cycle
 
                 services.push({
-                    name: camelCase(serviceName, { pascalCase: true }),
+                    name: changeCase(serviceName, { pascalCase: true }),
                     sourceName: serviceName,
                     ports: servicePorts,
                 });

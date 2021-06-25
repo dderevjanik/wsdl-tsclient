@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Generator: Fix incorrect case
+
 ## [1.1.4] - 2021-05-10
 
 - Parser: Fix `sourceName` for definitions
