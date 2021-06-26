@@ -93,12 +93,14 @@ export class ParsedWsdl {
     services: Array<Service> = [];
 
     private _options: Options;
+    private _warns: string[];
 
     constructor(options: Partial<Options>) {
         this._options = {
             ...defaultOptions,
             ...options
         };
+        this._warns = [];
     }
 
     /** Find definition by it's name */
@@ -122,8 +124,9 @@ export class ParsedWsdl {
             if (!this.definitions.find((def) => isInSensitive ? def.name.toLowerCase() : def.name === `${defNameToCheck}${i}`)) {
                 return `${definitionName}${i}`;
             }
-            if (i == this._options.maxStackWarn) {
-                Logger.warn(`Too many definition with same name "${definitionName}", will throw an exception at ${this._options.maxStack}`);
+            if (i == this._options.maxStackWarn && !this._warns.includes(definitionName)) {
+                Logger.warn(`Too many definition with same name "${definitionName}"`);
+                this._warns.push(definitionName);
             }
         }
         throw new Error(`Out of stack (${this._options.maxStack}) for "${definitionName}", there's probably cyclic definition. You can also try to increase maxStack with --TODO option`);

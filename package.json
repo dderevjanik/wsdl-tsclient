@@ -11,9 +11,10 @@
   },
   "scripts": {
     "pretest": "rm -rf ./test/generated",
-    "test": "npm run test:node-soap && npm run test:node-soap2",
+    "test": "npm run test:node-soap && npm run test:node-soap2 && npm run test:public`",
     "test:node-soap": "ts-node node_modules/tape/bin/tape ./test/node-soap/*.test.ts | tap-spec",
     "test:node-soap2": "ts-node node_modules/tape/bin/tape ./test/node-soap/**/*.test.ts | tap-spec",
+    "test:public": "ts-node node_modules/tape/bin/tape ./test/resources-public/**/*.test.ts | tap-spec",
     "preversion": "npm test && npm run build",
     "prepublishOnly": "npm test && npm run dist",
     "dev": "ts-node -T ./dev.ts",
