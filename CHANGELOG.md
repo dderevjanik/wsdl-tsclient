@@ -2,8 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## [1.2.0] - 2021-06-26
 
+- CLI: Add option for `maxRecursiveDefinitionName`, default `64`
+- CLI: Add option for `caseInsensitiveNames`, default `false`
+- Parser: Warn user if recursive definition name exceed `32`
+- Parser: Option for `caseInsensitiveNames`, fix [#12](https://github.com/dderevjanik/wsdl-tsclient/pull/12) by @jakethagle
 - Generator: Fix incorrect case
 
 ## [1.1.4] - 2021-05-10
