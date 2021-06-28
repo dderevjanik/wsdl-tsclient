@@ -63,6 +63,8 @@ function parseDefinition(
         properties: [],
         description: "",
     };
+
+    parsedWsdl.definitions.push(definition); // Must be here to avoid name collision with `findNonCollisionDefinitionName` if sub-definition has same name
     visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
@@ -204,8 +206,6 @@ function parseDefinition(
         }
     } else {
     }
-
-    parsedWsdl.definitions.push(definition);
 
     return definition;
 }

@@ -1,3 +1,4 @@
+import camelcase from "camelcase";
 import path from "path";
 import {
     ImportDeclarationStructure,
@@ -172,7 +173,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                     name: sanitizePropName(method.name),
                     parameters: [
                         {
-                            name: method.paramName,
+                            name: camelcase(method.paramName),
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
                         },
                         {
@@ -188,7 +189,7 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
             if (!mergedOptions.emitDefinitionsOnly) {
                 addSafeImport(serviceImports, `../ports/${port.name}`, port.name);
                 servicePorts.push({
-                    name: port.name,
+                    name: sanitizePropName(port.name),
                     isReadonly: true,
                     type: port.name,
                 });
@@ -249,10 +250,10 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                 properties: clientServices,
                 extends: ["SoapClient"],
                 methods: allMethods.map<OptionalKind<MethodSignatureStructure>>((method) => ({
-                    name: `${method.name}Async`,
+                    name: sanitizePropName(`${(method.name)}Async`),
                     parameters: [
                         {
-                            name: method.paramName,
+                            name: camelcase(method.paramName),
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
                         },
                     ],

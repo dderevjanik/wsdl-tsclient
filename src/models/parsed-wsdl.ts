@@ -115,13 +115,13 @@ export class ParsedWsdl {
     findNonCollisionDefinitionName(defName: string): string {
         const definitionName = sanitizeFilename(defName);
         const isInSensitive = this._options.caseInsensitiveNames;
-
+        
         const defNameToCheck = isInSensitive ? definitionName.toLowerCase() : definitionName;
-        if (!this.definitions.find((def) => isInSensitive ? def.name.toLowerCase() : def.name === defNameToCheck)) {
+        if (!this.definitions.find((def) => isInSensitive ? (def.name.toLowerCase() === defNameToCheck) : (def.name === defNameToCheck))) {
             return definitionName;
         }
         for (let i = 1; i < this._options.maxStack; i++) {
-            if (!this.definitions.find((def) => isInSensitive ? def.name.toLowerCase() : def.name === `${defNameToCheck}${i}`)) {
+            if (!this.definitions.find((def) => isInSensitive ? (def.name.toLowerCase() === `${defNameToCheck}${i}`.toLowerCase()) : (def.name === `${defNameToCheck}${i}`))) {
                 return `${definitionName}${i}`;
             }
             if (i == this._options.maxStackWarn && !this._warns.includes(definitionName)) {
