@@ -1,16 +1,23 @@
-import camelCase from "camelcase";
 import * as path from "path";
 import { ComplexTypeElement } from "soap/lib/wsdl/elements";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
+import { changeCase } from "./utils/change-case";
 import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
 
-interface Options {
+interface ParserOptions {
     modelNamePreffix: string;
     modelNameSuffix: string;
+    maxRecursiveDefinitionName: number;
 }
+
+const defaultOptions: ParserOptions = {
+    modelNamePreffix: "",
+    modelNameSuffix: "",
+    maxRecursiveDefinitionName: 64
+};
 
 type VisitedDefinition = {
     name: string;
@@ -32,13 +39,13 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
  */
 function parseDefinition(
     parsedWsdl: ParsedWsdl,
-    options: Options,
+    options: ParserOptions,
     name: string,
     defParts: { [propNameType: string]: any },
     stack: string[],
     visitedDefs: Array<VisitedDefinition>
 ): Definition {
-    const defName = camelCase(name, { pascalCase: true });
+    const defName = changeCase(name, { pascalCase: true });
     Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
     let nonCollisionDefName: string;
@@ -50,8 +57,8 @@ function parseDefinition(
         throw e;
     }
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${camelCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
-        sourceName: defName,
+        name: `${options.modelNamePreffix}${changeCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
+        sourceName: name,
         docs: [name],
         properties: [],
         description: "",
@@ -96,6 +103,7 @@ function parseDefinition(
                             type: "any",
                             isArray: true
                         });
+                        Logger.warn(`Cannot parse ComplexType '${stack.join(".")}.${name}' - using 'any' type`);
                     } else {
                         // With sub-type
                         const visited = findReferenceDefiniton(visitedDefs, type);
@@ -126,7 +134,7 @@ function parseDefinition(
                                     isArray: true,
                                 });
                             } catch (err) {
-                                const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
+                                const e = new Error(`Error while parsing Subdefinition for '${stack.join(".")}.${name}'`);
                                 e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
                                 throw e;
                             }
@@ -153,6 +161,7 @@ function parseDefinition(
                             type: "any",
                             isArray: false
                         });
+                        Logger.warn(`Cannot parse ComplexType '${stack.join(".")}.${name}' - using 'any' type`);
                     } else {
                         // With sub-type
                         const reference = findReferenceDefiniton(visitedDefs, type);
@@ -207,7 +216,11 @@ function parseDefinition(
  * Parse WSDL to domain model `ParsedWsdl`
  * @param wsdlPath - path or url to wsdl file
  */
-export async function parseWsdl(wsdlPath: string, options: Options): Promise<ParsedWsdl> {
+export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions>): Promise<ParsedWsdl> {
+    const mergedOptions: ParserOptions = {
+        ...defaultOptions,
+        ...options
+    };
     return new Promise((resolve, reject) => {
         open_wsdl(wsdlPath, function (err, wsdl) {
             if (err) {
@@ -216,11 +229,10 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
             if (wsdl === undefined) {
                 return reject(new Error("WSDL is undefined"));
             }
-            const x = wsdl.describeServices();
 
-            const parsedWsdl = new ParsedWsdl();
+            const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
             const filename = path.basename(wsdlPath);
-            parsedWsdl.name = camelCase(stripExtension(filename), {
+            parsedWsdl.name = changeCase(stripExtension(filename), {
                 pascalCase: true,
             });
             parsedWsdl.wsdlFilename = path.basename(filename);
@@ -260,7 +272,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           typeName,
                                           inputMessage.parts,
                                           [typeName],
@@ -272,13 +284,15 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           paramName,
                                           inputMessage.parts,
                                           [paramName],
                                           visitedDefinitions
                                       );
-                            } // TODO: Add debug to else
+                            } else {
+                                Logger.debug(`Method '${serviceName}.${portName}.${methodName}' doesn't have any input defined`);
+                            }
                         }
 
                         let outputDefinition: Definition = null; // default type, `{}` or `unknown` ?
@@ -292,7 +306,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           typeName,
                                           outputMessage.parts,
                                           [typeName],
@@ -304,16 +318,16 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                                     ? type
                                     : parseDefinition(
                                           parsedWsdl,
-                                          options,
+                                          mergedOptions,
                                           paramName,
                                           outputMessage.parts,
                                           [paramName],
                                           visitedDefinitions
                                       );
-                            } // TODO: Add debug to else
+                            }
                         }
 
-                        const camelParamName = camelCase(paramName);
+                        const camelParamName = changeCase(paramName);
                         const portMethod: Method = {
                             name: methodName,
                             paramName: reservedKeywords.includes(camelParamName)
@@ -327,7 +341,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                     }
 
                     const servicePort: Port = {
-                        name: camelCase(portName, { pascalCase: true }),
+                        name: changeCase(portName, { pascalCase: true }),
                         sourceName: portName,
                         methods: portMethods,
                     };
@@ -336,7 +350,7 @@ export async function parseWsdl(wsdlPath: string, options: Options): Promise<Par
                 } // End of Port cycle
 
                 services.push({
-                    name: camelCase(serviceName, { pascalCase: true }),
+                    name: changeCase(serviceName, { pascalCase: true }),
                     sourceName: serviceName,
                     ports: servicePorts,
                 });

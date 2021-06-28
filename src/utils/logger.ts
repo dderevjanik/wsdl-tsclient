@@ -5,6 +5,7 @@ export class Logger {
     static isDebug = false;
     static isLog = true;
     static isInfo = true;
+    static isWarn = true;
     static isError = true;
     static colors = true;
 
@@ -12,6 +13,7 @@ export class Logger {
         Logger.isDebug = false;
         Logger.isLog = false;
         Logger.isInfo = false;
+        Logger.isWarn = false;
         Logger.isError = false;
     }
 
@@ -35,6 +37,16 @@ export class Logger {
         if (Logger.isInfo) {
             if (Logger.colors && SupportsColors.stdout) {
                 console.log(Chalk.green(str));
+            } else {
+                console.log(str);
+            }
+        }
+    }
+
+    static warn(str: any) {
+        if (Logger.isWarn) {
+            if (Logger.colors && SupportsColors.stdout) {
+                console.log(Chalk.yellow(str));
             } else {
                 console.log(str);
             }

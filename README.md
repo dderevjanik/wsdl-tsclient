@@ -2,6 +2,7 @@
 
 [![travis-status](https://travis-ci.org/dderevjanik/wsdl-tsclient.svg?branch=master)](https://travis-ci.org/dderevjanik/wsdl-tsclient)
 ![license](https://img.shields.io/npm/l/wsdl-tsclient)
+[![Known Vulnerabilities](https://snyk.io/test/github/dderevjanik/wsdl-tsclient/badge.svg)](https://snyk.io/test/github/dderevjanik/wsdl-tsclient)
 [![npm-version](https://img.shields.io/npm/v/wsdl-tsclient)](https://npmjs.com/package/wsdl-tsclient)
 
 **Example how to generate and use wsdl-tsclient:** [wsdl-tsclient-example](https://github.com/dderevjanik/wsdl-tsclient-example)
@@ -45,15 +46,20 @@ you can also use `npx`
 wsdl-tsclient [options] [path]
 
 Options:
-      --help                 Show help                                 [boolean]
+      --help                        Show help                          [boolean]
   -v, --version                                                        [boolean]
-  -o                         Output directory                [string] [required]
-      --emitDefinitionsOnly  Generate only Definitions                 [boolean]
-      --modelNamePreffix     Prefix for generated interface names       [string]
-      --modelNameSuffix      Suffix for generated interface names       [string]
-      --quiet                Suppress logs                             [boolean]
-      --verbose              Print verbose logs                        [boolean]
-      --no-color             Logs without colors                       [boolean]
+  -o                                Output directory         [string] [required]
+      --emitDefinitionsOnly         Generate only Definitions          [boolean]
+      --modelNamePreffix            Prefix for generated interface names[string]
+      --modelNameSuffix             Suffix for generated interface names[string]
+      --caseInsensitiveNames        Case-insensitive name while parsing
+                                    definition names                   [boolean]
+      --maxRecursiveDefinitionName  Maximum count of definition's with same name
+                                    but increased suffix. Will throw an error if
+                                    exceed                              [number]
+      --quiet                       Suppress logs                      [boolean]
+      --verbose                     Print verbose logs                 [boolean]
+      --no-color                    Logs without colors                [boolean]
 
 Examples:
     wsdl-tsclient file.wsdl -o ./generated/
@@ -88,3 +94,7 @@ for more information about the use of the client, read more about [soap](https:/
 ## License
 
 The source code is licensed under the [MIT](./LICENSE) license
+
+## Contributors
+
+![Contributors](https://contrib.rocks/image?repo=dderevjanik/wsdl-tsclient)

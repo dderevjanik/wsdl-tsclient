@@ -11,12 +11,16 @@ export interface Options {
     emitDefinitionsOnly: boolean;
     modelNamePreffix: string;
     modelNameSuffix: string;
+    caseInsensitiveNames: boolean;
+    maxRecursiveDefinitionName: number;
 }
 
 export const defaultOptions: Options = {
     emitDefinitionsOnly: false,
     modelNamePreffix: "",
     modelNameSuffix: "",
+    caseInsensitiveNames: false,
+    maxRecursiveDefinitionName: 64
 };
 
 export async function parseAndGenerate(

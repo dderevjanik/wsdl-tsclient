@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2021-06-26
+
+- CLI: Add option for `maxRecursiveDefinitionName`, default `64`
+- CLI: Add option for `caseInsensitiveNames`, default `false`
+- Parser: Warn user if recursive definition name exceed `32`
+- Parser: Option for `caseInsensitiveNames`, fix [#12](https://github.com/dderevjanik/wsdl-tsclient/pull/12) by @jakethagle
+- Generator: Fix incorrect case
+
+## [1.1.4] - 2021-05-10
+
+- Parser: Fix `sourceName` for definitions
+- Parser: Add warn logs when parsing `ComplexType` as `any`
+- Parser: Partial options for `parse` function
+- Generator: Partial options for `generate` function
+- More meaningful source code comments
+
+## [1.1.3] - 2021-05-03
+
+- Fix cyclic error when parsing `ComplexType`. Now generates `any` type
+- Fix problem with duplicated imports (importing same definition for client/service/port)
+
 ## [1.1.2] - 2021-05-01
 
 - Fix wrong generated callback result
