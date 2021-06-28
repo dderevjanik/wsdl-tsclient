@@ -40,7 +40,7 @@ function createProperty(
 ): PropertySignatureStructure {
     return {
         kind: StructureKind.PropertySignature,
-        name: changeCase(name),
+        name: name,
         docs: [doc],
         hasQuestionToken: true,
         type: isArray ? `Array<${type}>` : type,
