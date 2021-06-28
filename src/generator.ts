@@ -31,6 +31,17 @@ function addSafeImport(imports: OptionalKind<ImportDeclarationStructure>[], modu
     }
 }
 
+const incorrectPropNameChars = [" ", "-", "."];
+/**
+ * This is temporally method to fix this issue https://github.com/dsherret/ts-morph/issues/1160
+ */
+function sanitizePropName(propName: string) {
+    if (incorrectPropNameChars.some(char => propName.includes(char))) {
+        return `"${propName}"`;
+    }
+    return propName;
+}
+
 function createProperty(
     name: string,
     type: string,
@@ -40,7 +51,7 @@ function createProperty(
 ): PropertySignatureStructure {
     return {
         kind: StructureKind.PropertySignature,
-        name: name,
+        name: sanitizePropName(name),
         docs: [doc],
         hasQuestionToken: true,
         type: isArray ? `Array<${type}>` : type,
