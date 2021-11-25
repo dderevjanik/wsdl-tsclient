@@ -16,7 +16,7 @@ interface ParserOptions {
 const defaultOptions: ParserOptions = {
     modelNamePreffix: "",
     modelNameSuffix: "",
-    maxRecursiveDefinitionName: 64
+    maxRecursiveDefinitionName: 64,
 };
 
 type VisitedDefinition = {
@@ -50,14 +50,19 @@ function parseDefinition(
 
     let nonCollisionDefName: string;
     try {
-        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName);
+        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(
+            defName,
+            options?.modelNamePreffix,
+            options?.modelNameSuffix
+        );
     } catch (err) {
         const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
-        e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
+        e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
         throw e;
     }
+
     const definition: Definition = {
-        name: `${options.modelNamePreffix}${changeCase(nonCollisionDefName, { pascalCase: true })}${options.modelNameSuffix}`,
+        name: changeCase(nonCollisionDefName, { pascalCase: true }),
         sourceName: name,
         docs: [name],
         properties: [],
@@ -68,7 +73,7 @@ function parseDefinition(
     visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
-        if (("undefined" in defParts) && (defParts.undefined === undefined)) {
+        if ("undefined" in defParts && defParts.undefined === undefined) {
             // TODO: problem while parsing WSDL, maybe report to node-soap
             // TODO: add flag --FailOnWsdlError
             Logger.error({
@@ -103,7 +108,7 @@ function parseDefinition(
                             sourceName: propName,
                             description: "ComplexType are not supported yet",
                             type: "any",
-                            isArray: true
+                            isArray: true,
                         });
                         Logger.warn(`Cannot parse ComplexType '${stack.join(".")}.${name}' - using 'any' type`);
                     } else {
@@ -136,8 +141,10 @@ function parseDefinition(
                                     isArray: true,
                                 });
                             } catch (err) {
-                                const e = new Error(`Error while parsing Subdefinition for '${stack.join(".")}.${name}'`);
-                                e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
+                                const e = new Error(
+                                    `Error while parsing Subdefinition for '${stack.join(".")}.${name}'`
+                                );
+                                e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
                                 throw e;
                             }
                         }
@@ -161,7 +168,7 @@ function parseDefinition(
                             sourceName: propName,
                             description: "ComplexType are not supported yet",
                             type: "any",
-                            isArray: false
+                            isArray: false,
                         });
                         Logger.warn(`Cannot parse ComplexType '${stack.join(".")}.${name}' - using 'any' type`);
                     } else {
@@ -196,7 +203,7 @@ function parseDefinition(
                                 });
                             } catch (err) {
                                 const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
-                                e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack;
+                                e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
                                 throw e;
                             }
                         }
@@ -219,7 +226,7 @@ function parseDefinition(
 export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions>): Promise<ParsedWsdl> {
     const mergedOptions: ParserOptions = {
         ...defaultOptions,
-        ...options
+        ...options,
     };
     return new Promise((resolve, reject) => {
         open_wsdl(wsdlPath, function (err, wsdl) {
@@ -291,7 +298,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                           visitedDefinitions
                                       );
                             } else {
-                                Logger.debug(`Method '${serviceName}.${portName}.${methodName}' doesn't have any input defined`);
+                                Logger.debug(
+                                    `Method '${serviceName}.${portName}.${methodName}' doesn't have any input defined`
+                                );
                             }
                         }
 

@@ -65,7 +65,7 @@ export interface Service {
 }
 
 export interface Options {
-    caseInsensitiveNames: boolean; 
+    caseInsensitiveNames: boolean;
     maxStack: number;
     maxStackWarn: number;
 }
@@ -73,8 +73,8 @@ export interface Options {
 const defaultOptions: Options = {
     caseInsensitiveNames: false,
     maxStack: 64,
-    maxStackWarn: 32
-}
+    maxStackWarn: 32,
+};
 
 export class ParsedWsdl {
     /**
@@ -98,7 +98,7 @@ export class ParsedWsdl {
     constructor(options: Partial<Options>) {
         this._options = {
             ...defaultOptions,
-            ...options
+            ...options,
         };
         this._warns = [];
     }
@@ -112,23 +112,37 @@ export class ParsedWsdl {
      * To make every definition's name unique.
      * If definition with same name exists, suffix it with incremented number
      */
-    findNonCollisionDefinitionName(defName: string): string {
+    findNonCollisionDefinitionName(defName: string, prefix?: string, suffix?: string): string {
         const definitionName = sanitizeFilename(defName);
         const isInSensitive = this._options.caseInsensitiveNames;
-        
-        const defNameToCheck = isInSensitive ? definitionName.toLowerCase() : definitionName;
-        if (!this.definitions.find((def) => isInSensitive ? (def.name.toLowerCase() === defNameToCheck) : (def.name === defNameToCheck))) {
-            return definitionName;
+
+        const completeDef = `${prefix}${definitionName}${suffix}`;
+        const defNameToCheck = isInSensitive ? completeDef.toLowerCase() : completeDef;
+        if (
+            !this.definitions.find((def) =>
+                isInSensitive ? def.name.toLowerCase() === defNameToCheck : def.name === defNameToCheck
+            )
+        ) {
+            return defNameToCheck;
         }
+
         for (let i = 1; i < this._options.maxStack; i++) {
-            if (!this.definitions.find((def) => isInSensitive ? (def.name.toLowerCase() === `${defNameToCheck}${i}`.toLowerCase()) : (def.name === `${defNameToCheck}${i}`))) {
-                return `${definitionName}${i}`;
+            if (
+                !this.definitions.find((def) =>
+                    isInSensitive
+                        ? def.name.toLowerCase() === `${defNameToCheck}${i}`.toLowerCase()
+                        : def.name === `${defNameToCheck}${i}`
+                )
+            ) {
+                return `${defNameToCheck}${i}`;
             }
-            if (i == this._options.maxStackWarn && !this._warns.includes(definitionName)) {
-                Logger.warn(`Too many definition with same name "${definitionName}"`);
-                this._warns.push(definitionName);
+            if (i == this._options.maxStackWarn && !this._warns.includes(defNameToCheck)) {
+                Logger.warn(`Too many definition with same name "${defNameToCheck}"`);
+                this._warns.push(defNameToCheck);
             }
         }
-        throw new Error(`Out of stack (${this._options.maxStack}) for "${definitionName}", there's probably cyclic definition. You can also try to increase maxStack with --TODO option`);
+        throw new Error(
+            `Out of stack (${this._options.maxStack}) for "${defNameToCheck}", there's probably cyclic definition. You can also try to increase maxStack with --TODO option`
+        );
     }
 }

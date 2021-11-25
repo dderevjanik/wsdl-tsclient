@@ -16,17 +16,21 @@ export interface GeneratorOptions {
 }
 
 const defaultOptions: GeneratorOptions = {
-    emitDefinitionsOnly: false
+    emitDefinitionsOnly: false,
 };
 
 /**
  * To avoid duplicated imports
  */
-function addSafeImport(imports: OptionalKind<ImportDeclarationStructure>[], moduleSpecifier: string, namedImport: string) {
-    if (!imports.find(imp => imp.moduleSpecifier == moduleSpecifier)) {
+function addSafeImport(
+    imports: OptionalKind<ImportDeclarationStructure>[],
+    moduleSpecifier: string,
+    namedImport: string
+) {
+    if (!imports.find((imp) => imp.moduleSpecifier == moduleSpecifier)) {
         imports.push({
-           moduleSpecifier,
-           namedImports: [{ name: namedImport }]
+            moduleSpecifier,
+            namedImports: [{ name: namedImport }],
         });
     }
 }
@@ -36,7 +40,7 @@ const incorrectPropNameChars = [" ", "-", "."];
  * This is temporally method to fix this issue https://github.com/dsherret/ts-morph/issues/1160
  */
 function sanitizePropName(propName: string) {
-    if (incorrectPropNameChars.some(char => propName.includes(char))) {
+    if (incorrectPropNameChars.some((char) => propName.includes(char))) {
         return `"${propName}"`;
     }
     return propName;
@@ -105,10 +109,14 @@ function generateDefinitionFile(
     defFile.saveSync();
 }
 
-export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: Partial<GeneratorOptions>): Promise<void> {
+export async function generate(
+    parsedWsdl: ParsedWsdl,
+    outDir: string,
+    options: Partial<GeneratorOptions>
+): Promise<void> {
     const mergedOptions: GeneratorOptions = {
         ...defaultOptions,
-        ...options
+        ...options,
     };
     const project = new Project();
 
@@ -149,9 +157,17 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             [method.paramDefinition.name],
                             allDefinitions
                         );
-                        addSafeImport(clientImports, `./definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
+                        addSafeImport(
+                            clientImports,
+                            `./definitions/${method.paramDefinition.name}`,
+                            method.paramDefinition.name
+                        );
                     }
-                    addSafeImport(portImports, `../definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
+                    addSafeImport(
+                        portImports,
+                        `../definitions/${method.paramDefinition.name}`,
+                        method.paramDefinition.name
+                    );
                 }
                 if (method.returnDefinition !== null) {
                     if (!allDefinitions.includes(method.returnDefinition)) {
@@ -163,9 +179,17 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             [method.returnDefinition.name],
                             allDefinitions
                         );
-                        addSafeImport(clientImports, `./definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
+                        addSafeImport(
+                            clientImports,
+                            `./definitions/${method.returnDefinition.name}`,
+                            method.returnDefinition.name
+                        );
                     }
-                    addSafeImport(portImports, `../definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
+                    addSafeImport(
+                        portImports,
+                        `../definitions/${method.returnDefinition.name}`,
+                        method.returnDefinition.name
+                    );
                 }
                 // TODO: Deduplicate PortMethods
                 allMethods.push(method);
@@ -250,14 +274,16 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                 properties: clientServices,
                 extends: ["SoapClient"],
                 methods: allMethods.map<OptionalKind<MethodSignatureStructure>>((method) => ({
-                    name: sanitizePropName(`${(method.name)}Async`),
+                    name: sanitizePropName(`${method.name}Async`),
                     parameters: [
                         {
                             name: camelcase(method.paramName),
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
                         },
                     ],
-                    returnType: `Promise<[result: ${method.returnDefinition ? method.returnDefinition.name : "unknown"}, rawResponse: any, soapHeader: any, rawRequest: any]>`,
+                    returnType: `Promise<[result: ${
+                        method.returnDefinition ? method.returnDefinition.name : "unknown"
+                    }, rawResponse: any, soapHeader: any, rawRequest: any]>`,
                 })),
             },
         ]);
