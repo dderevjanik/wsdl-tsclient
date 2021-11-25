@@ -1,62 +1,63 @@
 {
-  "name": "wsdl-tsclient",
-  "version": "1.3.1",
-  "description": "Generate typescript soap client with typescript definitons from WSDL file.",
-  "main": "dist/src/index.js",
-  "bin": {
-    "wsdl-tsclient": "dist/src/cli.js"
-  },
-  "engines": {
-    "node": ">=10.0.0"
-  },
-  "scripts": {
-    "pretest": "rm -rf ./test/generated",
-    "test": "npm run test:node-soap && npm run test:node-soap2 && npm run test:public",
-    "test:node-soap": "ts-node node_modules/tape/bin/tape ./test/node-soap/*.test.ts | tap-spec",
-    "test:node-soap2": "ts-node node_modules/tape/bin/tape ./test/node-soap/**/*.test.ts | tap-spec",
-    "test:public": "ts-node node_modules/tape/bin/tape ./test/resources-public/**/*.test.ts | tap-spec",
-    "preversion": "npm test && npm run build",
-    "prepublishOnly": "npm test && npm run dist",
-    "dev": "ts-node -T ./dev.ts",
-    "dist": "tsc",
-    "build": "tsc",
-    "format": "npx prettier --write ./src"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dderevjanik/wsdl-tsclient.git"
-  },
-  "keywords": [
-    "soap",
-    "soap-client",
-    "wsdl",
-    "wsdl-client",
-    "typescript"
-  ],
-  "author": "Daniel Derevjanik <daniel.derevjanik@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dderevjanik/wsdl-tsclient/issues"
-  },
-  "homepage": "https://github.com/dderevjanik/wsdl-tsclient#readme",
-  "devDependencies": {
-    "prettier": "^2.3.2",
-    "tap-spec": "^5.0.0",
-    "tape": "^5.2.2",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.4"
-  },
-  "dependencies": {
-    "@types/node": "^15.12.5",
-    "@types/supports-color": "^8.1.0",
-    "@types/tape": "^4.13.0",
-    "@types/yargs": "^16.0.1",
-    "camelcase": "^6.2.0",
-    "chalk": "^4.1.1",
-    "sanitize-filename": "^1.6.3",
-    "soap": "^0.39.0",
-    "supports-color": "^8.1.1",
-    "ts-morph": "^11.0.0",
-    "yargs": "^16.2.0"
-  }
+    "name": "wsdl-tsclient",
+    "version": "1.3.1",
+    "description": "Generate typescript soap client with typescript definitons from WSDL file.",
+    "main": "dist/src/index.js",
+    "bin": {
+        "wsdl-tsclient": "dist/src/cli.js"
+    },
+    "engines": {
+        "node": ">=10.0.0"
+    },
+    "scripts": {
+        "pretest": "rm -rf ./test/generated",
+        "test": "npm run test:node-soap && npm run test:node-soap2 && npm run test:public",
+        "test:node-soap": "ts-node node_modules/tape/bin/tape ./test/node-soap/*.test.ts | tap-spec",
+        "test:node-soap2": "ts-node node_modules/tape/bin/tape ./test/node-soap/**/*.test.ts | tap-spec",
+        "test:public": "ts-node node_modules/tape/bin/tape ./test/resources-public/**/*.test.ts | tap-spec",
+        "preversion": "npm test && npm run build",
+        "prepublishOnly": "npm test && npm run dist",
+        "dev": "ts-node -T ./dev.ts",
+        "dist": "tsc",
+        "build": "tsc",
+        "local-build": "tsc && cp -r dist ../focapp/node_modules/wsdl-tsclient",
+        "format": "npx prettier --write ./src"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dderevjanik/wsdl-tsclient.git"
+    },
+    "keywords": [
+        "soap",
+        "soap-client",
+        "wsdl",
+        "wsdl-client",
+        "typescript"
+    ],
+    "author": "Daniel Derevjanik <daniel.derevjanik@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dderevjanik/wsdl-tsclient/issues"
+    },
+    "homepage": "https://github.com/dderevjanik/wsdl-tsclient#readme",
+    "devDependencies": {
+        "prettier": "^2.3.2",
+        "tap-spec": "^5.0.0",
+        "tape": "^5.2.2",
+        "ts-node": "^10.0.0",
+        "typescript": "^4.3.4"
+    },
+    "dependencies": {
+        "@types/node": "^15.12.5",
+        "@types/supports-color": "^8.1.0",
+        "@types/tape": "^4.13.0",
+        "@types/yargs": "^16.0.1",
+        "camelcase": "^6.2.0",
+        "chalk": "^4.1.1",
+        "sanitize-filename": "^1.6.3",
+        "soap": "../node-soap",
+        "supports-color": "^8.1.1",
+        "ts-morph": "^11.0.0",
+        "yargs": "^16.2.0"
+    }
 }
