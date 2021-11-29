@@ -72,8 +72,8 @@ export interface Options {
 
 const defaultOptions: Options = {
     caseInsensitiveNames: false,
-    maxStack: 64,
-    maxStackWarn: 32,
+    maxStack: 9999,
+    maxStackWarn: 9999,
 };
 
 export class ParsedWsdl {
