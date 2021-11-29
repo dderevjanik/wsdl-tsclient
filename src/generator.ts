@@ -105,7 +105,7 @@ function generateDefinitionFile(
             properties: definitionProperties,
         },
     ]);
-    Logger.log(`Writing Definition file: ${path.resolve(path.join(defDir, defName))}.ts`);
+    // Logger.log(`Writing Definition file: ${path.resolve(path.join(defDir, defName))}.ts`);
     defFile.saveSync();
 }
 

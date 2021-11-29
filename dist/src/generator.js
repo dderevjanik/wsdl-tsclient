@@ -134,7 +134,7 @@ function generateDefinitionFile(project, definition, defDir, stack, generated) {
             properties: definitionProperties,
         },
     ]);
-    logger_1.Logger.log("Writing Definition file: ".concat(path_1.default.resolve(path_1.default.join(defDir, defName)), ".ts"));
+    // Logger.log(`Writing Definition file: ${path.resolve(path.join(defDir, defName))}.ts`);
     defFile.saveSync();
 }
 function generate(parsedWsdl, outDir, options) {
