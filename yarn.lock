@@ -264,9 +264,9 @@ create-require@^1.1.0:
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
 debug@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
-  integrity sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.3.tgz#04266e0b70a98d4462e6e288e38259213332b664"
+  integrity sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==
   dependencies:
     ms "2.1.2"
 
@@ -969,7 +969,7 @@ side-channel@^1.0.3, side-channel@^1.0.4:
 
 soap@applyinnovations/node-soap:
   version "0.43.0"
-  resolved "https://codeload.github.com/applyinnovations/node-soap/tar.gz/8c162bd2ac9f425a6df4554732048ae7b494a52a"
+  resolved "https://codeload.github.com/applyinnovations/node-soap/tar.gz/81c9b498c5c00d4e4f6f2334dd982845d177ed40"
   dependencies:
     axios "^0.21.1"
     axios-ntlm "^1.2.0"
