@@ -287,6 +287,7 @@ export async function generate(
             },
             {
                 kind: StructureKind.Interface,
+                isExported: true,
                 name: `${parsedWsdl.name}Client`,
                 extends: [`${parsedWsdl.name}Methods`, "SoapClient"],
             },

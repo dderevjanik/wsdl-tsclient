@@ -274,6 +274,7 @@ function generate(parsedWsdl, outDir, options) {
                     },
                     {
                         kind: ts_morph_1.StructureKind.Interface,
+                        isExported: true,
                         name: "".concat(parsedWsdl.name, "Client"),
                         extends: ["".concat(parsedWsdl.name, "Methods"), "SoapClient"],
                     },

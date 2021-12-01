@@ -969,7 +969,7 @@ side-channel@^1.0.3, side-channel@^1.0.4:
 
 soap@applyinnovations/node-soap:
   version "0.43.0"
-  resolved "https://codeload.github.com/applyinnovations/node-soap/tar.gz/81c9b498c5c00d4e4f6f2334dd982845d177ed40"
+  resolved "https://codeload.github.com/applyinnovations/node-soap/tar.gz/80c5d4565505cd74617bfc43217c368161828862"
   dependencies:
     axios "^0.21.1"
     axios-ntlm "^1.2.0"
