@@ -259,9 +259,8 @@ function generate(parsedWsdl, outDir, options) {
                         isExported: true,
                         kind: ts_morph_1.StructureKind.Interface,
                         // docs: [`${parsedWsdl.name}Client`],
-                        name: "".concat(parsedWsdl.name, "Client"),
+                        name: "".concat(parsedWsdl.name, "Methods"),
                         properties: clientServices,
-                        extends: ["SoapClient"],
                         methods: allMethods.map(function (method) { return ({
                             name: sanitizePropName("".concat(method.name, "Async")),
                             parameters: [
@@ -272,6 +271,11 @@ function generate(parsedWsdl, outDir, options) {
                             ],
                             returnType: "Promise<[result: ".concat(method.returnDefinition ? method.returnDefinition.name : "unknown", ", rawResponse: any, soapHeader: any, rawRequest: any]>"),
                         }); }),
+                    },
+                    {
+                        kind: ts_morph_1.StructureKind.Interface,
+                        name: "".concat(parsedWsdl.name, "Client"),
+                        extends: ["".concat(parsedWsdl.name, "Methods"), "SoapClient"],
                     },
                 ]);
                 createClientDeclaration = clientFile.addFunction({
