@@ -6,6 +6,7 @@ import { changeCase } from "./utils/change-case";
 import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
+import { isEqual } from "lodash";
 
 interface ParserOptions {
     modelNamePreffix: string;
@@ -26,7 +27,8 @@ type VisitedDefinition = {
 };
 
 function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionParts: object) {
-    return visited.find((def) => def.parts === definitionParts);
+    const result = visited.find((def) => isEqual(def.parts, definitionParts));
+    return result;
 }
 
 /**
@@ -48,29 +50,36 @@ function parseDefinition(
     const defName = changeCase(name, { pascalCase: true });
     Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
-    let nonCollisionDefName: string;
-    try {
-        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(
-            defName,
-            options?.modelNamePreffix,
-            options?.modelNameSuffix
-        );
-    } catch (err) {
-        const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
-        e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
-        throw e;
+    let definition: Definition;
+
+    // dont create if equivalent type
+    const visited = findReferenceDefiniton(visitedDefs, defParts);
+    if (visited) {
+        return visited.definition;
+    } else {
+        let nonCollisionDefName: string;
+        try {
+            nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(
+                defName,
+                options?.modelNamePreffix,
+                options?.modelNameSuffix
+            );
+        } catch (err) {
+            const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+            e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
+            throw e;
+        }
+        definition = {
+            name: changeCase(nonCollisionDefName, { pascalCase: true }),
+            sourceName: name,
+            docs: [name],
+            properties: [],
+            description: "",
+        };
+        parsedWsdl.definitions.push(definition); // Must be here to avoid name collision with `findNonCollisionDefinitionName` if sub-definition has same name
+        visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     }
 
-    const definition: Definition = {
-        name: changeCase(nonCollisionDefName, { pascalCase: true }),
-        sourceName: name,
-        docs: [name],
-        properties: [],
-        description: "",
-    };
-
-    parsedWsdl.definitions.push(definition); // Must be here to avoid name collision with `findNonCollisionDefinitionName` if sub-definition has same name
-    visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
         if ("undefined" in defParts && defParts.undefined === undefined) {

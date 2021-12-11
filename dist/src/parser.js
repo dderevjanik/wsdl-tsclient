@@ -84,13 +84,15 @@ var change_case_1 = require("./utils/change-case");
 var file_1 = require("./utils/file");
 var javascript_1 = require("./utils/javascript");
 var logger_1 = require("./utils/logger");
+var lodash_1 = require("lodash");
 var defaultOptions = {
     modelNamePreffix: "",
     modelNameSuffix: "",
     maxRecursiveDefinitionName: 64,
 };
 function findReferenceDefiniton(visited, definitionParts) {
-    return visited.find(function (def) { return def.parts === definitionParts; });
+    var result = visited.find(function (def) { return (0, lodash_1.isEqual)(def.parts, definitionParts); });
+    return result;
 }
 /**
  * parse definition
@@ -103,24 +105,32 @@ function findReferenceDefiniton(visited, definitionParts) {
 function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs) {
     var defName = (0, change_case_1.changeCase)(name, { pascalCase: true });
     logger_1.Logger.debug("Parsing Definition ".concat(stack.join("."), ".").concat(name));
-    var nonCollisionDefName;
-    try {
-        nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName, options === null || options === void 0 ? void 0 : options.modelNamePreffix, options === null || options === void 0 ? void 0 : options.modelNameSuffix);
+    var definition;
+    // dont create if equivalent type
+    var visited = findReferenceDefiniton(visitedDefs, defParts);
+    if (visited) {
+        return visited.definition;
     }
-    catch (err) {
-        var e = new Error("Error for finding non-collision definition name for ".concat(stack.join("."), ".").concat(name));
-        e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
-        throw e;
+    else {
+        var nonCollisionDefName = void 0;
+        try {
+            nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName, options === null || options === void 0 ? void 0 : options.modelNamePreffix, options === null || options === void 0 ? void 0 : options.modelNameSuffix);
+        }
+        catch (err) {
+            var e = new Error("Error for finding non-collision definition name for ".concat(stack.join("."), ".").concat(name));
+            e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
+            throw e;
+        }
+        definition = {
+            name: (0, change_case_1.changeCase)(nonCollisionDefName, { pascalCase: true }),
+            sourceName: name,
+            docs: [name],
+            properties: [],
+            description: "",
+        };
+        parsedWsdl.definitions.push(definition); // Must be here to avoid name collision with `findNonCollisionDefinitionName` if sub-definition has same name
+        visitedDefs.push({ name: definition.name, parts: defParts, definition: definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     }
-    var definition = {
-        name: (0, change_case_1.changeCase)(nonCollisionDefName, { pascalCase: true }),
-        sourceName: name,
-        docs: [name],
-        properties: [],
-        description: "",
-    };
-    parsedWsdl.definitions.push(definition); // Must be here to avoid name collision with `findNonCollisionDefinitionName` if sub-definition has same name
-    visitedDefs.push({ name: definition.name, parts: defParts, definition: definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
         if ("undefined" in defParts && defParts.undefined === undefined) {
@@ -169,14 +179,14 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                     }
                     else {
                         // With sub-type
-                        var visited = findReferenceDefiniton(visitedDefs, type);
-                        if (visited) {
+                        var visited_1 = findReferenceDefiniton(visitedDefs, type);
+                        if (visited_1) {
                             // By referencing already declared definition, we will avoid circular references
                             definition.properties.push({
                                 kind: "REFERENCE",
                                 name: stripedPropName,
                                 sourceName: propName,
-                                ref: visited.definition,
+                                ref: visited_1.definition,
                                 isArray: true,
                             });
                         }
