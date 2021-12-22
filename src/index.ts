@@ -7,12 +7,17 @@ import { Logger } from "./utils/logger";
 export { generate } from "./generator";
 export { parseWsdl } from "./parser";
 
+export enum ModelPropertyNaming {
+    'camelCase' = 'camelCase',
+    'PascalCase' = 'PascalCase'
+}
 export interface Options {
     emitDefinitionsOnly: boolean;
     modelNamePreffix: string;
     modelNameSuffix: string;
     caseInsensitiveNames: boolean;
     maxRecursiveDefinitionName: number;
+    modelPropertyNaming: ModelPropertyNaming
 }
 
 export const defaultOptions: Options = {
@@ -20,7 +25,8 @@ export const defaultOptions: Options = {
     modelNamePreffix: "",
     modelNameSuffix: "",
     caseInsensitiveNames: false,
-    maxRecursiveDefinitionName: 64
+    maxRecursiveDefinitionName: 64,
+    modelPropertyNaming: null
 };
 
 export async function parseAndGenerate(
