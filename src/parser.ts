@@ -46,6 +46,9 @@ function parseDefinition(
     visitedDefs: Array<VisitedDefinition>
 ): Definition {
     const defName = changeCase(name, { pascalCase: true });
+    if(name === 'GetCountries') {
+        debugger;
+    }
     Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
     let nonCollisionDefName: string;
@@ -78,11 +81,12 @@ function parseDefinition(
             });
         } else {
             Object.entries(defParts).forEach(([propName, type]) => {
+
                 if (propName === "targetNSAlias") {
                     definition.docs.push(`@targetNSAlias \`${type}\``);
                 } else if (propName === "targetNamespace") {
                     definition.docs.push(`@targetNamespace \`${type}\``);
-                } else if (propName.endsWith("[]")) {
+                } else if (propName.endsWith("[]") || (typeof type === 'string' && type.includes('ArrayOf'))) {
                     const stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
                     if (typeof type === "string") {
@@ -222,7 +226,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
         ...options
     };
     return new Promise((resolve, reject) => {
-        open_wsdl(wsdlPath, function (err, wsdl) {
+        open_wsdl(wsdlPath, { namespaceArrayElements: false, ignoredNamespaces: ['tns', 'targetNamespace', 'typeNamespace'] }, function (err, wsdl) {
             if (err) {
                 return reject(err);
             }
