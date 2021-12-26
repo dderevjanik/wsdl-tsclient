@@ -98,6 +98,9 @@ function findReferenceDefiniton(visited, definitionParts) {
  */
 function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs) {
     var defName = change_case_1.changeCase(name, { pascalCase: true });
+    if (name === 'GetCountries') {
+        debugger;
+    }
     logger_1.Logger.debug("Parsing Definition " + stack.join(".") + "." + name);
     var nonCollisionDefName;
     try {
@@ -137,7 +140,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                 else if (propName === "targetNamespace") {
                     definition.docs.push("@targetNamespace `" + type + "`");
                 }
-                else if (propName.endsWith("[]")) {
+                else if (propName.endsWith("[]") || (typeof type === 'string' && type.includes('ArrayOf'))) {
                     var stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
                     if (typeof type === "string") {
@@ -271,7 +274,7 @@ function parseWsdl(wsdlPath, options) {
         return __generator(this, function (_a) {
             mergedOptions = __assign(__assign({}, defaultOptions), options);
             return [2 /*return*/, new Promise(function (resolve, reject) {
-                    index_1.open_wsdl(wsdlPath, function (err, wsdl) {
+                    index_1.open_wsdl(wsdlPath, { namespaceArrayElements: false, ignoredNamespaces: ['tns', 'targetNamespace', 'typeNamespace'] }, function (err, wsdl) {
                         var _a, _b, _c;
                         if (err) {
                             return reject(err);
