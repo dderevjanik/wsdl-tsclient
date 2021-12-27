@@ -83,7 +83,7 @@ var logger_1 = require("./utils/logger");
 var defaultOptions = {
     modelNamePreffix: "",
     modelNameSuffix: "",
-    maxRecursiveDefinitionName: 64
+    maxRecursiveDefinitionName: 64,
 };
 function findReferenceDefiniton(visited, definitionParts) {
     return visited.find(function (def) { return def.parts === definitionParts; });
@@ -98,9 +98,6 @@ function findReferenceDefiniton(visited, definitionParts) {
  */
 function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs) {
     var defName = change_case_1.changeCase(name, { pascalCase: true });
-    if (name === 'GetCountries') {
-        debugger;
-    }
     logger_1.Logger.debug("Parsing Definition " + stack.join(".") + "." + name);
     var nonCollisionDefName;
     try {
@@ -108,7 +105,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
     }
     catch (err) {
         var e = new Error("Error for finding non-collision definition name for " + stack.join(".") + "." + name);
-        e.stack.split('\n').slice(0, 2).join('\n') + '\n' + err.stack;
+        e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
         throw e;
     }
     var definition = {
@@ -122,7 +119,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
     visitedDefs.push({ name: definition.name, parts: defParts, definition: definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     if (defParts) {
         // NOTE: `node-soap` has sometimes problem with parsing wsdl files, it includes `defParts.undefined = undefined`
-        if (("undefined" in defParts) && (defParts.undefined === undefined)) {
+        if ("undefined" in defParts && defParts.undefined === undefined) {
             // TODO: problem while parsing WSDL, maybe report to node-soap
             // TODO: add flag --FailOnWsdlError
             logger_1.Logger.error({
@@ -140,7 +137,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                 else if (propName === "targetNamespace") {
                     definition.docs.push("@targetNamespace `" + type + "`");
                 }
-                else if (propName.endsWith("[]") || (typeof type === 'string' && type.includes('ArrayOf'))) {
+                else if (propName.endsWith("[]") || (typeof type === "string" && type.includes("ArrayOf"))) {
                     var stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
                     if (typeof type === "string") {
@@ -162,7 +159,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                             sourceName: propName,
                             description: "ComplexType are not supported yet",
                             type: "any",
-                            isArray: true
+                            isArray: true,
                         });
                         logger_1.Logger.warn("Cannot parse ComplexType '" + stack.join(".") + "." + name + "' - using 'any' type");
                     }
@@ -192,7 +189,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                             }
                             catch (err) {
                                 var e = new Error("Error while parsing Subdefinition for '" + stack.join(".") + "." + name + "'");
-                                e.stack.split('\n').slice(0, 2).join('\n') + '\n' + err.stack;
+                                e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
                                 throw e;
                             }
                         }
@@ -218,7 +215,7 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                             sourceName: propName,
                             description: "ComplexType are not supported yet",
                             type: "any",
-                            isArray: false
+                            isArray: false,
                         });
                         logger_1.Logger.warn("Cannot parse ComplexType '" + stack.join(".") + "." + name + "' - using 'any' type");
                     }
@@ -239,17 +236,22 @@ function parseDefinition(parsedWsdl, options, name, defParts, stack, visitedDefs
                         else {
                             try {
                                 var subDefinition = parseDefinition(parsedWsdl, options, propName, type, __spreadArray(__spreadArray([], stack), [propName]), visitedDefs);
-                                definition.properties.push({
-                                    kind: "REFERENCE",
-                                    name: propName,
-                                    sourceName: propName,
-                                    ref: subDefinition,
-                                    isArray: false,
-                                });
+                                if (typeof type === "object" && Object.keys(type)[0].includes("[]")) {
+                                    definition.properties.push(__assign(__assign({}, subDefinition.properties[0]), { name: propName }));
+                                }
+                                else {
+                                    definition.properties.push({
+                                        kind: "REFERENCE",
+                                        name: propName,
+                                        sourceName: propName,
+                                        ref: subDefinition,
+                                        isArray: false,
+                                    });
+                                }
                             }
                             catch (err) {
                                 var e = new Error("Error while parsing Subdefinition for " + stack.join(".") + "." + name);
-                                e.stack.split('\n').slice(0, 2).join('\n') + '\n' + err.stack;
+                                e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
                                 throw e;
                             }
                         }
@@ -274,7 +276,7 @@ function parseWsdl(wsdlPath, options) {
         return __generator(this, function (_a) {
             mergedOptions = __assign(__assign({}, defaultOptions), options);
             return [2 /*return*/, new Promise(function (resolve, reject) {
-                    index_1.open_wsdl(wsdlPath, { namespaceArrayElements: false, ignoredNamespaces: ['tns', 'targetNamespace', 'typeNamespace'] }, function (err, wsdl) {
+                    index_1.open_wsdl(wsdlPath, { namespaceArrayElements: false, ignoredNamespaces: ["tns", "targetNamespace", "typeNamespace"] }, function (err, wsdl) {
                         var _a, _b, _c;
                         if (err) {
                             return reject(err);
