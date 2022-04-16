@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://recursive.com/account"
+        xmlns:s="http://www.w3.org/2001/XMLSchema"
+        xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+        targetNamespace="http://recursive.com/account"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://recursive.com/account">
+            <s:element name="GetPerson">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="Request" type="tns:GetPersonRequest" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="GetPersonRequest">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="PersonId" type="s:int" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="AccountAttribute">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="AttributeId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" name="AttributeUid" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="ProductAttributeUid" type="s:string" />
+                    <s:element minOccurs="1" maxOccurs="1" name="IsTemplateAttribute" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" name="TemplateInternalName" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="DisplayStatus" type="s:string" />
+                    <s:element minOccurs="1" maxOccurs="1" name="ReadOnly" type="s:int" />
+                    <s:element minOccurs="1" maxOccurs="1" name="CanBeModified" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" name="AccountElements" type="tns:ArrayOfAccountElement" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetPersonResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="Person" type="tns:PersonResponse" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="PersonResponse">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+                    <s:element minOccurs="1" maxOccurs="1" name="Name" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="mother" type="tns:PersonResponse" />
+                    <s:element minOccurs="0" maxOccurs="1" name="father" type="tns:PersonResponse" />
+                </s:sequence>
+            </s:complexType>
+        </s:schema>
+    </wsdl:types>
+    <wsdl:message name="GetPersonSoapIn">
+        <wsdl:part name="parameters" element="tns:GetPerson" />
+    </wsdl:message>
+    <wsdl:message name="GetPersonSoapOut">
+        <wsdl:part name="parameters" element="tns:GetPersonResponse" />
+    </wsdl:message>
+    <wsdl:portType name="RecursiveOperationsSoap">
+        <wsdl:operation name="GetPerson">
+            <wsdl:input message="tns:GetPersonSoapIn" />
+            <wsdl:output message="tns:GetPersonSoapOut" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RecursiveOperationsSoap" type="tns:RecursiveOperationsSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="GetPerson">
+            <soap:operation soapAction="http://recursive.com/account/GetPerson" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+                <soap:header message="tns:GetPersonSecureHeader" part="SecureHeader" use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RecursiveOperations">
+        <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
+        <wsdl:port name="RecursiveOperationsSoap" binding="tns:RecursiveOperationsSoap">
+            <soap:address location="http://recursive.com/Account/RecursiveOperations.asmx" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
