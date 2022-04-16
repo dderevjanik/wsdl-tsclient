@@ -20,7 +20,8 @@
     "dev": "ts-node -T ./dev.ts",
     "dist": "tsc",
     "build": "tsc",
-    "format": "npx prettier --write ./src"
+    "lint": "eslint ./src",
+    "lint:fix": "eslint --write ./src"
   },
   "repository": {
     "type": "git",
@@ -51,8 +52,12 @@
     "@types/supports-color": "^8.1.0",
     "@types/tape": "^4.13.2",
     "@types/yargs": "^16.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
     "camelcase": "^6.3.0",
     "chalk": "^4.1.1",
+    "eslint": "^8.13.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "sanitize-filename": "^1.6.3",
     "soap": "^0.43.0",
     "supports-color": "^8.1.1",
