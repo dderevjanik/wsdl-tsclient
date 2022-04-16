@@ -85,6 +85,20 @@ const client = await createClientAsync("./path/to/wsdl.wsdl");
 client.CallSoapMethodAsync();
 ```
 
+Setting basic auth 
+
+```typescript
+import soap from "soap";
+import { createClientAsync } from "./generated/MyWsdl";
+
+const client = await createClientAsync("./path/to/wsdl.wsdl");
+
+const basicAuth = new soap.BasicAuthSecurity(auth.username, auth.password);
+client.setSecurity(basicAuth);
+
+client.CallSoapMethodAsync();
+```
+
 for more information about the use of the client, read more about [soap](https://github.com/vpulim/node-soap)
 
 ## How it works
