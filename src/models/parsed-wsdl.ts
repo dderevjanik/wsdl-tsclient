@@ -65,8 +65,20 @@ export interface Service {
 }
 
 export interface Options {
-    caseInsensitiveNames: boolean; 
+    /**
+     * Case-insensitive name while parsing definition names
+     * @default false
+     */
+    caseInsensitiveNames: boolean;
+    /**
+     * Maximum count of definition's with same name but increased suffix. Will throw an error if exceed
+     * @default 64
+     */
     maxStack: number;
+    /**
+     * Warn user if definition's name with increased suffix exceed number
+     * @default 32
+     */
     maxStackWarn: number;
 }
 
@@ -103,7 +115,7 @@ export class ParsedWsdl {
         this._warns = [];
     }
 
-    /** Find definition by it's name */
+    /** Find already parsed definition by it's name */
     findDefinition(definitionName: string): Definition {
         return this.definitions.find((def) => def.name === definitionName);
     }
@@ -111,6 +123,7 @@ export class ParsedWsdl {
     /**
      * To make every definition's name unique.
      * If definition with same name exists, suffix it with incremented number
+     * @throws Will throw an error when suffixed number exceed `maxStack`
      */
     findNonCollisionDefinitionName(defName: string): string {
         const definitionName = sanitizeFilename(defName);
@@ -125,7 +138,7 @@ export class ParsedWsdl {
                 return `${definitionName}${i}`;
             }
             if (i == this._options.maxStackWarn && !this._warns.includes(definitionName)) {
-                Logger.warn(`Too many definition with same name "${definitionName}"`);
+                Logger.warn(`Too many definitions with same name "${definitionName}"`);
                 this._warns.push(definitionName);
             }
         }

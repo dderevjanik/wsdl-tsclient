@@ -16,4 +16,9 @@ test(target, async t => {
         // await parseAndGenerate(input, outdir);
         t.end();
     });
+
+    // t.test(`${target} - compile`, async t => {
+    //     await typecheck(`${outdir}/arraynamespaceoverride/index.ts`);
+    // });
+
 });

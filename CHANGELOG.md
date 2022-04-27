@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2022-04-27
+
+- Fix issue with self recursive WSDL types [#39](https://github.com/dderevjanik/wsdl-tsclient/pull/39) by @mtranter
+- Fix issue with `quiet` option not working properly
+- Project: Updated several npm packages
+- Project: Added eslint
+- Project: Added test for typechecking generated wsdl clients [#19](https://github.com/dderevjanik/wsdl-tsclient/pull/19)
+- Project: Add more jsdoc to `parseAndGenerate` and `parsedWsdl`
+- ParseAndGenerate: Support for `colors`, `verbose` and `queit` options (before it was only possible through CLI)
+- Docs: Mention `basicAuth` in `README.md`
+
 ## [1.3.1] - 2021-07-01
 
 - Project: Updated several npm packages

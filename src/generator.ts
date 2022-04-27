@@ -99,7 +99,10 @@ function generateDefinitionFile(
                 // Wasn't generated yet
                 generateDefinitionFile(project, prop.ref, defDir, [...stack, prop.ref.name], generated, options);
             }
-            addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
+            // If a property is of the same type as its parent type, don't add import
+            if(prop.ref.name !== definition.name) {
+                addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
+            }
             definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
         }
     }

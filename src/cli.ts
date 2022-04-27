@@ -41,7 +41,7 @@ const conf = yargs(process.argv.slice(2))
     })
     .option("quiet", {
         type: "boolean",
-        description: "Suppress logs",
+        description: "Suppress all logs",
     })
     .option("verbose", {
         type: "boolean",
@@ -64,6 +64,7 @@ if (conf.verbose || process.env.DEBUG) {
 
 if (conf.quiet) {
     Logger.isDebug = false;
+    Logger.isLog = false;
     Logger.isInfo = false;
     Logger.isWarn = false;
     Logger.isError = false;
@@ -72,6 +73,18 @@ if (conf.quiet) {
 // Options override section
 
 const options: Partial<Options> = {};
+
+if (conf["no-color"] || process.env.NO_COLOR) {
+    options.colors = false;
+}
+
+if (conf.verbose || process.env.DEBUG) {
+    options.verbose = true;   
+}
+
+if (conf.quiet) {
+    options.quiet = true;
+}
 
 if (conf.emitDefinitionsOnly) {
     options.emitDefinitionsOnly = true;

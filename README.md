@@ -57,7 +57,7 @@ Options:
       --maxRecursiveDefinitionName  Maximum count of definition's with same name
                                     but increased suffix. Will throw an error if
                                     exceed                              [number]
-      --quiet                       Suppress logs                      [boolean]
+      --quiet                       Suppress all logs                  [boolean]
       --verbose                     Print verbose logs                 [boolean]
       --no-color                    Logs without colors                [boolean]
 
@@ -82,6 +82,20 @@ parseAndGenerate("./path/to/MyWsdl.wsdl", "./generated/");
 import { createClientAsync } from "./generated/MyWsdl";
 
 const client = await createClientAsync("./path/to/wsdl.wsdl");
+client.CallSoapMethodAsync();
+```
+
+Setting basic auth 
+
+```typescript
+import soap from "soap";
+import { createClientAsync } from "./generated/MyWsdl";
+
+const client = await createClientAsync("./path/to/wsdl.wsdl");
+
+const basicAuth = new soap.BasicAuthSecurity(auth.username, auth.password);
+client.setSecurity(basicAuth);
+
 client.CallSoapMethodAsync();
 ```
 

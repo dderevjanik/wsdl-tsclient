@@ -214,6 +214,7 @@ function parseDefinition(
             });
         }
     } else {
+        // Empty
     }
 
     return definition;
