@@ -14,22 +14,26 @@ import { Logger } from "./utils/logger";
 
 export interface GeneratorOptions {
     emitDefinitionsOnly: boolean;
-    modelPropertyNaming: ModelPropertyNaming
+    modelPropertyNaming: ModelPropertyNaming;
 }
 
 const defaultOptions: GeneratorOptions = {
     emitDefinitionsOnly: false,
-    modelPropertyNaming: null
+    modelPropertyNaming: null,
 };
 
 /**
  * To avoid duplicated imports
  */
-function addSafeImport(imports: OptionalKind<ImportDeclarationStructure>[], moduleSpecifier: string, namedImport: string) {
-    if (!imports.find(imp => imp.moduleSpecifier == moduleSpecifier)) {
+function addSafeImport(
+    imports: OptionalKind<ImportDeclarationStructure>[],
+    moduleSpecifier: string,
+    namedImport: string
+) {
+    if (!imports.find((imp) => imp.moduleSpecifier == moduleSpecifier)) {
         imports.push({
-           moduleSpecifier,
-           namedImports: [{ name: namedImport }]
+            moduleSpecifier,
+            namedImports: [{ name: namedImport }],
         });
     }
 }
@@ -39,7 +43,7 @@ const incorrectPropNameChars = [" ", "-", "."];
  * This is temporally method to fix this issue https://github.com/dsherret/ts-morph/issues/1160
  */
 function sanitizePropName(propName: string) {
-    if (incorrectPropNameChars.some(char => propName.includes(char))) {
+    if (incorrectPropNameChars.some((char) => propName.includes(char))) {
         return `"${propName}"`;
     }
     return propName;
@@ -80,7 +84,7 @@ function generateDefinitionFile(
     const definitionImports: OptionalKind<ImportDeclarationStructure>[] = [];
     const definitionProperties: PropertySignatureStructure[] = [];
     for (const prop of definition.properties) {
-        if(options.modelPropertyNaming) {
+        if (options.modelPropertyNaming) {
             switch (options.modelPropertyNaming) {
                 case ModelPropertyNaming.camelCase:
                     prop.name = camelcase(prop.name);
@@ -100,7 +104,7 @@ function generateDefinitionFile(
                 generateDefinitionFile(project, prop.ref, defDir, [...stack, prop.ref.name], generated, options);
             }
             // If a property is of the same type as its parent type, don't add import
-            if(prop.ref.name !== definition.name) {
+            if (prop.ref.name !== definition.name) {
                 addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
             }
             definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
@@ -122,10 +126,14 @@ function generateDefinitionFile(
     defFile.saveSync();
 }
 
-export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: Partial<GeneratorOptions>): Promise<void> {
+export async function generate(
+    parsedWsdl: ParsedWsdl,
+    outDir: string,
+    options: Partial<GeneratorOptions>
+): Promise<void> {
     const mergedOptions: GeneratorOptions = {
         ...defaultOptions,
-        ...options
+        ...options,
     };
     const project = new Project();
 
@@ -167,9 +175,17 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             allDefinitions,
                             mergedOptions
                         );
-                        addSafeImport(clientImports, `./definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
+                        addSafeImport(
+                            clientImports,
+                            `./definitions/${method.paramDefinition.name}`,
+                            method.paramDefinition.name
+                        );
                     }
-                    addSafeImport(portImports, `../definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
+                    addSafeImport(
+                        portImports,
+                        `../definitions/${method.paramDefinition.name}`,
+                        method.paramDefinition.name
+                    );
                 }
                 if (method.returnDefinition !== null) {
                     if (!allDefinitions.includes(method.returnDefinition)) {
@@ -182,9 +198,17 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             allDefinitions,
                             mergedOptions
                         );
-                        addSafeImport(clientImports, `./definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
+                        addSafeImport(
+                            clientImports,
+                            `./definitions/${method.returnDefinition.name}`,
+                            method.returnDefinition.name
+                        );
                     }
-                    addSafeImport(portImports, `../definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
+                    addSafeImport(
+                        portImports,
+                        `../definitions/${method.returnDefinition.name}`,
+                        method.returnDefinition.name
+                    );
                 }
                 // TODO: Deduplicate PortMethods
                 allMethods.push(method);
@@ -269,14 +293,16 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                 properties: clientServices,
                 extends: ["SoapClient"],
                 methods: allMethods.map<OptionalKind<MethodSignatureStructure>>((method) => ({
-                    name: sanitizePropName(`${(method.name)}Async`),
+                    name: sanitizePropName(`${method.name}Async`),
                     parameters: [
                         {
                             name: camelcase(method.paramName),
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
                         },
                     ],
-                    returnType: `Promise<[result: ${method.returnDefinition ? method.returnDefinition.name : "unknown"}, rawResponse: any, soapHeader: any, rawRequest: any]>`,
+                    returnType: `Promise<[result: ${
+                        method.returnDefinition ? method.returnDefinition.name : "unknown"
+                    }, rawResponse: any, soapHeader: any, rawRequest: any]>`,
                 })),
             },
         ]);

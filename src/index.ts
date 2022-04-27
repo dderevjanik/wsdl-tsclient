@@ -8,8 +8,8 @@ export { generate } from "./generator";
 export { parseWsdl } from "./parser";
 
 export enum ModelPropertyNaming {
-    'camelCase' = 'camelCase',
-    'PascalCase' = 'PascalCase'
+    "camelCase" = "camelCase",
+    "PascalCase" = "PascalCase",
 }
 export interface Options {
     /**
@@ -34,10 +34,10 @@ export interface Options {
     caseInsensitiveNames: boolean;
     /**
      * Maximum count of definition's with same name but increased suffix. Will throw an error if exceed
-     * @default 64 
+     * @default 64
      */
     maxRecursiveDefinitionName: number;
-    modelPropertyNaming: ModelPropertyNaming
+    modelPropertyNaming: ModelPropertyNaming;
     /**
      * Print verbose logs
      * @default false
@@ -61,11 +61,11 @@ export const defaultOptions: Options = {
     modelNameSuffix: "",
     caseInsensitiveNames: false,
     maxRecursiveDefinitionName: 64,
-    modelPropertyNaming: null
+    modelPropertyNaming: null,
     //
     verbose: false,
     quiet: false,
-    colors: true
+    colors: true,
 };
 
 export async function parseAndGenerate(

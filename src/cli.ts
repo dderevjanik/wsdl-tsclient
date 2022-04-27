@@ -33,7 +33,7 @@ const conf = yargs(process.argv.slice(2))
     })
     .option("caseInsensitiveNames", {
         type: "boolean",
-        description: "Case-insensitive name while parsing definition names"
+        description: "Case-insensitive name while parsing definition names",
     })
     .option("maxRecursiveDefinitionName", {
         type: "number",
@@ -79,7 +79,7 @@ if (conf["no-color"] || process.env.NO_COLOR) {
 }
 
 if (conf.verbose || process.env.DEBUG) {
-    options.verbose = true;   
+    options.verbose = true;
 }
 
 if (conf.quiet) {

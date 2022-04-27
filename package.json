@@ -21,7 +21,7 @@
     "dist": "tsc",
     "build": "tsc",
     "lint": "eslint ./src",
-    "lint:fix": "eslint --write ./src"
+    "lint:fix": "eslint --fix ./src"
   },
   "repository": {
     "type": "git",
