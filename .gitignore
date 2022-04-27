@@ -1,6 +1,7 @@
 node_modules/
 test/generated/
 generated/
+dist/
 
 *.wsdl
 *.wso
