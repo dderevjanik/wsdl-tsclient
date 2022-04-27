@@ -7,6 +7,10 @@ import { Logger } from "./utils/logger";
 export { generate } from "./generator";
 export { parseWsdl } from "./parser";
 
+export enum ModelPropertyNaming {
+    'camelCase' = 'camelCase',
+    'PascalCase' = 'PascalCase'
+}
 export interface Options {
     /**
      * Generate only Definitions
@@ -33,6 +37,7 @@ export interface Options {
      * @default 64 
      */
     maxRecursiveDefinitionName: number;
+    modelPropertyNaming: ModelPropertyNaming
     /**
      * Print verbose logs
      * @default false
@@ -56,6 +61,7 @@ export const defaultOptions: Options = {
     modelNameSuffix: "",
     caseInsensitiveNames: false,
     maxRecursiveDefinitionName: 64,
+    modelPropertyNaming: null
     //
     verbose: false,
     quiet: false,

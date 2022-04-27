@@ -8,15 +8,18 @@ import {
     PropertySignatureStructure,
     StructureKind,
 } from "ts-morph";
+import { ModelPropertyNaming } from ".";
 import { Definition, Method, ParsedWsdl } from "./models/parsed-wsdl";
 import { Logger } from "./utils/logger";
 
 export interface GeneratorOptions {
     emitDefinitionsOnly: boolean;
+    modelPropertyNaming: ModelPropertyNaming
 }
 
 const defaultOptions: GeneratorOptions = {
-    emitDefinitionsOnly: false
+    emitDefinitionsOnly: false,
+    modelPropertyNaming: null
 };
 
 /**
@@ -63,7 +66,8 @@ function generateDefinitionFile(
     definition: null | Definition,
     defDir: string,
     stack: string[],
-    generated: Definition[]
+    generated: Definition[],
+    options: GeneratorOptions
 ): void {
     const defName = definition.name;
     const defFilePath = path.join(defDir, `${defName}.ts`);
@@ -76,6 +80,16 @@ function generateDefinitionFile(
     const definitionImports: OptionalKind<ImportDeclarationStructure>[] = [];
     const definitionProperties: PropertySignatureStructure[] = [];
     for (const prop of definition.properties) {
+        if(options.modelPropertyNaming) {
+            switch (options.modelPropertyNaming) {
+                case ModelPropertyNaming.camelCase:
+                    prop.name = camelcase(prop.name);
+                    break;
+                case ModelPropertyNaming.PascalCase:
+                    prop.name = camelcase(prop.name, { pascalCase: true });
+                    break;
+            }
+        }
         if (prop.kind === "PRIMITIVE") {
             // e.g. string
             definitionProperties.push(createProperty(prop.name, prop.type, prop.description, prop.isArray));
@@ -83,7 +97,7 @@ function generateDefinitionFile(
             // e.g. Items
             if (!generated.includes(prop.ref)) {
                 // Wasn't generated yet
-                generateDefinitionFile(project, prop.ref, defDir, [...stack, prop.ref.name], generated);
+                generateDefinitionFile(project, prop.ref, defDir, [...stack, prop.ref.name], generated, options);
             }
             // If a property is of the same type as its parent type, don't add import
             if(prop.ref.name !== definition.name) {
@@ -150,7 +164,8 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             method.paramDefinition,
                             defDir,
                             [method.paramDefinition.name],
-                            allDefinitions
+                            allDefinitions,
+                            mergedOptions
                         );
                         addSafeImport(clientImports, `./definitions/${method.paramDefinition.name}`, method.paramDefinition.name);
                     }
@@ -164,7 +179,8 @@ export async function generate(parsedWsdl: ParsedWsdl, outDir: string, options: 
                             method.returnDefinition,
                             defDir,
                             [method.returnDefinition.name],
-                            allDefinitions
+                            allDefinitions,
+                            mergedOptions
                         );
                         addSafeImport(clientImports, `./definitions/${method.returnDefinition.name}`, method.returnDefinition.name);
                     }
