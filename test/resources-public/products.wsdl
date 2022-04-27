@@ -1,0 +1,554 @@
+<wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://24sevenOffice.com/webservices" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://24sevenOffice.com/webservices">
+    <wsdl:types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://24sevenOffice.com/webservices">
+            <s:element name="SetStockQuantity">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="productId" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="stockQuantity" type="s:decimal" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="SetStockQuantityResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="SetStockQuantityResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetProducts">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="searchParams" type="tns:ProductSearchParameters" />
+                        <s:element minOccurs="0" maxOccurs="1" name="returnProperties" type="tns:ArrayOfString" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ProductSearchParameters">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="Id" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="CategoryId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="No" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="EAN1" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="Name" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="Price" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="0001-01-01T00:00:00" name="DateChanged" type="s:dateTime" />
+                    <s:element minOccurs="0" maxOccurs="1" name="ProductIds" type="tns:ArrayOfInt" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ArrayOfInt">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ArrayOfString">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetProductsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetProductsResult" type="tns:ArrayOfProduct" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfProduct">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Product" nillable="true" type="tns:Product" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="Product">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" default="-1.7976931348623157E+308" name="CashPriceIncTax" type="s:double" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="WebPrice" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="SupplierId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="Id" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="Name" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="TaxRate" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="Stock" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="StatusId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="CategoryId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="PriceGroupID" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="InPrice" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="Description" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="DescriptionLong" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="Cost" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="EAN1" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="Price" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="No" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="0001-01-01T00:00:00" name="DateChanged" type="s:dateTime" />
+                    <s:element minOccurs="0" maxOccurs="1" name="APIException" type="tns:APIException" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="Weight" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="MinimumStock" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-79228162514264337593543950335" name="OrderProposal" type="s:decimal" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="StockLocation" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="SupplierProductCode" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="SupplierProductName" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Web" nillable="true" type="s:boolean" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="ProductCode" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="StockControlled" nillable="true" type="s:boolean" />
+                    <s:element minOccurs="0" maxOccurs="1" name="NewOffer" nillable="true" type="s:boolean" />
+                    <s:element minOccurs="0" maxOccurs="1" name="NewProduct" nillable="true" type="s:boolean" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="APIException">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="StackTrace" type="s:string" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="SaveProducts">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="products" type="tns:ArrayOfProduct" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="SaveProductsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="SaveProductsResult" type="tns:ArrayOfProduct" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteProducts">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="products" type="tns:ArrayOfProduct" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteProductsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="DeleteProductsResult" type="tns:ArrayOfProduct" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetPriceList">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="priceListId" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetPriceListResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetPriceListResult" type="tns:ArrayOfKeyValuePair" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfKeyValuePair">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="KeyValuePair" type="tns:KeyValuePair" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="KeyValuePair">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Key" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetAllPriceLists">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetAllPriceListsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetAllPriceListsResult" type="tns:ArrayOfProductPriceList" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfProductPriceList">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="ProductPriceList" nillable="true" type="tns:ProductPriceList" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ProductPriceList">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+                    <s:element minOccurs="1" maxOccurs="1" name="IncVat" type="s:boolean" />
+                    <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s:string" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetCategories">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="returnProperties" type="tns:ArrayOfString" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetCategoriesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetCategoriesResult" type="tns:ArrayOfCategory" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfCategory">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Category" nillable="true" type="tns:Category" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="Category">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="Id" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="Name" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="" name="No" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="ParentId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" name="APIException" type="tns:APIException" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="SaveCategories">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="categories" type="tns:ArrayOfCategory" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="SaveCategoriesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="SaveCategoriesResult" type="tns:ArrayOfCategory" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetDiscountMatrixPriceGroup">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetDiscountMatrixPriceGroupResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetDiscountMatrixPriceGroupResult" type="tns:ArrayOfDiscount" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfDiscount">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Discount" nillable="true" type="tns:Discount" />
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="Discount">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="PriceGroupId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="CategoryId" type="s:int" />
+                    <s:element minOccurs="0" maxOccurs="1" default="-2147483648" name="CustomerId" type="s:int" />
+                    <s:element minOccurs="1" maxOccurs="1" name="Value" type="s:decimal" />
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetDiscountMatrixCategory">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetDiscountMatrixCategoryResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetDiscountMatrixCategoryResult" type="tns:ArrayOfDiscount" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:schema>
+    </wsdl:types>
+    <wsdl:message name="SetStockQuantitySoapIn">
+        <wsdl:part name="parameters" element="tns:SetStockQuantity" />
+    </wsdl:message>
+    <wsdl:message name="SetStockQuantitySoapOut">
+        <wsdl:part name="parameters" element="tns:SetStockQuantityResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetProductsSoapIn">
+        <wsdl:part name="parameters" element="tns:GetProducts" />
+    </wsdl:message>
+    <wsdl:message name="GetProductsSoapOut">
+        <wsdl:part name="parameters" element="tns:GetProductsResponse" />
+    </wsdl:message>
+    <wsdl:message name="SaveProductsSoapIn">
+        <wsdl:part name="parameters" element="tns:SaveProducts" />
+    </wsdl:message>
+    <wsdl:message name="SaveProductsSoapOut">
+        <wsdl:part name="parameters" element="tns:SaveProductsResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteProductsSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteProducts" />
+    </wsdl:message>
+    <wsdl:message name="DeleteProductsSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteProductsResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetPriceListSoapIn">
+        <wsdl:part name="parameters" element="tns:GetPriceList" />
+    </wsdl:message>
+    <wsdl:message name="GetPriceListSoapOut">
+        <wsdl:part name="parameters" element="tns:GetPriceListResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetAllPriceListsSoapIn">
+        <wsdl:part name="parameters" element="tns:GetAllPriceLists" />
+    </wsdl:message>
+    <wsdl:message name="GetAllPriceListsSoapOut">
+        <wsdl:part name="parameters" element="tns:GetAllPriceListsResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetCategoriesSoapIn">
+        <wsdl:part name="parameters" element="tns:GetCategories" />
+    </wsdl:message>
+    <wsdl:message name="GetCategoriesSoapOut">
+        <wsdl:part name="parameters" element="tns:GetCategoriesResponse" />
+    </wsdl:message>
+    <wsdl:message name="SaveCategoriesSoapIn">
+        <wsdl:part name="parameters" element="tns:SaveCategories" />
+    </wsdl:message>
+    <wsdl:message name="SaveCategoriesSoapOut">
+        <wsdl:part name="parameters" element="tns:SaveCategoriesResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetDiscountMatrixPriceGroupSoapIn">
+        <wsdl:part name="parameters" element="tns:GetDiscountMatrixPriceGroup" />
+    </wsdl:message>
+    <wsdl:message name="GetDiscountMatrixPriceGroupSoapOut">
+        <wsdl:part name="parameters" element="tns:GetDiscountMatrixPriceGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetDiscountMatrixCategorySoapIn">
+        <wsdl:part name="parameters" element="tns:GetDiscountMatrixCategory" />
+    </wsdl:message>
+    <wsdl:message name="GetDiscountMatrixCategorySoapOut">
+        <wsdl:part name="parameters" element="tns:GetDiscountMatrixCategoryResponse" />
+    </wsdl:message>
+    <wsdl:portType name="ProductServiceSoap">
+        <wsdl:operation name="SetStockQuantity">
+            <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Sets the stock quantity and returns true if no error occured.</wsdl:documentation>
+            <wsdl:input message="tns:SetStockQuantitySoapIn" />
+            <wsdl:output message="tns:SetStockQuantitySoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetProducts">
+            <wsdl:input message="tns:GetProductsSoapIn" />
+            <wsdl:output message="tns:GetProductsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="SaveProducts">
+            <wsdl:input message="tns:SaveProductsSoapIn" />
+            <wsdl:output message="tns:SaveProductsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteProducts">
+            <wsdl:input message="tns:DeleteProductsSoapIn" />
+            <wsdl:output message="tns:DeleteProductsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetPriceList">
+            <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns the product prices for a given price list Id</wsdl:documentation>
+            <wsdl:input message="tns:GetPriceListSoapIn" />
+            <wsdl:output message="tns:GetPriceListSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetAllPriceLists">
+            <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns all product price lists</wsdl:documentation>
+            <wsdl:input message="tns:GetAllPriceListsSoapIn" />
+            <wsdl:output message="tns:GetAllPriceListsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetCategories">
+            <wsdl:input message="tns:GetCategoriesSoapIn" />
+            <wsdl:output message="tns:GetCategoriesSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="SaveCategories">
+            <wsdl:input message="tns:SaveCategoriesSoapIn" />
+            <wsdl:output message="tns:SaveCategoriesSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetDiscountMatrixPriceGroup">
+            <wsdl:input message="tns:GetDiscountMatrixPriceGroupSoapIn" />
+            <wsdl:output message="tns:GetDiscountMatrixPriceGroupSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetDiscountMatrixCategory">
+            <wsdl:input message="tns:GetDiscountMatrixCategorySoapIn" />
+            <wsdl:output message="tns:GetDiscountMatrixCategorySoapOut" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ProductServiceSoap" type="tns:ProductServiceSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="SetStockQuantity">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/SetStockQuantity" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetProducts">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/GetProducts" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SaveProducts">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/SaveProducts" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteProducts">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/DeleteProducts" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetPriceList">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/GetPriceList" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetAllPriceLists">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/GetAllPriceLists" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetCategories">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/GetCategories" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SaveCategories">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/SaveCategories" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetDiscountMatrixPriceGroup">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/GetDiscountMatrixPriceGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetDiscountMatrixCategory">
+            <soap:operation soapAction="http://24sevenOffice.com/webservices/GetDiscountMatrixCategory" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ProductServiceSoap12" type="tns:ProductServiceSoap">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="SetStockQuantity">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/SetStockQuantity" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetProducts">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/GetProducts" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SaveProducts">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/SaveProducts" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteProducts">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/DeleteProducts" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetPriceList">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/GetPriceList" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetAllPriceLists">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/GetAllPriceLists" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetCategories">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/GetCategories" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SaveCategories">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/SaveCategories" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetDiscountMatrixPriceGroup">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/GetDiscountMatrixPriceGroup" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetDiscountMatrixCategory">
+            <soap12:operation soapAction="http://24sevenOffice.com/webservices/GetDiscountMatrixCategory" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ProductService">
+        <wsdl:port name="ProductServiceSoap" binding="tns:ProductServiceSoap">
+            <soap:address location="https://api.24sevenoffice.com/Logistics/Product/V001/ProductService.asmx" />
+        </wsdl:port>
+        <wsdl:port name="ProductServiceSoap12" binding="tns:ProductServiceSoap12">
+            <soap12:address location="https://api.24sevenoffice.com/Logistics/Product/V001/ProductService.asmx" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
