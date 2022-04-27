@@ -85,7 +85,7 @@ function parseDefinition(
                     definition.docs.push(`@targetNSAlias \`${type}\``);
                 } else if (propName === "targetNamespace") {
                     definition.docs.push(`@targetNamespace \`${type}\``);
-                } else if (propName.endsWith("[]") || (typeof type === "string" && type.includes("ArrayOf"))) {
+                } else if (propName.endsWith("[]")) {
                     const stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
                     if (typeof type === "string") {
@@ -192,17 +192,13 @@ function parseDefinition(
                                     [...stack, propName],
                                     visitedDefs
                                 );
-                                if (typeof type === "object" && Object.keys(type)[0].includes("[]")) {
-                                    definition.properties.push({ ...subDefinition.properties[0], name: propName });
-                                } else {
-                                    definition.properties.push({
-                                        kind: "REFERENCE",
-                                        name: propName,
-                                        sourceName: propName,
-                                        ref: subDefinition,
-                                        isArray: false,
-                                    });
-                                }
+                                definition.properties.push({
+                                    kind: "REFERENCE",
+                                    name: propName,
+                                    sourceName: propName,
+                                    ref: subDefinition,
+                                    isArray: false,
+                                });
                             } catch (err) {
                                 const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
                                 e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
