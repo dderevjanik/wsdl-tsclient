@@ -57,7 +57,7 @@ Options:
       --maxRecursiveDefinitionName  Maximum count of definition's with same name
                                     but increased suffix. Will throw an error if
                                     exceed                              [number]
-      --quiet                       Suppress logs                      [boolean]
+      --quiet                       Suppress all logs                  [boolean]
       --verbose                     Print verbose logs                 [boolean]
       --no-color                    Logs without colors                [boolean]
 
