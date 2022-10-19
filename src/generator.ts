@@ -126,6 +126,18 @@ function generateDefinitionFile(
     defFile.saveSync();
 }
 
+function checkDefinition(paramDefinition: Definition) {
+    if (paramDefinition) {
+        return paramDefinition.name;
+    }
+
+    if (paramDefinition === null) {
+        return "null";
+    }
+
+    return "{}";
+}
+
 export async function generate(
     parsedWsdl: ParsedWsdl,
     outDir: string,
@@ -217,7 +229,7 @@ export async function generate(
                     parameters: [
                         {
                             name: camelcase(method.paramName),
-                            type: method.paramDefinition ? method.paramDefinition.name : "{}",
+                            type: checkDefinition(method.paramDefinition),
                         },
                         {
                             name: "callback",
@@ -297,7 +309,7 @@ export async function generate(
                     parameters: [
                         {
                             name: camelcase(method.paramName),
-                            type: method.paramDefinition ? method.paramDefinition.name : "{}",
+                            type: checkDefinition(method.paramDefinition),
                         },
                     ],
                     returnType: `Promise<[result: ${
