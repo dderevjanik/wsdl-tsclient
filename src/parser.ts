@@ -84,8 +84,10 @@ const NODE_SOAP_PARSED_TYPES: Record<string, string> = Object.entries({
         ...pv,
         [cv[0]]: cv[1],
         ["xs:" + cv[0]]: cv[1],
+        ["xsd:" + cv[0]]: cv[1],
     }
 }, {});
+// console.log("NODE_SOAP_PARSED_TYPES",NODE_SOAP_PARSED_TYPES)
 /* eslint-enable */
 
 /**
@@ -139,7 +141,8 @@ function parseDefinition(
                 parts: defParts,
             });
         } else {
-            Object.entries(defParts).forEach(([propName, type]) => {
+            Object.entries(defParts).forEach(([propName, type]) => {                
+                // console.log(">>", typeof type, type instanceof ComplexTypeElement ? "ComplexTypeElement" : "noComplexTypeElement",  propName, type)
                 if (propName === "targetNSAlias") {
                     definition.docs.push(`@targetNSAlias \`${type}\``);
                 } else if (propName === "targetNamespace") {
@@ -148,13 +151,14 @@ function parseDefinition(
                     const stripedPropName = propName.substring(0, propName.length - 2);
                     // Array of
                     if (typeof type === "string") {
+                        const type0 = type.split("|")[0];
                         // primitive type
                         definition.properties.push({
                             kind: "PRIMITIVE",
                             name: stripedPropName,
                             sourceName: propName,
                             description: type,
-                            type: NODE_SOAP_PARSED_TYPES[type] || "string",
+                            type: NODE_SOAP_PARSED_TYPES[type0] || "string",
                             isArray: true,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -208,13 +212,14 @@ function parseDefinition(
                     }
                 } else {
                     if (typeof type === "string") {
+                        const type0 = type.split("|")[0];
                         // primitive type
                         definition.properties.push({
                             kind: "PRIMITIVE",
                             name: propName,
                             sourceName: propName,
                             description: type,
-                            type: NODE_SOAP_PARSED_TYPES[type] || "string",
+                            type: NODE_SOAP_PARSED_TYPES[type0] || "string",
                             isArray: false,
                         });
                     } else if (type instanceof ComplexTypeElement) {
