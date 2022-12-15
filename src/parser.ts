@@ -7,6 +7,24 @@ import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
 
+
+
+const JSONsafeStringify = (obj:any, indent = 2) => {
+    let cache: any[] = [];
+    const retVal = JSON.stringify(
+        obj,
+        (key: any, value: any) =>
+            typeof value === "object" && value !== null
+                ? cache.includes(value)
+                    ? undefined // Duplicate reference found, discard key
+                    : cache.push(value) && value // Store value in our collection
+                : value,
+        indent
+    );
+    cache = [];
+    return retVal;
+};
+
 interface ParserOptions {
     modelNamePreffix: string;
     modelNameSuffix: string;
@@ -48,8 +66,8 @@ const NODE_SOAP_PARSED_TYPES: Record<string, string> = Object.entries({
     "nonPositiveInteger":   "number",
     "nonNegativeInteger":   "number",
     
-    "boolean":              "boolean",
-    "bool":                 "boolean",
+    "boolean":              "boolean | \"1\" | \"0\" | \"true\"",
+    "bool":                 "boolean | \"1\" | \"0\" | \"true\"",
     
     "date":                 "string",//"Date",
     "dateTime":             "string",//"Date",
@@ -304,6 +322,8 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                 if (wsdl === undefined) {
                     return reject(new Error("WSDL is undefined"));
                 }
+
+                // console.log("open_wsdl",JSONsafeStringify(wsdl));
 
                 const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
                 const filename = path.basename(wsdlPath);
