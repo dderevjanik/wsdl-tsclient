@@ -6,3 +6,7 @@ dist/
 *.wsdl
 *.wso
 *.xsd
+
+out
+test.*
+o
