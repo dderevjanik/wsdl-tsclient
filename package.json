@@ -59,7 +59,7 @@
         "eslint": "^8.13.0",
         "eslint-plugin-prettier": "^4.0.0",
         "sanitize-filename": "^1.6.3",
-        "soap": "file:../node-soap",
+        "soap": "github:valrnd/node-soap",
         "supports-color": "^8.1.1",
         "ts-morph": "^14.0.0",
         "yargs": "^16.2.0"
