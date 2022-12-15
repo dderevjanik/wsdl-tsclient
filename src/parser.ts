@@ -108,13 +108,15 @@ function parseDefinition(
 ): Definition {
     const defName = changeCase(name, { pascalCase: true });
 
+    // console.log("parseDefinition", name, defName, stack);
+
     Logger.debug(`Parsing Definition ${stack.join(".")}.${name}`);
 
     let nonCollisionDefName: string;
     try {
         nonCollisionDefName = parsedWsdl.findNonCollisionDefinitionName(defName);
     } catch (err) {
-        const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}`);
+        const e = new Error(`Error for finding non-collision definition name for ${stack.join(".")}.${name}: ${err}`);
         e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
         throw e;
     }
@@ -203,7 +205,7 @@ function parseDefinition(
                                 });
                             } catch (err) {
                                 const e = new Error(
-                                    `Error while parsing Subdefinition for '${stack.join(".")}.${name}'`
+                                    `Error while parsing Subdefinition for '${stack.join(".")}.${name}': ${err}`
                                 );
                                 e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
                                 throw e;
@@ -264,7 +266,7 @@ function parseDefinition(
                                     isArray: false,
                                 });
                             } catch (err) {
-                                const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}`);
+                                const e = new Error(`Error while parsing Subdefinition for ${stack.join(".")}.${name}: ${err}`);
                                 e.stack.split("\n").slice(0, 2).join("\n") + "\n" + err.stack;
                                 throw e;
                             }
