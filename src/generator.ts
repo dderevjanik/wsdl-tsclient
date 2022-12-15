@@ -61,7 +61,7 @@ function createProperty(
         name: sanitizePropName(name),
         docs: [doc],
         hasQuestionToken: true,
-        type: isArray ? `Array<${type}>` : type,
+        type: isArray ? `Array<${type}> | ${type}` : type,
     };
 }
 
