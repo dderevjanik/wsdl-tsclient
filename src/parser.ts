@@ -51,8 +51,8 @@ const NODE_SOAP_PARSED_TYPES: Record<string, string> = Object.entries({
     "boolean":              "boolean",
     "bool":                 "boolean",
     
-    "date":                 "Date",
-    "dateTime":             "Date",
+    "date":                 "string",//"Date",
+    "dateTime":             "string",//"Date",
 
     "string":               "string",
     "duration":             "string",
