@@ -18,6 +18,11 @@ export interface Options {
      */
     emitDefinitionsOnly: boolean;
     /**
+     * Skip creating a subdirectory based on the wsdl filename inside the output directory
+     * @default false
+     */
+    skipOutputSubdirectory: boolean;
+    /**
      * Prefix for generated interface names
      * @default ""
      */
@@ -57,6 +62,7 @@ export interface Options {
 
 export const defaultOptions: Options = {
     emitDefinitionsOnly: false,
+    skipOutputSubdirectory: false,
     modelNamePreffix: "",
     modelNameSuffix: "",
     caseInsensitiveNames: false,
@@ -98,8 +104,12 @@ export async function parseAndGenerate(
     const parsedWsdl = await parseWsdl(wsdlPath, mergedOptions);
     Logger.debug(`Parser time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
 
+    const out = options.skipOutputSubdirectory
+        ? path.resolve(outDir)
+        : path.join(outDir, parsedWsdl.name.toLowerCase());
+
     const timeGenerateStart = process.hrtime();
-    await generate(parsedWsdl, path.join(outDir, parsedWsdl.name.toLowerCase()), mergedOptions);
+    await generate(parsedWsdl, out, mergedOptions);
     Logger.debug(`Generator time: ${timeElapsed(process.hrtime(timeGenerateStart))}ms`);
 
     Logger.info(`Generating finished: ${timeElapsed(process.hrtime(timeParseStart))}ms`);

@@ -23,6 +23,10 @@ const conf = yargs(process.argv.slice(2))
         type: "boolean",
         description: "Generate only Definitions",
     })
+    .option("skipOutputSubdirectory", {
+        type: "boolean",
+        description: "Skip creating a subdirectory based on the wsdl filename inside the output directory",
+    })
     .option("modelNamePreffix", {
         type: "string",
         description: "Prefix for generated interface names",
@@ -88,6 +92,10 @@ if (conf.quiet) {
 
 if (conf.emitDefinitionsOnly) {
     options.emitDefinitionsOnly = true;
+}
+
+if (conf.skipOutputSubdirectory) {
+    options.skipOutputSubdirectory = true;
 }
 
 if (conf.modelNamePreffix) {
