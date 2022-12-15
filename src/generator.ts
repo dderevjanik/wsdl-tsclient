@@ -107,8 +107,18 @@ function generateDefinitionFile(
             if (prop.ref.name !== definition.name) {
                 addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
             }
-            definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
+            definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));            
         }
+    }
+
+    // console.log("YYYY", definition.name, definition);
+    if (definition.properties.map(p => p.sourceName).includes("attributes")) {
+        // console.log("ZZZZ project", project);
+        // console.log("ZZZZ definition", definition);
+        // console.log("ZZZZ defDir", defDir);
+        // console.log("ZZZZ stack", stack);
+        // console.log("ZZZZ stack", stack);
+        definitionProperties.push(createProperty("$value", "string", "$value", false));
     }
 
     defFile.addImportDeclarations(definitionImports);
