@@ -28,12 +28,14 @@ const defaultOptions: GeneratorOptions = {
 function addSafeImport(
     imports: OptionalKind<ImportDeclarationStructure>[],
     moduleSpecifier: string,
-    namedImport: string
+    namedImport: string,
+    isTypeOnly: boolean = false
 ) {
     if (!imports.find((imp) => imp.moduleSpecifier == moduleSpecifier)) {
         imports.push({
             moduleSpecifier,
             namedImports: [{ name: namedImport }],
+            isTypeOnly
         });
     }
 }
@@ -105,7 +107,7 @@ function generateDefinitionFile(
             }
             // If a property is of the same type as its parent type, don't add import
             if (prop.ref.name !== definition.name) {
-                addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
+                addSafeImport(definitionImports, `./${prop.ref.name}.js`, prop.ref.name, true);
             }
             definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
         }
@@ -177,14 +179,16 @@ export async function generate(
                         );
                         addSafeImport(
                             clientImports,
-                            `./definitions/${method.paramDefinition.name}`,
-                            method.paramDefinition.name
+                            `./definitions/${method.paramDefinition.name}.js`,
+                            method.paramDefinition.name,
+                            true
                         );
                     }
                     addSafeImport(
                         portImports,
-                        `../definitions/${method.paramDefinition.name}`,
-                        method.paramDefinition.name
+                        `../definitions/${method.paramDefinition.name}.js`,
+                        method.paramDefinition.name,
+                        true
                     );
                 }
                 if (method.returnDefinition !== null) {
@@ -200,14 +204,16 @@ export async function generate(
                         );
                         addSafeImport(
                             clientImports,
-                            `./definitions/${method.returnDefinition.name}`,
-                            method.returnDefinition.name
+                            `./definitions/${method.returnDefinition.name}.js`,
+                            method.returnDefinition.name,
+                            true
                         );
                     }
                     addSafeImport(
                         portImports,
-                        `../definitions/${method.returnDefinition.name}`,
-                        method.returnDefinition.name
+                        `../definitions/${method.returnDefinition.name}.js`,
+                        method.returnDefinition.name,
+                        true
                     );
                 }
                 // TODO: Deduplicate PortMethods
@@ -230,7 +236,7 @@ export async function generate(
                 });
             } // End of PortMethod
             if (!mergedOptions.emitDefinitionsOnly) {
-                addSafeImport(serviceImports, `../ports/${port.name}`, port.name);
+                addSafeImport(serviceImports, `../ports/${port.name}.js`, port.name, true);
                 servicePorts.push({
                     name: sanitizePropName(port.name),
                     isReadonly: true,
@@ -252,7 +258,7 @@ export async function generate(
         } // End of Port
 
         if (!mergedOptions.emitDefinitionsOnly) {
-            addSafeImport(clientImports, `./services/${service.name}`, service.name);
+            addSafeImport(clientImports, `./services/${service.name}.js`, service.name, true);
             clientServices.push({ name: sanitizePropName(service.name), type: service.name });
 
             serviceFile.addImportDeclarations(serviceImports);
