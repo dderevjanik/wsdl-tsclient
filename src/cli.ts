@@ -3,7 +3,9 @@ import yargs from "yargs";
 import path from "path";
 import { Logger } from "./utils/logger";
 import { parseAndGenerate, Options } from "./index";
+import glob from 'glob';
 import packageJson from "../package.json";
+import { promisify } from "util";
 
 const conf = yargs(process.argv.slice(2))
     .version(packageJson.version)
@@ -125,8 +127,13 @@ if (conf._ === undefined || conf._.length === 0) {
         const outDir = path.resolve(conf.o);
 
         let errorsCount = 0;
-        const matches = conf._ as string[];
-
+        let patterns = conf._ as string[];
+        Logger.debug(`patterns: ${patterns}`);
+        let matches: string[] = [];
+        for (const pattern of patterns) {
+          const expanded = await promisify(glob)(pattern);
+          matches = matches.concat(expanded);
+        }
         if (matches.length > 1) {
             Logger.debug(matches.map((m) => path.resolve(m)).join("\n"));
             Logger.log(`Found ${matches.length} wsdl files`);
