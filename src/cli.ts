@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import yargs from "yargs";
 import path from "path";
+import glob from "glob";
+import { promisify } from "util";
 import { Logger } from "./utils/logger";
 import { parseAndGenerate, Options } from "./index";
-import glob from 'glob';
+import { isUrl } from "./utils/url";
 import packageJson from "../package.json";
-import { promisify } from "util";
 
 const conf = yargs(process.argv.slice(2))
     .version(packageJson.version)
@@ -127,25 +128,27 @@ if (conf._ === undefined || conf._.length === 0) {
         const outDir = path.resolve(conf.o);
 
         let errorsCount = 0;
-        let patterns = conf._ as string[];
+        const patterns = conf._ as string[];
         Logger.debug(`patterns: ${patterns}`);
-        let matches: string[] = [];
+        const wsdlUris: string[] = [];
         for (const pattern of patterns) {
-          const expanded = await promisify(glob)(pattern);
-          matches = matches.concat(expanded);
+            if (isUrl(pattern)) {
+                wsdlUris.push(pattern);
+            } else {
+                const matches = await promisify(glob)(pattern);
+                wsdlUris.push(...matches);
+            }
         }
-        if (matches.length > 1) {
-            Logger.debug(matches.map((m) => path.resolve(m)).join("\n"));
-            Logger.log(`Found ${matches.length} wsdl files`);
+        if (wsdlUris.length > 1) {
+            Logger.log(`Found ${wsdlUris.length} wsdl URIs`);
+            Logger.debug(wsdlUris.join("\n"));
         }
-        for (const match of matches) {
-            const wsdlPath = path.resolve(match);
-            const wsdlName = path.basename(wsdlPath);
-            Logger.log(`Generating soap client from "${wsdlName}"`);
+        for (const wsdlUri of wsdlUris) {
+            Logger.log(`Generating soap client from "${wsdlUri}"`);
             try {
-                await parseAndGenerate(wsdlPath, path.join(outDir), options);
+                await parseAndGenerate(wsdlUri, path.join(outDir), options);
             } catch (err) {
-                Logger.error(`Error occured while generating client "${wsdlName}"`);
+                Logger.error(`Error occured while generating client for "${wsdlUri}"`);
                 Logger.error(`\t${err}`);
                 errorsCount += 1;
             }
