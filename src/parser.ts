@@ -244,7 +244,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                 parsedWsdl.name = changeCase(stripExtension(filename), {
                     pascalCase: true,
                 });
-                parsedWsdl.wsdlFilename = path.basename(filename);
+                parsedWsdl.wsdlFilename = filename;
                 parsedWsdl.wsdlPath = path.resolve(wsdlPath);
 
                 const visitedDefinitions: Array<VisitedDefinition> = [];
