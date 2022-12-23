@@ -320,12 +320,12 @@ export async function generate(
                 {
                     isRestParameter: true,
                     name: "args",
-                    type: "Parameters<typeof soapCreateClientAsync>",
+                    type: "Parameters<typeof soapCreateClientAsync> extends [any, ...infer Rest] ? Rest : never",
                 },
             ],
             returnType: `Promise<${parsedWsdl.name}Client>`, // TODO: `any` keyword is very dangerous
         });
-        createClientDeclaration.setBodyText("return soapCreateClientAsync(args[0], args[1], args[2]) as any;");
+        createClientDeclaration.setBodyText(`return soapCreateClientAsync("${parsedWsdl.wsdlUri}", ...args) as any;`);
         Logger.log(`Writing Client file: ${path.resolve(path.join(outDir, "client"))}.ts`);
         clientFile.saveSync();
     }
@@ -339,7 +339,8 @@ export async function generate(
     indexFile.addExportDeclarations(
         allDefinitions.map((def) => ({
             namedExports: [def.name],
-            moduleSpecifier: `./definitions/${def.name}`,
+            moduleSpecifier: `./definitions/${def.name}.js`,
+            isTypeOnly: true
         }))
     );
     if (!mergedOptions.emitDefinitionsOnly) {
@@ -348,19 +349,21 @@ export async function generate(
         indexFile.addExportDeclarations([
             {
                 namedExports: ["createClientAsync", `${parsedWsdl.name}Client`],
-                moduleSpecifier: "./client",
+                moduleSpecifier: "./client.js",
             },
         ]);
         indexFile.addExportDeclarations(
             parsedWsdl.services.map((service) => ({
                 namedExports: [service.name],
-                moduleSpecifier: `./services/${service.name}`,
+                moduleSpecifier: `./services/${service.name}.js`,
+                isTypeOnly: true,
             }))
         );
         indexFile.addExportDeclarations(
             parsedWsdl.ports.map((port) => ({
                 namedExports: [port.name],
-                moduleSpecifier: `./ports/${port.name}`,
+                moduleSpecifier: `./ports/${port.name}.js`,
+                isTypeOnly: true,
             }))
         );
     }

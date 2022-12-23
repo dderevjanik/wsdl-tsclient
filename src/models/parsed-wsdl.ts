@@ -98,7 +98,7 @@ export class ParsedWsdl {
     name: string;
     /** Original wsdl basename */
     wsdlBasename: string;
-    /** Absolute basepath or url */
+    /** Relative path or url */
     wsdlUri: string;
 
     definitions: Array<Definition> = [];

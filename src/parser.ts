@@ -228,7 +228,6 @@ export async function parseWsdl(wsdlUri: string, options: Partial<ParserOptions>
         ...defaultOptions,
         ...options,
     };
-    wsdlUri = isUrl(wsdlUri) ? wsdlUri : path.resolve(wsdlUri);
     return new Promise((resolve, reject) => {
         open_wsdl(
             wsdlUri,
