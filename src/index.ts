@@ -69,7 +69,7 @@ export const defaultOptions: Options = {
 };
 
 export async function parseAndGenerate(
-    wsdlPath: string,
+    wsdlUri: string,
     outDir: string,
     options: Partial<Options> = {}
 ): Promise<void> {
@@ -95,7 +95,7 @@ export async function parseAndGenerate(
     // Logger.debug(`Options: ${JSON.stringify(mergedOptions, null, 2)}`);
 
     const timeParseStart = process.hrtime();
-    const parsedWsdl = await parseWsdl(wsdlPath, mergedOptions);
+    const parsedWsdl = await parseWsdl(wsdlUri, mergedOptions);
     Logger.debug(`Parser time: ${timeElapsed(process.hrtime(timeParseStart))}ms`);
 
     const timeGenerateStart = process.hrtime();

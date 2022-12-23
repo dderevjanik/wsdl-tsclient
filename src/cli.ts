@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import yargs from "yargs";
 import path from "path";
+import glob from "glob";
+import { promisify } from "util";
 import { Logger } from "./utils/logger";
 import { parseAndGenerate, Options } from "./index";
+import { isUrl } from "./utils/url";
 import packageJson from "../package.json";
 
 const conf = yargs(process.argv.slice(2))
@@ -125,20 +128,27 @@ if (conf._ === undefined || conf._.length === 0) {
         const outDir = path.resolve(conf.o);
 
         let errorsCount = 0;
-        const matches = conf._ as string[];
-
-        if (matches.length > 1) {
-            Logger.debug(matches.map((m) => path.resolve(m)).join("\n"));
-            Logger.log(`Found ${matches.length} wsdl files`);
+        const patterns = conf._ as string[];
+        Logger.debug(`patterns: ${patterns}`);
+        const wsdlUris: string[] = [];
+        for (const pattern of patterns) {
+            if (isUrl(pattern)) {
+                wsdlUris.push(pattern);
+            } else {
+                const matches = await promisify(glob)(pattern);
+                wsdlUris.push(...matches);
+            }
         }
-        for (const match of matches) {
-            const wsdlPath = path.resolve(match);
-            const wsdlName = path.basename(wsdlPath);
-            Logger.log(`Generating soap client from "${wsdlName}"`);
+        if (wsdlUris.length > 1) {
+            Logger.log(`Found ${wsdlUris.length} wsdl URIs`);
+            Logger.debug(wsdlUris.join("\n"));
+        }
+        for (const wsdlUri of wsdlUris) {
+            Logger.log(`Generating soap client from "${wsdlUri}"`);
             try {
-                await parseAndGenerate(wsdlPath, path.join(outDir), options);
+                await parseAndGenerate(wsdlUri, path.join(outDir), options);
             } catch (err) {
-                Logger.error(`Error occured while generating client "${wsdlName}"`);
+                Logger.error(`Error occured while generating client for "${wsdlUri}"`);
                 Logger.error(`\t${err}`);
                 errorsCount += 1;
             }
