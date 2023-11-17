@@ -29,6 +29,30 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
     return visited.find((def) => def.parts === definitionParts);
 }
 
+function toPrimitiveType(type: string): string {
+    const index = type.indexOf(":");
+    if (index >= 0) {
+        type = type.substring(index + 1);
+    }
+    switch (type) {
+        case "int":
+        case "integer":
+        case "long":
+        case "short":
+        case "float":
+        case "decimal":
+            return "number";
+        case "bool":
+        case "boolean":
+            return "boolean";
+        case "dateTime":
+        case "date":
+            return "Date";
+        default:
+            return "string";
+    }
+}
+
 /**
  * parse definition
  * @param parsedWsdl context of parsed wsdl
@@ -95,7 +119,7 @@ function parseDefinition(
                             name: stripedPropName,
                             sourceName: propName,
                             description: type,
-                            type: "string",
+                            type: toPrimitiveType(type),
                             isArray: true,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -155,7 +179,7 @@ function parseDefinition(
                             name: propName,
                             sourceName: propName,
                             description: type,
-                            type: "string",
+                            type: toPrimitiveType(type),
                             isArray: false,
                         });
                     } else if (type instanceof ComplexTypeElement) {
