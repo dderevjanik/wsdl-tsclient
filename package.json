@@ -16,7 +16,7 @@
     "test:node-soap2": "ts-node node_modules/tape/bin/tape ./test/node-soap/**/*.test.ts | tap-spec",
     "test:public": "ts-node node_modules/tape/bin/tape ./test/resources-public/**/*.test.ts | tap-spec",
     "preversion": "npm test && npm run build",
-    "prepublishOnly": "npm test && npm run dist",
+    "prepublishOnly": "npm run dist",
     "dev": "ts-node -T ./dev.ts",
     "dist": "tsc",
     "build": "tsc",

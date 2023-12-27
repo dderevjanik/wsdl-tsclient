@@ -1,6 +1,6 @@
 node_modules/
 test/generated/
-generated/
+ANA_altea/generate/
 dist/
 
 *.wsdl
