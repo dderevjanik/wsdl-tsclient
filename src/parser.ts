@@ -29,6 +29,19 @@ function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionPar
     return visited.find((def) => def.parts === definitionParts);
 }
 
+function removeNameSpace(typeString: string) {
+    const [typeNameOrNameSpace, typeName] = typeString.split(":");
+    return typeName ? typeName : typeNameOrNameSpace;
+}
+
+function getPrimitiveTypeFromSimpleType(simpleTypeString: string) {
+    const [typeName, baseType, _typePattern] = simpleTypeString.split("|");
+    if (!baseType) {
+        return "string";
+    }
+    return removeNameSpace(baseType) === "string" ? "string" : "number";
+}
+
 /**
  * parse definition
  * @param parsedWsdl context of parsed wsdl
@@ -66,7 +79,6 @@ function parseDefinition(
         properties: [],
         description: "",
     };
-
     parsedWsdl.definitions.push(definition); // Must be here to avoid name collision with `findNonCollisionDefinitionName` if sub-definition has same name
     visitedDefs.push({ name: definition.name, parts: defParts, definition }); // NOTE: cache reference to this defintion globally (for avoiding circular references)
     if (defParts) {
@@ -81,6 +93,8 @@ function parseDefinition(
             });
         } else {
             Object.entries(defParts).forEach(([propName, type]) => {
+                // console.log(`propName : ${propName}`);
+                // console.log(type);
                 if (propName === "targetNSAlias") {
                     definition.docs.push(`@targetNSAlias \`${type}\``);
                 } else if (propName === "targetNamespace") {
@@ -95,7 +109,7 @@ function parseDefinition(
                             name: stripedPropName,
                             sourceName: propName,
                             description: type,
-                            type: "string",
+                            type: getPrimitiveTypeFromSimpleType(type),
                             isArray: true,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -149,13 +163,14 @@ function parseDefinition(
                     }
                 } else {
                     if (typeof type === "string") {
+                        const [typeName, baseType, _typePattern] = type.split("|");
                         // primitive type
                         definition.properties.push({
                             kind: "PRIMITIVE",
                             name: propName,
                             sourceName: propName,
                             description: type,
-                            type: "string",
+                            type: getPrimitiveTypeFromSimpleType(type),
                             isArray: false,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -222,6 +237,7 @@ function parseDefinition(
  * Parse WSDL to domain model `ParsedWsdl`
  * @param wsdlPath - path or url to wsdl file
  */
+
 export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions>): Promise<ParsedWsdl> {
     const mergedOptions: ParserOptions = {
         ...defaultOptions,
@@ -238,7 +254,6 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                 if (wsdl === undefined) {
                     return reject(new Error("WSDL is undefined"));
                 }
-
                 const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
                 const filename = path.basename(wsdlPath);
                 parsedWsdl.name = changeCase(stripExtension(filename), {
@@ -262,7 +277,6 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
 
                         for (const [methodName, method] of Object.entries(port.binding.methods)) {
                             Logger.debug(`Parsing Method ${methodName}`);
-
                             // TODO: Deduplicate code below by refactoring it to external function. Is it even possible ?
                             let paramName = "request";
                             let inputDefinition: Definition = null; // default type
