@@ -93,8 +93,6 @@ function parseDefinition(
             });
         } else {
             Object.entries(defParts).forEach(([propName, type]) => {
-                // console.log(`propName : ${propName}`);
-                // console.log(type);
                 if (propName === "targetNSAlias") {
                     definition.docs.push(`@targetNSAlias \`${type}\``);
                 } else if (propName === "targetNamespace") {
@@ -163,7 +161,6 @@ function parseDefinition(
                     }
                 } else {
                     if (typeof type === "string") {
-                        const [typeName, baseType, _typePattern] = type.split("|");
                         // primitive type
                         definition.properties.push({
                             kind: "PRIMITIVE",
