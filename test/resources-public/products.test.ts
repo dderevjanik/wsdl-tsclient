@@ -18,12 +18,12 @@ test(target, async t => {
     });
 
     t.test(`${target} - check definitions`, async t => {
-        t.equal(existsSync(`${outdir}/foo/definitions/BankSvcRq.ts`), true);
+        t.equal(existsSync(`${outdir}/${target}/definitions/KeyValuePair.ts`), true);
         t.end();
     });
 
     t.test(`${target} - compile`, async t => {
-        await typecheck(`${outdir}/file/index.ts`);
+        await typecheck(`${outdir}/${target}/index.ts`);
 		t.end();
     });
 
