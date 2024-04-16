@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2023-03-19
+
+- Project: Update soap dependency to 1.0.0 [#73](https://github.com/dderevjanik/wsdl-tsclient/pull/73) by @taylorreece
+
 ## [1.4.0] - 2022-04-27
 
 - Fix issue with self recursive WSDL types [#39](https://github.com/dderevjanik/wsdl-tsclient/pull/39) by @mtranter
