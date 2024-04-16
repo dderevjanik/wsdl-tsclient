@@ -2,9 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.4.1] - 2023-03-19
+## [1.5.0] - 2024-04-16
 
 - Project: Update soap dependency to 1.0.0 [#73](https://github.com/dderevjanik/wsdl-tsclient/pull/73) by @taylorreece
+- ParseAndGenerate: Add optional `options` parameter all methods by @ZimGil
 
 ## [1.4.0] - 2022-04-27
 
