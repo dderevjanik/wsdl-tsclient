@@ -6,6 +6,7 @@ import { changeCase } from "./utils/change-case";
 import { stripExtension } from "./utils/file";
 import { reservedKeywords } from "./utils/javascript";
 import { Logger } from "./utils/logger";
+import { isUrl, stripQuery } from "./utils/url";
 
 interface ParserOptions {
     modelNamePreffix: string;
@@ -234,16 +235,16 @@ function parseDefinition(
 // TODO: Add comments for services, ports, methods and client
 /**
  * Parse WSDL to domain model `ParsedWsdl`
- * @param wsdlPath - path or url to wsdl file
+ * @param wsdlUri - path or url to wsdl file
  */
-export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions>): Promise<ParsedWsdl> {
+export async function parseWsdl(wsdlUri: string, options: Partial<ParserOptions>): Promise<ParsedWsdl> {
     const mergedOptions: ParserOptions = {
         ...defaultOptions,
         ...options,
     };
     return new Promise((resolve, reject) => {
         open_wsdl(
-            wsdlPath,
+            wsdlUri,
             { namespaceArrayElements: false, ignoredNamespaces: ["tns", "targetNamespace", "typeNamespace"] },
             function (err, wsdl) {
                 if (err) {
@@ -254,12 +255,17 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                 }
 
                 const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
-                const filename = path.basename(wsdlPath);
-                parsedWsdl.name = changeCase(stripExtension(filename), {
-                    pascalCase: true,
-                });
-                parsedWsdl.wsdlFilename = path.basename(filename);
-                parsedWsdl.wsdlPath = path.resolve(wsdlPath);
+                const basename = path.basename(wsdlUri);
+                parsedWsdl.name = changeCase(
+                    isUrl(wsdlUri)
+                        ? stripQuery(basename)
+                        : stripExtension(basename),
+                    {
+                        pascalCase: true,
+                    }
+                );
+                parsedWsdl.wsdlBasename = basename;
+                parsedWsdl.wsdlUri = wsdlUri;
 
                 const visitedDefinitions: Array<VisitedDefinition> = [];
 

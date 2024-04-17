@@ -90,15 +90,16 @@ const defaultOptions: Options = {
 
 export class ParsedWsdl {
     /**
-     * Name is always uppercased filename of wsdl without an extension.
+     * Name is always uppercased filename of wsdl without an extension
+     * or the last URL path component without the query string.
      * Used to generate client name of interface
      * @example "MyClient"
      */
     name: string;
-    /** Original wsdl filename */
-    wsdlFilename: string;
-    /** Absolute basepath or url */
-    wsdlPath: string;
+    /** Original wsdl basename */
+    wsdlBasename: string;
+    /** Relative path or url */
+    wsdlUri: string;
 
     definitions: Array<Definition> = [];
     ports: Array<Port> = [];
