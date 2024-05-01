@@ -52,6 +52,8 @@ Options:
       --emitDefinitionsOnly         Generate only Definitions          [boolean]
       --modelNamePreffix            Prefix for generated interface names[string]
       --modelNameSuffix             Suffix for generated interface names[string]
+      --fileSuffix                  The filename suffix used in import/export
+                                    statements (e.g. ".js" or ".mjs")   [string]
       --caseInsensitiveNames        Case-insensitive name while parsing
                                     definition names                   [boolean]
       --maxRecursiveDefinitionName  Maximum count of definition's with same name

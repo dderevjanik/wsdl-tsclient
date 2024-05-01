@@ -15,11 +15,13 @@ import { Logger } from "./utils/logger";
 export interface GeneratorOptions {
     emitDefinitionsOnly: boolean;
     modelPropertyNaming: ModelPropertyNaming;
+    fileSuffix: string;
 }
 
 const defaultOptions: GeneratorOptions = {
     emitDefinitionsOnly: false,
     modelPropertyNaming: null,
+    fileSuffix: "",
 };
 
 /**
@@ -105,7 +107,7 @@ function generateDefinitionFile(
             }
             // If a property is of the same type as its parent type, don't add import
             if (prop.ref.name !== definition.name) {
-                addSafeImport(definitionImports, `./${prop.ref.name}`, prop.ref.name);
+                addSafeImport(definitionImports, `./${prop.ref.name}${options.fileSuffix}`, prop.ref.name);
             }
             definitionProperties.push(createProperty(prop.name, prop.ref.name, prop.sourceName, prop.isArray));
         }
@@ -177,13 +179,13 @@ export async function generate(
                         );
                         addSafeImport(
                             clientImports,
-                            `./definitions/${method.paramDefinition.name}`,
+                            `./definitions/${method.paramDefinition.name}${mergedOptions.fileSuffix}`,
                             method.paramDefinition.name
                         );
                     }
                     addSafeImport(
                         portImports,
-                        `../definitions/${method.paramDefinition.name}`,
+                        `../definitions/${method.paramDefinition.name}${mergedOptions.fileSuffix}`,
                         method.paramDefinition.name
                     );
                 }
@@ -200,13 +202,13 @@ export async function generate(
                         );
                         addSafeImport(
                             clientImports,
-                            `./definitions/${method.returnDefinition.name}`,
+                            `./definitions/${method.returnDefinition.name}${mergedOptions.fileSuffix}`,
                             method.returnDefinition.name
                         );
                     }
                     addSafeImport(
                         portImports,
-                        `../definitions/${method.returnDefinition.name}`,
+                        `../definitions/${method.returnDefinition.name}${mergedOptions.fileSuffix}`,
                         method.returnDefinition.name
                     );
                 }
@@ -230,7 +232,7 @@ export async function generate(
                 });
             } // End of PortMethod
             if (!mergedOptions.emitDefinitionsOnly) {
-                addSafeImport(serviceImports, `../ports/${port.name}`, port.name);
+                addSafeImport(serviceImports, `../ports/${port.name}${mergedOptions.fileSuffix}`, port.name);
                 servicePorts.push({
                     name: sanitizePropName(port.name),
                     isReadonly: true,
@@ -252,7 +254,7 @@ export async function generate(
         } // End of Port
 
         if (!mergedOptions.emitDefinitionsOnly) {
-            addSafeImport(clientImports, `./services/${service.name}`, service.name);
+            addSafeImport(clientImports, `./services/${service.name}${mergedOptions.fileSuffix}`, service.name);
             clientServices.push({ name: sanitizePropName(service.name), type: service.name });
 
             serviceFile.addImportDeclarations(serviceImports);
@@ -280,7 +282,7 @@ export async function generate(
             namedImports: [
                 { name: "Client", alias: "SoapClient" },
                 { name: "createClientAsync", alias: "soapCreateClientAsync" },
-                { name: "IExOptions", alias: "ISoapExOptions" }
+                { name: "IExOptions", alias: "ISoapExOptions" },
             ],
         });
         clientFile.addImportDeclarations(clientImports);
@@ -339,7 +341,7 @@ export async function generate(
     indexFile.addExportDeclarations(
         allDefinitions.map((def) => ({
             namedExports: [def.name],
-            moduleSpecifier: `./definitions/${def.name}`,
+            moduleSpecifier: `./definitions/${def.name}${mergedOptions.fileSuffix}`,
         }))
     );
     if (!mergedOptions.emitDefinitionsOnly) {
@@ -348,19 +350,19 @@ export async function generate(
         indexFile.addExportDeclarations([
             {
                 namedExports: ["createClientAsync", `${parsedWsdl.name}Client`],
-                moduleSpecifier: "./client",
+                moduleSpecifier: `./client${mergedOptions.fileSuffix}`,
             },
         ]);
         indexFile.addExportDeclarations(
             parsedWsdl.services.map((service) => ({
                 namedExports: [service.name],
-                moduleSpecifier: `./services/${service.name}`,
+                moduleSpecifier: `./services/${service.name}${mergedOptions.fileSuffix}`,
             }))
         );
         indexFile.addExportDeclarations(
             parsedWsdl.ports.map((port) => ({
                 namedExports: [port.name],
-                moduleSpecifier: `./ports/${port.name}`,
+                moduleSpecifier: `./ports/${port.name}${mergedOptions.fileSuffix}`,
             }))
         );
     }

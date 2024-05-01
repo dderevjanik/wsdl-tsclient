@@ -28,6 +28,11 @@ export interface Options {
      */
     modelNameSuffix: string;
     /**
+     * The filename suffix used in import/export statements (e.g. ".js" or ".mjs")
+     * @default ""
+     */
+    fileSuffix: string;
+    /**
      * Case-insensitive name while parsing definition names
      * @default false
      */
@@ -66,6 +71,7 @@ export const defaultOptions: Options = {
     verbose: false,
     quiet: false,
     colors: true,
+    fileSuffix: "",
 };
 
 export async function parseAndGenerate(
