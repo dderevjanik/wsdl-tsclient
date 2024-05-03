@@ -10,7 +10,8 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "pretest": "rm -rf ./test/generated",
+    "pretest": "npm run lint && npm run test:clean",
+    "test:clean": "rm -rf ./test/generated",
     "test": "npm run test:node-soap && npm run test:node-soap2 && npm run test:public",
     "test:node-soap": "ts-node node_modules/tape/bin/tape ./test/node-soap/*.test.ts | tap-spec",
     "test:node-soap2": "ts-node node_modules/tape/bin/tape ./test/node-soap/**/*.test.ts | tap-spec",

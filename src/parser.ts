@@ -11,14 +11,14 @@ interface ParserOptions {
     modelNamePreffix: string;
     modelNameSuffix: string;
     maxRecursiveDefinitionName: number;
-    caseInsensitiveNames: boolean
+    caseInsensitiveNames: boolean;
 }
 
 const defaultOptions: ParserOptions = {
     modelNamePreffix: "",
     modelNameSuffix: "",
     maxRecursiveDefinitionName: 64,
-    caseInsensitiveNames: false
+    caseInsensitiveNames: false,
 };
 
 type VisitedDefinition = {
@@ -259,7 +259,7 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                     maxStack: options.maxRecursiveDefinitionName,
                     caseInsensitiveNames: options.caseInsensitiveNames,
                     modelNamePreffix: options.modelNamePreffix,
-                    modelNameSuffix: options.modelNameSuffix
+                    modelNameSuffix: options.modelNameSuffix,
                 });
                 const filename = path.basename(wsdlPath);
                 parsedWsdl.name = changeCase(stripExtension(filename), {
