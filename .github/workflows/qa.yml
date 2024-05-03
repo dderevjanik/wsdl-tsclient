@@ -1,0 +1,29 @@
+name: QA
+
+on:
+    pull_request:
+    push:
+        paths-ignore:
+            - "docs/**"
+            - "**/*.md"
+
+jobs:
+    test:
+        name: Tests & Typecheck
+        runs-on: ubuntu-22.04
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Lint & Typecheck
+              run: npm run lint
+
+            - name: Build
+              run: npm run build
+
+            - name: Run test
+              run: npm test

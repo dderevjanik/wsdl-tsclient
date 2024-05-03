@@ -24,7 +24,7 @@ test(target, async t => {
 
     t.test(`${target} - compile`, async t => {
         await typecheck(`${outdir}/products/index.ts`);
-		t.end();
+		    t.end();
     });
 
 });

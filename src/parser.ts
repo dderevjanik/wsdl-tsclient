@@ -11,12 +11,14 @@ interface ParserOptions {
     modelNamePreffix: string;
     modelNameSuffix: string;
     maxRecursiveDefinitionName: number;
+    caseInsensitiveNames: boolean
 }
 
 const defaultOptions: ParserOptions = {
     modelNamePreffix: "",
     modelNameSuffix: "",
     maxRecursiveDefinitionName: 64,
+    caseInsensitiveNames: false
 };
 
 type VisitedDefinition = {
@@ -28,6 +30,20 @@ type VisitedDefinition = {
 function findReferenceDefiniton(visited: Array<VisitedDefinition>, definitionParts: object) {
     return visited.find((def) => def.parts === definitionParts);
 }
+
+const NODE_SOAP_PARSED_TYPES: { [type: string]: string } = {
+    int: "number",
+    integer: "number",
+    short: "number",
+    long: "number",
+    double: "number",
+    float: "number",
+    decimal: "number",
+    bool: "boolean",
+    boolean: "boolean",
+    dateTime: "Date",
+    date: "Date",
+};
 
 /**
  * parse definition
@@ -95,7 +111,7 @@ function parseDefinition(
                             name: stripedPropName,
                             sourceName: propName,
                             description: type,
-                            type: "string",
+                            type: NODE_SOAP_PARSED_TYPES[type] || "string",
                             isArray: true,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -155,7 +171,7 @@ function parseDefinition(
                             name: propName,
                             sourceName: propName,
                             description: type,
-                            type: "string",
+                            type: NODE_SOAP_PARSED_TYPES[type] || "string",
                             isArray: false,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -239,7 +255,12 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                     return reject(new Error("WSDL is undefined"));
                 }
 
-                const parsedWsdl = new ParsedWsdl({ maxStack: options.maxRecursiveDefinitionName });
+                const parsedWsdl = new ParsedWsdl({
+                    maxStack: options.maxRecursiveDefinitionName,
+                    caseInsensitiveNames: options.caseInsensitiveNames,
+                    modelNamePreffix: options.modelNamePreffix,
+                    modelNameSuffix: options.modelNameSuffix
+                });
                 const filename = path.basename(wsdlPath);
                 parsedWsdl.name = changeCase(stripExtension(filename), {
                     pascalCase: true,

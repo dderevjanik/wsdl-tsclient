@@ -280,6 +280,7 @@ export async function generate(
             namedImports: [
                 { name: "Client", alias: "SoapClient" },
                 { name: "createClientAsync", alias: "soapCreateClientAsync" },
+                { name: "IExOptions", alias: "ISoapExOptions" }
             ],
         });
         clientFile.addImportDeclarations(clientImports);
@@ -298,6 +299,11 @@ export async function generate(
                         {
                             name: camelcase(method.paramName),
                             type: method.paramDefinition ? method.paramDefinition.name : "{}",
+                        },
+                        {
+                            name: "options",
+                            type: "ISoapExOptions",
+                            hasQuestionToken: true,
                         },
                     ],
                     returnType: `Promise<[result: ${
