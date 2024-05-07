@@ -290,17 +290,17 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                             let inputDefinition: Definition | null = null; // default type
 
                             if (method.input) {
-                                const inputName = method.input.$name;
-                                if (!inputName) {
-                                    throw new Error(`Method '${methodPath}' doesn't have input name`);
+                                const methodInputName = method.input.$name;
+                                if (!methodInputName) {
+                                    throw new Error(`Method '${methodPath}' doesn't have an input name`);
                                 }
-                                inputDefinition = getInputDefinition(
-                                    inputName,
+                                inputDefinition = createMethodInputDefinition({
+                                    methodInputName,
                                     wsdl,
                                     parsedWsdl,
                                     mergedOptions,
-                                    visitedDefinitions
-                                );
+                                    visitedDefinitions,
+                                });
                                 if (!inputDefinition) {
                                     Logger.debug(`Method '${methodPath}' doesn't have any input defined`);
                                 }
@@ -313,13 +313,13 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                 if (!methodOutputName) {
                                     throw new Error(`Method '${methodPath}' doesn't have output name`);
                                 }
-                                outputDefinition = getOutputDefinition(
+                                outputDefinition = createMethodOutputDefinition({
                                     methodOutputName,
                                     wsdl,
                                     parsedWsdl,
                                     mergedOptions,
-                                    visitedDefinitions
-                                );
+                                    visitedDefinitions,
+                                });
                             }
 
                             const requestParamName = method.input?.$name ?? "request";
@@ -360,13 +360,14 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
     });
 }
 
-function getInputDefinition(
-    methodInputName: string,
-    wsdl: WSDL,
-    parsedWsdl: ParsedWsdl,
-    mergedOptions: ParserOptions,
-    visitedDefinitions: VisitedDefinition[]
-): Definition | null {
+function createMethodInputDefinition(opts: {
+    methodInputName: string;
+    wsdl: WSDL;
+    parsedWsdl: ParsedWsdl;
+    mergedOptions: ParserOptions;
+    visitedDefinitions: VisitedDefinition[];
+}): Definition | null {
+    const { methodInputName, wsdl, parsedWsdl, mergedOptions, visitedDefinitions } = opts;
     const inputMessage = wsdl.definitions.messages[methodInputName];
     if (inputMessage.element) {
         // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
@@ -394,13 +395,14 @@ function getInputDefinition(
     }
 }
 
-function getOutputDefinition(
-    methodOutputName: string,
-    wsdl: WSDL,
-    parsedWsdl: ParsedWsdl,
-    mergedOptions: ParserOptions,
-    visitedDefinitions: VisitedDefinition[]
-): Definition | null {
+function createMethodOutputDefinition(opts: {
+    methodOutputName: string;
+    wsdl: WSDL;
+    parsedWsdl: ParsedWsdl;
+    mergedOptions: ParserOptions;
+    visitedDefinitions: VisitedDefinition[];
+}): Definition | null {
+    const { methodOutputName, wsdl, parsedWsdl, mergedOptions, visitedDefinitions } = opts;
     const outputMessage = wsdl.definitions.messages[methodOutputName];
     if (outputMessage.element) {
         // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
