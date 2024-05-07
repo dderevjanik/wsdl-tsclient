@@ -45,6 +45,14 @@ const NODE_SOAP_PARSED_TYPES: { [type: string]: string } = {
     date: "Date",
 };
 
+function toPrimitedType(type: string): string {
+    const index = type.indexOf(":");
+    if (index >= 0) {
+        type = type.substring(index + 1);
+    }
+    return NODE_SOAP_PARSED_TYPES[type] || "string";
+}
+
 /**
  * parse definition
  * @param parsedWsdl context of parsed wsdl
@@ -111,7 +119,7 @@ function parseDefinition(
                             name: stripedPropName,
                             sourceName: propName,
                             description: type,
-                            type: NODE_SOAP_PARSED_TYPES[type] || "string",
+                            type: toPrimitedType(type),
                             isArray: true,
                         });
                     } else if (type instanceof ComplexTypeElement) {
@@ -171,7 +179,7 @@ function parseDefinition(
                             name: propName,
                             sourceName: propName,
                             description: type,
-                            type: NODE_SOAP_PARSED_TYPES[type] || "string",
+                            type: toPrimitedType(type),
                             isArray: false,
                         });
                     } else if (type instanceof ComplexTypeElement) {
