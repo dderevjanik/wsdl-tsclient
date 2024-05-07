@@ -1,5 +1,5 @@
 import * as path from "path";
-import { ComplexTypeElement } from "soap/lib/wsdl/elements";
+import { ComplexTypeElement, OperationElement } from "soap/lib/wsdl/elements";
 import { WSDL, open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
 import { changeCase } from "./utils/change-case";
@@ -285,16 +285,14 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
 
                         for (const [methodName, method] of Object.entries(port.binding.methods)) {
                             Logger.debug(`Parsing Method ${methodName}`);
+                            const methodPath = `${serviceName}.${portName}.${methodName}`;
 
-                            // TODO: Deduplicate code below by refactoring it to external function. Is it even possible ?
-                            let inputDefinition: Definition = null; // default type
+                            let inputDefinition: Definition | null = null; // default type
 
                             if (method.input) {
                                 const inputName = method.input.$name;
                                 if (!inputName) {
-                                    throw new Error(
-                                        `Method '${serviceName}.${portName}.${methodName}' doesn't have input name`
-                                    );
+                                    throw new Error(`Method '${methodPath}' doesn't have input name`);
                                 }
                                 inputDefinition = getInputDefinition(
                                     inputName,
@@ -304,49 +302,24 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                     visitedDefinitions
                                 );
                                 if (!inputDefinition) {
-                                    Logger.debug(
-                                        `Method '${serviceName}.${portName}.${methodName}' doesn't have any input defined`
-                                    );
+                                    Logger.debug(`Method '${methodPath}' doesn't have any input defined`);
                                 }
                             }
 
-                            let outputDefinition: Definition = null; // default type, `{}` or `unknown` ?
-                            if (method.output) {
-                                if (!method.output.$name) {
-                                    throw new Error(
-                                        `Method '${serviceName}.${portName}.${methodName}' doesn't have output name`
-                                    );
-                                }
+                            let outputDefinition: Definition | null = null;
 
+                            if (method.output) {
                                 const methodOutputName = method.output.$name;
-                                const outputMessage = wsdl.definitions.messages[method.output.$name];
-                                if (outputMessage.element) {
-                                    // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
-                                    const typeName = outputMessage.element.$type ?? outputMessage.element.$name;
-                                    const type = parsedWsdl.findDefinition(typeName);
-                                    outputDefinition =
-                                        type ??
-                                        parseDefinition(
-                                            parsedWsdl,
-                                            mergedOptions,
-                                            typeName,
-                                            outputMessage.parts,
-                                            [typeName],
-                                            visitedDefinitions
-                                        );
-                                } else {
-                                    const type = parsedWsdl.findDefinition(methodOutputName);
-                                    outputDefinition =
-                                        type ??
-                                        parseDefinition(
-                                            parsedWsdl,
-                                            mergedOptions,
-                                            methodOutputName,
-                                            outputMessage.parts,
-                                            [methodOutputName],
-                                            visitedDefinitions
-                                        );
+                                if (!methodOutputName) {
+                                    throw new Error(`Method '${methodPath}' doesn't have output name`);
                                 }
+                                outputDefinition = getOutputDefinition(
+                                    methodOutputName,
+                                    wsdl,
+                                    parsedWsdl,
+                                    mergedOptions,
+                                    visitedDefinitions
+                                );
                             }
 
                             const requestParamName = method.input?.$name ?? "request";
@@ -393,7 +366,7 @@ function getInputDefinition(
     parsedWsdl: ParsedWsdl,
     mergedOptions: ParserOptions,
     visitedDefinitions: VisitedDefinition[]
-): Definition {
+): Definition | null {
     const inputMessage = wsdl.definitions.messages[methodInputName];
     if (inputMessage.element) {
         // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
@@ -416,6 +389,39 @@ function getInputDefinition(
                 visitedDefinitions
             )
         );
+    } else {
+        return null;
     }
-    return null;
+}
+
+function getOutputDefinition(
+    methodOutputName: string,
+    wsdl: WSDL,
+    parsedWsdl: ParsedWsdl,
+    mergedOptions: ParserOptions,
+    visitedDefinitions: VisitedDefinition[]
+): Definition | null {
+    const outputMessage = wsdl.definitions.messages[methodOutputName];
+    if (outputMessage.element) {
+        // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
+        const typeName = outputMessage.element.$type ?? outputMessage.element.$name;
+        const type = parsedWsdl.findDefinition(typeName);
+        return (
+            type ??
+            parseDefinition(parsedWsdl, mergedOptions, typeName, outputMessage.parts, [typeName], visitedDefinitions)
+        );
+    } else {
+        const type = parsedWsdl.findDefinition(methodOutputName);
+        return (
+            type ??
+            parseDefinition(
+                parsedWsdl,
+                mergedOptions,
+                methodOutputName,
+                outputMessage.parts,
+                [methodOutputName],
+                visitedDefinitions
+            )
+        );
+    }
 }
