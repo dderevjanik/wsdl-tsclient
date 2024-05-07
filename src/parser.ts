@@ -401,7 +401,7 @@ function createMethodOutputDefinition(opts: {
     parsedWsdl: ParsedWsdl;
     mergedOptions: ParserOptions;
     visitedDefinitions: VisitedDefinition[];
-}): Definition | null {
+}): Definition {
     const { methodOutputName, wsdl, parsedWsdl, mergedOptions, visitedDefinitions } = opts;
     const outputMessage = wsdl.definitions.messages[methodOutputName];
     if (outputMessage.element) {
