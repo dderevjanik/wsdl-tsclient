@@ -280,7 +280,7 @@ export async function generate(
             namedImports: [
                 { name: "Client", alias: "SoapClient" },
                 { name: "createClientAsync", alias: "soapCreateClientAsync" },
-                { name: "IExOptions", alias: "ISoapExOptions" }
+                { name: "IExOptions", alias: "ISoapExOptions" },
             ],
         });
         clientFile.addImportDeclarations(clientImports);
