@@ -4,7 +4,7 @@ import { parseAndGenerate } from "../../src";
 import { Logger } from "../../src/utils/logger";
 import { typecheck } from "../utils/tsc";
 
-const target = "ref_element_same_as_type";
+const target = "hello_service";
 
 test(target, async (t) => {
     Logger.disabled();
@@ -12,20 +12,29 @@ test(target, async (t) => {
     const input = `./test/resources/${target}.wsdl`;
     const outdir = "./test/generated";
 
+    const expectedFiles = [
+        "client.ts",
+        "index.ts",
+        "definitions/SayHelloRequest.ts",
+        "definitions/SayHelloResponse.ts",
+        "ports/HelloPort.ts",
+        "services/HelloService.ts",
+    ];
+
     t.test(`${target} - generate wsdl client`, async (t) => {
         await parseAndGenerate(input, outdir);
         t.end();
     });
 
-    t.test(`${target} - check definitions`, async (t) => {
-        t.equal(existsSync(`${outdir}/refelementsameastype/definitions/ExampleContent.ts`), true);
-        t.equal(existsSync(`${outdir}/refelementsameastype/definitions/OutMessage.ts`), true);
-        t.equal(existsSync(`${outdir}/refelementsameastype/definitions/V1ExampleRequestType.ts`), true);
-        t.end();
+    expectedFiles.forEach((file) => {
+        t.test(`${target} - ${file} exists`, async (t) => {
+            t.equal(existsSync(`${outdir}/helloservice/${file}`), true);
+            t.end();
+        });
     });
 
     t.test(`${target} - compile`, async (t) => {
-        await typecheck(`${outdir}/refelementsameastype/index.ts`);
+        await typecheck(`${outdir}/helloservice/index.ts`);
         t.end();
     });
 });

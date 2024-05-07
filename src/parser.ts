@@ -287,11 +287,11 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                             Logger.debug(`Parsing Method ${methodName}`);
 
                             // TODO: Deduplicate code below by refactoring it to external function. Is it even possible ?
-                            let paramName = "request";
+                            let requestParamName = "request";
                             let inputDefinition: Definition = null; // default type
                             if (method.input) {
                                 if (method.input.$name) {
-                                    paramName = method.input.$name;
+                                    requestParamName = method.input.$name;
                                 }
                                 const inputMessage = wsdl.definitions.messages[method.input.$name];
                                 if (inputMessage.element) {
@@ -311,15 +311,15 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                             visitedDefinitions
                                         );
                                 } else if (inputMessage.parts) {
-                                    const type = parsedWsdl.findDefinition(paramName);
+                                    const type = parsedWsdl.findDefinition(requestParamName);
                                     inputDefinition =
                                         type ??
                                         parseDefinition(
                                             parsedWsdl,
                                             mergedOptions,
-                                            paramName,
+                                            requestParamName,
                                             inputMessage.parts,
-                                            [paramName],
+                                            [requestParamName],
                                             visitedDefinitions
                                         );
                                 } else {
@@ -329,8 +329,12 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                 }
                             }
 
+                            let responseParamName = "response";
                             let outputDefinition: Definition = null; // default type, `{}` or `unknown` ?
                             if (method.output) {
+                                if (method.output.$name) {
+                                    responseParamName = method.output.$name;
+                                }
                                 const outputMessage = wsdl.definitions.messages[method.output.$name];
                                 if (outputMessage.element) {
                                     // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
@@ -347,21 +351,21 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                             visitedDefinitions
                                         );
                                 } else {
-                                    const type = parsedWsdl.findDefinition(paramName);
+                                    const type = parsedWsdl.findDefinition(responseParamName);
                                     outputDefinition =
                                         type ??
                                         parseDefinition(
                                             parsedWsdl,
                                             mergedOptions,
-                                            paramName,
+                                            responseParamName,
                                             outputMessage.parts,
-                                            [paramName],
+                                            [responseParamName],
                                             visitedDefinitions
                                         );
                                 }
                             }
 
-                            const camelParamName = changeCase(paramName);
+                            const camelParamName = changeCase(requestParamName);
                             const portMethod: Method = {
                                 name: methodName,
                                 paramName: reservedKeywords.includes(camelParamName)
