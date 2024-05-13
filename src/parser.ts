@@ -149,15 +149,27 @@ function parseDefinition(
                     }
                 } else {
                     if (typeof type === "string") {
-                        // primitive type
-                        definition.properties.push({
-                            kind: "PRIMITIVE",
-                            name: propName,
-                            sourceName: propName,
-                            description: type,
-                            type: "string",
-                            isArray: false,
-                        });
+                        const enumResult = /string\|(.+)/.exec(type);
+                        if (enumResult) {
+                            // enum
+                            definition.properties.push({
+                                kind: "PRIMITIVE",
+                                name: propName,
+                                sourceName: propName,
+                                description: type,
+                                type: `"${enumResult[1].split(",").join('" | "')}"`,
+                            });
+                        } else {
+                            // primitive type
+                            definition.properties.push({
+                                kind: "PRIMITIVE",
+                                name: propName,
+                                sourceName: propName,
+                                description: type,
+                                type: "string",
+                                isArray: false,
+                            });
+                        }
                     } else if (type instanceof ComplexTypeElement) {
                         // TODO: Finish complex type parsing by updating node-soap
                         definition.properties.push({

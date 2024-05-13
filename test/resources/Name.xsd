@@ -5,7 +5,16 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="DummyField1" type="xs:string" minOccurs="0"/>
-				<xs:element name="DummyField2" type="xs:string" minOccurs="0"/>
+				<xs:element name="DummyField2" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="A"/>
+							<xs:enumeration value="B"/>
+							<xs:enumeration value="C"/>
+							<xs:enumeration value="D"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
