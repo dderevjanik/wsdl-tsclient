@@ -6,18 +6,18 @@ import { typecheck } from "../utils/tsc";
 
 const target = "list_parameter";
 
-test(target, async t => {
+test(target, async (t) => {
     Logger.disabled();
 
     const input = `./test/resources/${target}.wsdl`;
     const outdir = "./test/generated";
 
-    t.test(`${target} - generate wsdl client`, async t => {
+    t.test(`${target} - generate wsdl client`, async (t) => {
         await parseAndGenerate(input, outdir);
         t.end();
     });
 
-    t.test(`${target} - check definitions`, async t => {
+    t.test(`${target} - check definitions`, async (t) => {
         t.equal(existsSync(`${outdir}/listparameter/definitions/About.ts`), true);
         t.equal(existsSync(`${outdir}/listparameter/definitions/AboutResponse.ts`), true);
         t.equal(existsSync(`${outdir}/listparameter/definitions/AddTimesheet.ts`), true);
@@ -60,7 +60,10 @@ test(target, async t => {
         t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetValuesResponse.ts`), true);
         t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetValuesResult.ts`), true);
         t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetValuesWithRelatedColumns.ts`), true);
-        t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetValuesWithRelatedColumnsResponse.ts`), true);
+        t.equal(
+            existsSync(`${outdir}/listparameter/definitions/GetTimesheetValuesWithRelatedColumnsResponse.ts`),
+            true
+        );
         t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetWorkSchedule.ts`), true);
         t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetWorkScheduleResponse.ts`), true);
         t.equal(existsSync(`${outdir}/listparameter/definitions/GetTimesheetWorkScheduleResult.ts`), true);
@@ -91,9 +94,8 @@ test(target, async t => {
         t.end();
     });
 
-    t.test(`${target} - compile`, async t => {
+    t.test(`${target} - compile`, async (t) => {
         await typecheck(`${outdir}/listparameter/index.ts`);
-		t.end();
+        t.end();
     });
-
 });
