@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - TBD
+
+- Generator: Appends `fileSuffix` to imports and exports
+- CLI: Add `--fileSuffix` option
+- Project: Updated README with latest CLI help output
+
 ## [1.5.0] - 2024-04-16
 
 - Project: Update soap dependency to 1.0.0 [#73](https://github.com/dderevjanik/wsdl-tsclient/pull/73) by @taylorreece

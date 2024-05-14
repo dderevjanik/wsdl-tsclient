@@ -31,6 +31,10 @@ const conf = yargs(process.argv.slice(2))
         type: "string",
         description: "Suffix for generated interface names",
     })
+    .option("fileSuffix", {
+        type: "string",
+        description: 'The filename suffix used in import/export statements (e.g. ".js" or ".mjs")',
+    })
     .option("caseInsensitiveNames", {
         type: "boolean",
         description: "Case-insensitive name while parsing definition names",
@@ -96,6 +100,10 @@ if (conf.modelNamePreffix) {
 
 if (conf.modelNameSuffix) {
     options.modelNameSuffix = conf.modelNameSuffix;
+}
+
+if (conf.fileSuffix) {
+    options.fileSuffix = conf.fileSuffix;
 }
 
 if (conf.maxRecursiveDefinitionName || conf.maxRecursiveDefinitionName == 0) {
