@@ -2,7 +2,7 @@
 import yargs from "yargs";
 import path from "path";
 import { Logger } from "./utils/logger";
-import { parseAndGenerate, Options } from "./index";
+import { parseAndGenerate, Options, ModelPropertyNaming } from "./index";
 import packageJson from "../package.json";
 
 const conf = yargs(process.argv.slice(2))
@@ -30,6 +30,10 @@ const conf = yargs(process.argv.slice(2))
     .option("modelNameSuffix", {
         type: "string",
         description: "Suffix for generated interface names",
+    })
+    .option("modelPropertyNaming", {
+        type: "string",
+        description: "Property naming convention ('camelCase' or 'PascalCase')",
     })
     .option("caseInsensitiveNames", {
         type: "boolean",
@@ -97,6 +101,14 @@ if (conf.modelNamePreffix) {
 
 if (conf.modelNameSuffix) {
     options.modelNameSuffix = conf.modelNameSuffix;
+}
+
+if (conf.modelPropertyNaming) {
+    if (!["camelCase", "PascalCase"].includes(conf.modelPropertyNaming)) {
+        console.error("Incorrect modelPeropertyNaming value. Use 'camelCase' or 'PascalCase'");
+        process.exit(1);
+    }
+    options.modelPropertyNaming = conf.modelPropertyNaming as ModelPropertyNaming;
 }
 
 if (conf.maxRecursiveDefinitionName || conf.maxRecursiveDefinitionName == 0) {

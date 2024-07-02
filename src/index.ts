@@ -37,6 +37,9 @@ export interface Options {
      * @default 64
      */
     maxRecursiveDefinitionName: number;
+    /**
+     * Property naming convention ('camelCase' or 'PascalCase')"
+     */
     modelPropertyNaming: ModelPropertyNaming;
     /**
      * Print verbose logs
