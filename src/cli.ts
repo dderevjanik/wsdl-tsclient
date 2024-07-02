@@ -13,7 +13,7 @@ const conf = yargs(process.argv.slice(2))
     .demandOption(["o"])
     .option("o", {
         type: "string",
-        description: "Output directory",
+        description: "Output directory for generated TypeScript client",
     })
     .option("version", {
         alias: "v",
@@ -21,7 +21,7 @@ const conf = yargs(process.argv.slice(2))
     })
     .option("emitDefinitionsOnly", {
         type: "boolean",
-        description: "Generate only Definitions",
+        description: "Generate definitions only (interfaces and types)",
     })
     .option("modelNamePreffix", {
         type: "string",
@@ -33,11 +33,12 @@ const conf = yargs(process.argv.slice(2))
     })
     .option("caseInsensitiveNames", {
         type: "boolean",
-        description: "Case-insensitive name while parsing definition names",
+        description: "Parse WSDL definitions case-insensitively",
     })
     .option("maxRecursiveDefinitionName", {
         type: "number",
-        description: "Maximum count of definition's with same name but increased suffix. Will throw an error if exceed",
+        description:
+            "Maximum count of definitions with the same name but increased suffix. Will throw an error if exceeded.",
     })
     .option("quiet", {
         type: "boolean",
