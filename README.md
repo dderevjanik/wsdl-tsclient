@@ -1,6 +1,5 @@
 # WSDL TSClient
 
-[![travis-status](https://travis-ci.org/dderevjanik/wsdl-tsclient.svg?branch=master)](https://travis-ci.org/dderevjanik/wsdl-tsclient)
 ![license](https://img.shields.io/npm/l/wsdl-tsclient)
 [![Known Vulnerabilities](https://snyk.io/test/github/dderevjanik/wsdl-tsclient/badge.svg)](https://snyk.io/test/github/dderevjanik/wsdl-tsclient)
 [![npm-version](https://img.shields.io/npm/v/wsdl-tsclient)](https://npmjs.com/package/wsdl-tsclient)
