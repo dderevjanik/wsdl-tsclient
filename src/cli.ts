@@ -44,6 +44,10 @@ const conf = yargs(process.argv.slice(2))
         description:
             "Maximum count of definitions with the same name but increased suffix. Will throw an error if exceeded.",
     })
+    .option("esm", {
+        type: "boolean",
+        description: "Generate imports with .js suffix",
+    })
     .option("quiet", {
         type: "boolean",
         description: "Suppress all logs",
@@ -55,7 +59,7 @@ const conf = yargs(process.argv.slice(2))
     .option("no-color", {
         type: "boolean",
         description: "Logs without colors",
-    }).argv;
+    }).parseSync();
 
 // Logger section
 

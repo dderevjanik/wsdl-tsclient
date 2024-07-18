@@ -15,11 +15,13 @@ import { Logger } from "./utils/logger";
 export interface GeneratorOptions {
     emitDefinitionsOnly: boolean;
     modelPropertyNaming: ModelPropertyNaming;
+    esm: boolean;
 }
 
 const defaultOptions: GeneratorOptions = {
     emitDefinitionsOnly: false,
     modelPropertyNaming: null,
+    esm: false,
 };
 
 /**
@@ -177,13 +179,13 @@ export async function generate(
                         );
                         addSafeImport(
                             clientImports,
-                            `./definitions/${method.paramDefinition.name}`,
+                            `./definitions/${method.paramDefinition.name}${mergedOptions.esm ? ".js" : ""}`,
                             method.paramDefinition.name
                         );
                     }
                     addSafeImport(
                         portImports,
-                        `../definitions/${method.paramDefinition.name}`,
+                        `../definitions/${method.paramDefinition.name}${mergedOptions.esm ? ".js" : ""}`,
                         method.paramDefinition.name
                     );
                 }
@@ -200,13 +202,13 @@ export async function generate(
                         );
                         addSafeImport(
                             clientImports,
-                            `./definitions/${method.returnDefinition.name}`,
+                            `./definitions/${method.returnDefinition.name}${mergedOptions.esm ? ".js" : ""}`,
                             method.returnDefinition.name
                         );
                     }
                     addSafeImport(
                         portImports,
-                        `../definitions/${method.returnDefinition.name}`,
+                        `../definitions/${method.returnDefinition.name}${mergedOptions.esm ? ".js" : ""}`,
                         method.returnDefinition.name
                     );
                 }
@@ -230,7 +232,7 @@ export async function generate(
                 });
             } // End of PortMethod
             if (!mergedOptions.emitDefinitionsOnly) {
-                addSafeImport(serviceImports, `../ports/${port.name}`, port.name);
+                addSafeImport(serviceImports, `../ports/${port.name}${mergedOptions.esm ? ".js" : ""}`, port.name);
                 servicePorts.push({
                     name: sanitizePropName(port.name),
                     isReadonly: true,
@@ -252,7 +254,7 @@ export async function generate(
         } // End of Port
 
         if (!mergedOptions.emitDefinitionsOnly) {
-            addSafeImport(clientImports, `./services/${service.name}`, service.name);
+            addSafeImport(clientImports, `./services/${service.name}${mergedOptions.esm ? ".js" : ""}`, service.name);
             clientServices.push({ name: sanitizePropName(service.name), type: service.name });
 
             serviceFile.addImportDeclarations(serviceImports);

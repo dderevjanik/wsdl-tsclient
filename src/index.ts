@@ -42,6 +42,10 @@ export interface Options {
      */
     modelPropertyNaming: ModelPropertyNaming;
     /**
+     * Generate imports with .js suffix
+     */
+    esm: boolean
+    /**
      * Print verbose logs
      * @default false
      */
@@ -65,6 +69,7 @@ export const defaultOptions: Options = {
     caseInsensitiveNames: false,
     maxRecursiveDefinitionName: 64,
     modelPropertyNaming: null,
+    esm: false,
     //
     verbose: false,
     quiet: false,
