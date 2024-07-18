@@ -46,16 +46,21 @@ wsdl-tsclient [options] [path]
 
 Options:
       --help                        Show help                          [boolean]
-  -v, --version                                                        [boolean]
-  -o                                Output directory         [string] [required]
-      --emitDefinitionsOnly         Generate only Definitions          [boolean]
+  -v, --version                     Show version number                [boolean]
+  -o                                Output directory for generated TypeScript
+                                    client                   [string] [required]
+      --emitDefinitionsOnly         Generate definitions only (interfaces and
+                                    types)                             [boolean]
       --modelNamePreffix            Prefix for generated interface names[string]
       --modelNameSuffix             Suffix for generated interface names[string]
-      --caseInsensitiveNames        Case-insensitive name while parsing
-                                    definition names                   [boolean]
-      --maxRecursiveDefinitionName  Maximum count of definition's with same name
-                                    but increased suffix. Will throw an error if
-                                    exceed                              [number]
+      --modelPropertyNaming         Property naming convention ('camelCase' or
+                                    'PascalCase')                       [string]
+      --caseInsensitiveNames        Parse WSDL definitions case-insensitively
+                                                                       [boolean]
+      --maxRecursiveDefinitionName  Maximum count of definitions with the same
+                                    name but increased suffix. Will throw an
+                                    error if exceeded.                  [number]
+      --esm                         Generate imports with .js suffix   [boolean]
       --quiet                       Suppress all logs                  [boolean]
       --verbose                     Print verbose logs                 [boolean]
       --no-color                    Logs without colors                [boolean]
