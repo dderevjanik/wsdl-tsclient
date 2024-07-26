@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2024-07-15
+
+- [feat(cli): add option for modelPropertyNaming](https://github.com/dderevjanik/wsdl-tsclient/commit/8670d29a8f98815a74d442595b7d7d3ebdb5388c) `--modelPropertyNaming=` 
+
 ## [1.6.0] - 2024-07-02
 
 - Fix for code generation types not matching what node-soap produces by @nahidakbar in https://github.com/dderevjanik/wsdl-tsclient/pull/54
