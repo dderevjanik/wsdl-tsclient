@@ -123,6 +123,10 @@ if (conf.caseInsensitiveNames) {
     options.caseInsensitiveNames = conf.caseInsensitiveNames;
 }
 
+if (conf.esm) {
+    options.esm = conf.esm;
+}
+
 Logger.debug("Options");
 Logger.debug(JSON.stringify(options, null, 2));
 
