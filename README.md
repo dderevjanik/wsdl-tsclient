@@ -24,6 +24,12 @@ or install it with `-g` to have CLI globally available.
 npm i -g wsdl-tsclient
 ```
 
+or you can use `npx` to run it without installing
+
+```sh
+npx wsdl-tsclient ./path/to/wsdl.wsdl -o ./generated/
+```
+
 ## Usage
 
 You can check example repository [wsdl-tsclient-example](https://github.com/dderevjanik/wsdl-tsclient-example)
@@ -108,6 +114,12 @@ for more information about the use of the client, read more about [soap](https:/
 ## How it works
 
 ![overview](./docs/Overview.png)
+
+## Develpoment
+
+- Clone the repository
+- Install dependencies `npm i`
+- Run tests `npm test`
 
 ## License
 
