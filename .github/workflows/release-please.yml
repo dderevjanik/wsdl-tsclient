@@ -33,9 +33,6 @@ jobs:
 
             - if: ${{ github.event.inputs.publish-release == 'true' || steps.release.outputs.release_created }}
               uses: actions/setup-node@v4
-              with:
-                  node-version-file: ".nvmrc"
-                  registry-url: "https://registry.npmjs.org"
 
             - if: ${{ github.event.inputs.publish-release == 'true' || steps.release.outputs.release_created }}
               env:
