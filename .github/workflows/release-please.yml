@@ -1,0 +1,44 @@
+name: release-please
+
+on:
+    workflow_run:
+        workflows:
+            - QA
+        types:
+            - completed
+    # manual
+    workflow_dispatch:
+        inputs:
+            publish-release:
+                description: Publish the release?
+                required: true
+                default: "false"
+
+permissions:
+    contents: write
+    pull-requests: write
+    id-token: write
+
+jobs:
+    release-please:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: googleapis/release-please-action@v4
+              id: release
+              with:
+                  manifest-file: .github/.release-please-manifest.json
+                  config-file: .github/release-please-config.json
+
+            - if: ${{ github.event.inputs.publish-release == 'true' || steps.release.outputs.release_created }}
+              uses: actions/checkout@v4
+
+            - if: ${{ github.event.inputs.publish-release == 'true' || steps.release.outputs.release_created }}
+              uses: actions/setup-node@v4
+
+            - if: ${{ github.event.inputs.publish-release == 'true' || steps.release.outputs.release_created }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: >
+                  npm ci &&
+                  npm run build &&
+                  npm publish --provenance --access public
