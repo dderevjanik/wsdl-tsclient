@@ -20,8 +20,8 @@
     "dev": "ts-node -T ./dev.ts",
     "dist": "tsc",
     "build": "tsc",
-    "lint": "eslint ./src",
-    "lint:fix": "eslint --fix ./src"
+    "lint": "eslint '**/*.ts'",
+    "lint:fix": "eslint --fix '**/*.ts'"
   },
   "repository": {
     "type": "git",
