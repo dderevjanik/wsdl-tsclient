@@ -59,7 +59,7 @@
     "camelcase": "^6.3.0",
     "chalk": "^4.1.1",
     "sanitize-filename": "^1.6.3",
-    "soap": "^1.1.0",
+    "soap": "^1.1.2",
     "supports-color": "^8.1.1",
     "ts-morph": "^23.0.0",
     "yargs": "^17.7.2"
