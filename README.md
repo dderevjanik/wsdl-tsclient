@@ -63,6 +63,9 @@ Options:
                                     'PascalCase')                       [string]
       --caseInsensitiveNames        Parse WSDL definitions case-insensitively
                                                                        [boolean]
+      --useWsdlTypeNames            Use wsdl schema type names instead of
+                                    parameter names for generated interface
+                                    names                              [boolean]
       --maxRecursiveDefinitionName  Maximum count of definitions with the same
                                     name but increased suffix. Will throw an
                                     error if exceeded.                  [number]

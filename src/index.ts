@@ -33,6 +33,11 @@ export interface Options {
      */
     caseInsensitiveNames: boolean;
     /**
+     * Use wsdl schema type names instead of parameter names for generated interface names
+     * @default false
+     */
+    useWsdlTypeNames: boolean;
+    /**
      * Maximum count of definition's with same name but increased suffix. Will throw an error if exceed
      * @default 64
      */
@@ -44,7 +49,7 @@ export interface Options {
     /**
      * Generate imports with .js suffix
      */
-    esm: boolean
+    esm: boolean;
     /**
      * Print verbose logs
      * @default false
@@ -67,6 +72,7 @@ export const defaultOptions: Options = {
     modelNamePreffix: "",
     modelNameSuffix: "",
     caseInsensitiveNames: false,
+    useWsdlTypeNames: false,
     maxRecursiveDefinitionName: 64,
     modelPropertyNaming: null,
     esm: false,

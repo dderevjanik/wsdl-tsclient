@@ -1,5 +1,17 @@
 import * as path from "path";
-import { ComplexTypeElement } from "soap/lib/wsdl/elements";
+import {
+    AllElement,
+    ChoiceElement,
+    ComplexContentElement,
+    ComplexTypeElement,
+    DefinitionsElement,
+    ElementElement,
+    ExtensionElement,
+    SequenceElement,
+    SimpleContentElement,
+    SimpleTypeElement,
+} from "soap/lib/wsdl/elements";
+import { splitQName } from "soap/lib/utils";
 import { open_wsdl } from "soap/lib/wsdl/index";
 import { Definition, Method, ParsedWsdl, Port, Service } from "./models/parsed-wsdl";
 import { changeCase } from "./utils/change-case";
@@ -12,6 +24,7 @@ interface ParserOptions {
     modelNameSuffix: string;
     maxRecursiveDefinitionName: number;
     caseInsensitiveNames: boolean;
+    useWsdlTypeNames: boolean;
 }
 
 const defaultOptions: ParserOptions = {
@@ -19,6 +32,7 @@ const defaultOptions: ParserOptions = {
     modelNameSuffix: "",
     maxRecursiveDefinitionName: 64,
     caseInsensitiveNames: false,
+    useWsdlTypeNames: false,
 };
 
 type VisitedDefinition = {
@@ -53,6 +67,60 @@ function toPrimitiveType(type: string): string {
     return NODE_SOAP_PARSED_TYPES[type] || "string";
 }
 
+type ElementSchema = ElementElement | ComplexTypeElement | SimpleTypeElement;
+
+function findElementSchemaType(definitions: DefinitionsElement, element: ElementSchema) {
+    if (!("$type" in element) && !("$ref" in element)) return element;
+    const type = element.$type || element.$ref;
+    if (!type) return element;
+    const { prefix, name: localName } = splitQName(type);
+    const ns = element.schemaXmlns[prefix] ?? definitions.xmlns[prefix] ?? definitions.xmlns[element.targetNSAlias];
+    const schema = definitions.schemas[ns];
+    if (!schema) return element;
+    const typeElement = schema.complexTypes[localName] ?? schema.types[localName];
+    return typeElement;
+}
+
+function findPropSchemaType(
+    definitions: DefinitionsElement,
+    parentElement: ElementSchema | undefined,
+    propName: string
+): ElementSchema | undefined {
+    if (!parentElement?.children) return undefined;
+    for (const child of parentElement.children) {
+        if (
+            child instanceof ChoiceElement ||
+            child instanceof SequenceElement ||
+            child instanceof AllElement ||
+            child instanceof SimpleContentElement ||
+            child instanceof ComplexContentElement ||
+            child instanceof ExtensionElement
+        ) {
+            return findPropSchemaType(definitions, child, propName);
+        }
+        if (child.$name === propName) {
+            if (
+                child instanceof ElementElement ||
+                child instanceof ComplexTypeElement ||
+                child instanceof SimpleTypeElement
+            ) {
+                return findElementSchemaType(definitions, child);
+            }
+        }
+    }
+    return undefined;
+}
+
+function getNameFromSchema(element: ElementSchema | undefined) {
+    if (!element) return undefined;
+    if ("$type" in element || "$ref" in element) {
+        const type = element.$type || element.$ref;
+        const { name: localName } = splitQName(type);
+        return localName;
+    }
+    return element.$name;
+}
+
 /**
  * parse definition
  * @param parsedWsdl context of parsed wsdl
@@ -67,7 +135,9 @@ function parseDefinition(
     name: string,
     defParts: { [propNameType: string]: any },
     stack: string[],
-    visitedDefs: Array<VisitedDefinition>
+    visitedDefs: Array<VisitedDefinition>,
+    definitions: DefinitionsElement,
+    schema: ElementSchema | undefined
 ): Definition {
     const defName = changeCase(name, { pascalCase: true });
 
@@ -146,13 +216,17 @@ function parseDefinition(
                             });
                         } else {
                             try {
+                                const propSchema = findPropSchemaType(definitions, schema, stripedPropName);
+                                const guessPropName = getNameFromSchema(propSchema) ?? stripedPropName;
                                 const subDefinition = parseDefinition(
                                     parsedWsdl,
                                     options,
-                                    stripedPropName,
+                                    guessPropName,
                                     type,
                                     [...stack, propName],
-                                    visitedDefs
+                                    visitedDefs,
+                                    definitions,
+                                    propSchema
                                 );
                                 definition.properties.push({
                                     kind: "REFERENCE",
@@ -205,13 +279,17 @@ function parseDefinition(
                         });
                     } else {
                         try {
+                            const propSchema = findPropSchemaType(definitions, schema, propName);
+                            const guessPropName = getNameFromSchema(propSchema) ?? propName;
                             const subDefinition = parseDefinition(
                                 parsedWsdl,
                                 options,
-                                propName,
+                                guessPropName,
                                 type,
                                 [...stack, propName],
-                                visitedDefs
+                                visitedDefs,
+                                definitions,
+                                propSchema
                             );
                             definition.properties.push({
                                 kind: "REFERENCE",
@@ -300,6 +378,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                     const type = parsedWsdl.findDefinition(
                                         inputMessage.element.$type ?? inputMessage.element.$name
                                     );
+                                    const schema = mergedOptions.useWsdlTypeNames
+                                        ? findElementSchemaType(wsdl.definitions, inputMessage.element)
+                                        : undefined;
                                     inputDefinition =
                                         type ??
                                         parseDefinition(
@@ -308,7 +389,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                             typeName,
                                             inputMessage.parts,
                                             [typeName],
-                                            visitedDefinitions
+                                            visitedDefinitions,
+                                            wsdl.definitions,
+                                            schema
                                         );
                                 } else if (inputMessage.parts) {
                                     const type = parsedWsdl.findDefinition(requestParamName);
@@ -320,7 +403,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                             requestParamName,
                                             inputMessage.parts,
                                             [requestParamName],
-                                            visitedDefinitions
+                                            visitedDefinitions,
+                                            wsdl.definitions,
+                                            undefined
                                         );
                                 } else {
                                     Logger.debug(
@@ -340,6 +425,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                     // TODO: if `$type` not defined, inline type into function declartion (do not create definition file) - wsimport
                                     const typeName = outputMessage.element.$type ?? outputMessage.element.$name;
                                     const type = parsedWsdl.findDefinition(typeName);
+                                    const schema = mergedOptions.useWsdlTypeNames
+                                        ? findElementSchemaType(wsdl.definitions, outputMessage.element)
+                                        : undefined;
                                     outputDefinition =
                                         type ??
                                         parseDefinition(
@@ -348,7 +436,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                             typeName,
                                             outputMessage.parts,
                                             [typeName],
-                                            visitedDefinitions
+                                            visitedDefinitions,
+                                            wsdl.definitions,
+                                            schema
                                         );
                                 } else {
                                     const type = parsedWsdl.findDefinition(responseParamName);
@@ -360,7 +450,9 @@ export async function parseWsdl(wsdlPath: string, options: Partial<ParserOptions
                                             responseParamName,
                                             outputMessage.parts,
                                             [responseParamName],
-                                            visitedDefinitions
+                                            visitedDefinitions,
+                                            wsdl.definitions,
+                                            undefined
                                         );
                                 }
                             }

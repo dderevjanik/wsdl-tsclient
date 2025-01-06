@@ -39,6 +39,10 @@ const conf = yargs(process.argv.slice(2))
         type: "boolean",
         description: "Parse WSDL definitions case-insensitively",
     })
+    .option("useWsdlTypeNames", {
+        type: "boolean",
+        description: "Use wsdl schema type names instead of parameter names for generated interface names",
+    })
     .option("maxRecursiveDefinitionName", {
         type: "number",
         description:
@@ -59,7 +63,8 @@ const conf = yargs(process.argv.slice(2))
     .option("no-color", {
         type: "boolean",
         description: "Logs without colors",
-    }).parseSync();
+    })
+    .parseSync();
 
 // Logger section
 
@@ -121,6 +126,10 @@ if (conf.maxRecursiveDefinitionName || conf.maxRecursiveDefinitionName == 0) {
 
 if (conf.caseInsensitiveNames) {
     options.caseInsensitiveNames = conf.caseInsensitiveNames;
+}
+
+if (conf.useWsdlTypeNames) {
+    options.useWsdlTypeNames = conf.useWsdlTypeNames;
 }
 
 if (conf.esm) {
