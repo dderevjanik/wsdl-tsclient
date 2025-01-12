@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (https://github.com/eclipse-ee4j/metro-jax-ws). RI's version is JAX-WS RI 2.3.5 git-revision#7ddc91f. -->
+<xs:schema xmlns:tns="http://test.wsdl.it/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://test.wsdl.it/">
+
+<xs:element name="addNumber" type="tns:addNumber"/>
+
+<xs:element name="addNumberResponse" type="tns:addNumberResponse"/>
+
+<xs:element name="complexFunction" type="tns:complexFunction"/>
+
+<xs:element name="complexFunctionResponse" type="tns:complexFunctionResponse"/>
+
+<xs:element name="simpleFunction1" type="tns:simpleFunction1"/>
+
+<xs:element name="simpleFunction1Response" type="tns:simpleFunction1Response"/>
+
+<xs:element name="simpleFunction2" type="tns:simpleFunction2"/>
+
+<xs:element name="simpleFunction2Response" type="tns:simpleFunction2Response"/>
+
+<xs:element name="checkElementRef" type="tns:simpleRequest"/>
+
+<xs:complexType name="complexFunction">
+<xs:sequence>
+<xs:element name="param" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="complexFunctionResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:complextRecursiveResult" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="complextRecursiveResult">
+<xs:sequence>
+<xs:element name="items" type="tns:complextRecursiveResult" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="simpleFunction1">
+<xs:sequence>
+<xs:element name="request" type="tns:simpleRequest" minOccurs="0"/>
+<xs:element ref="tns:checkElementRef" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="simpleRequest">
+<xs:choice>
+<xs:element name="a" type="xs:string" minOccurs="0"/>
+<xs:element name="b" type="xs:string" minOccurs="0"/>
+</xs:choice>
+</xs:complexType>
+
+<xs:complexType name="simpleFunction1Response">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="simpleFunction2">
+<xs:sequence>
+<xs:element name="request" type="tns:complextRequest" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="complextRequest">
+<xs:all>
+<xs:element name="a" type="xs:string" minOccurs="0"/>
+<xs:element name="b" type="tns:simpleRequest" minOccurs="0"/>
+</xs:all>
+</xs:complexType>
+
+<xs:complexType name="simpleFunction2Response">
+<xs:sequence>
+<xs:element name="return" type="tns:complextRecursiveResult" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="addNumber">
+<xs:sequence>
+<xs:element name="param" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="addNumberResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
