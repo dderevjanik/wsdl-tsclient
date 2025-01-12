@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0](https://github.com/dderevjanik/wsdl-tsclient/compare/1.7.1...v1.8.0) (2025-01-12)
+
+
+### Features
+
+* new parameter --useWsdlTypeNames to generate interface names from wsdl type names ([db94bcc](https://github.com/dderevjanik/wsdl-tsclient/commit/db94bcc47e204d8c887cdecc59a1732f20c9bfe6))
+
+
+### Maintenance
+
+* add release please with provenance ([49dc863](https://github.com/dderevjanik/wsdl-tsclient/commit/49dc86324cd946a07250334292e94f41ba355333))
+* update release ([ac61d24](https://github.com/dderevjanik/wsdl-tsclient/commit/ac61d245b4ee9dd076732ea46e89a4d1e1aad5c2))
+* update setup-node ([60758af](https://github.com/dderevjanik/wsdl-tsclient/commit/60758af3695ae04c34410c073ba6fdc7e0d858a3))
+
 ## [1.7.0] - 2024-07-15
 
 - [feat(cli): add option for modelPropertyNaming](https://github.com/dderevjanik/wsdl-tsclient/commit/8670d29a8f98815a74d442595b7d7d3ebdb5388c) `--modelPropertyNaming=` 
