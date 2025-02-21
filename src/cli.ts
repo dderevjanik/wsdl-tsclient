@@ -15,10 +15,7 @@ const conf = yargs(process.argv.slice(2))
         type: "string",
         description: "Output directory for generated TypeScript client",
     })
-    .option("version", {
-        alias: "v",
-        type: "boolean",
-    })
+    .alias("version", "v")
     .option("emitDefinitionsOnly", {
         type: "boolean",
         description: "Generate definitions only (interfaces and types)",
