@@ -1,5 +1,5 @@
 import test from "tape";
-import { existsSync, rmdirSync } from "fs";
+import { existsSync, rmSync } from "fs";
 import { parseAndGenerate } from "../../src";
 import { Logger } from "../../src/utils/logger";
 import { typecheck } from "../utils/tsc";
@@ -13,7 +13,7 @@ test(target, async (t) => {
     const outdir = "./test/generated/jaxws_generated_service";
 
     t.test(`${target} - generate wsdl client with default options`, async (t) => {
-        rmdirSync(outdir, { recursive: true });
+        rmSync(outdir, { recursive: true, force: true });
         await parseAndGenerate(input, outdir);
         t.end();
     });
@@ -33,7 +33,7 @@ test(target, async (t) => {
     });
 
     t.test(`${target} - generate wsdl client with useWsdlTypeNames`, async (t) => {
-        rmdirSync(outdir, { recursive: true });
+        rmSync(outdir, { recursive: true, force: true });
         await parseAndGenerate(input, outdir, { useWsdlTypeNames: true });
         t.end();
     });
