@@ -57,6 +57,8 @@ Options:
                                     client                   [string] [required]
       --emitDefinitionsOnly         Generate definitions only (interfaces and
                                     types)                             [boolean]
+      --verbatimModuleSyntax        Use import type instead of import for types
+                                    and interfaces                     [boolean]
       --modelNamePreffix            Prefix for generated interface names[string]
       --modelNameSuffix             Suffix for generated interface names[string]
       --modelPropertyNaming         Property naming convention ('camelCase' or
