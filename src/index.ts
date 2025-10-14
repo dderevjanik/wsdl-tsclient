@@ -18,6 +18,11 @@ export interface Options {
      */
     emitDefinitionsOnly: boolean;
     /**
+     * Use `import type` instead of `import` for types and interfaces
+     * @default false
+     */
+    verbatimModuleSyntax: boolean;
+    /**
      * Prefix for generated interface names
      * @default ""
      */
@@ -69,6 +74,7 @@ export interface Options {
 
 export const defaultOptions: Options = {
     emitDefinitionsOnly: false,
+    verbatimModuleSyntax: false,
     modelNamePreffix: "",
     modelNameSuffix: "",
     caseInsensitiveNames: false,
