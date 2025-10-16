@@ -162,8 +162,7 @@ if (conf._ === undefined || conf._.length === 0) {
             Logger.log(`Found ${matches.length} wsdl files`);
         }
         for (const match of matches) {
-            const wsdlPath = path.resolve(match);
-            const wsdlName = path.basename(wsdlPath);
+            const { wsdlPath, wsdlName } = resolveWsdlPath(match);
             Logger.log(`Generating soap client from "${wsdlName}"`);
             try {
                 await parseAndGenerate(wsdlPath, path.join(outDir), options);
@@ -179,3 +178,18 @@ if (conf._ === undefined || conf._.length === 0) {
         }
     }
 })();
+
+/**
+ * Resolves the given WSDL path to an absolute path and extracts the WSDL file name.
+ *
+ * @param wsdlPath - The path or URL of the WSDL file to resolve.
+ * @return An object containing the resolved WSDL path and the WSDL file name.
+ */
+function resolveWsdlPath(wsdlPath: string): { wsdlPath: string; wsdlName: string} {
+    try {
+        const url = new URL(wsdlPath);
+        return { wsdlPath: url.href, wsdlName: path.basename(url.pathname) };
+    } catch (e) {
+        return { wsdlPath: path.resolve(wsdlPath), wsdlName: path.basename(wsdlPath) };
+    }
+}
